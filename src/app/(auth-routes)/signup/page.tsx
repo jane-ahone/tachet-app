@@ -81,7 +81,22 @@ const SignUp = () => {
     //   setIsSubmitting(false);
     // }
   };
+  const handleInput = async () => {
+    const username = "JohnDoe";
+    const password = "123456789";
+    const email = "john@example.com";
 
+    const response = await fetch("http://localhost:3000/api/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password, email }),
+    });
+
+    const data = await response.json();
+    console.log(data);
+  };
   return (
     <div className={styles.signupMain}>
       <Image

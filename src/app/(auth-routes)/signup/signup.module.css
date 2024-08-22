@@ -67,7 +67,7 @@
 }
 
 .signInMessage {
-  color: var(--Teal-Teal-300, #4fd1c5);
+  color: var(--Default-Green);
   font-size: 0.875rem;
   font-weight: 700;
 }

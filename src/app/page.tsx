@@ -5,6 +5,8 @@ import { getSession } from "@/lib/auth/action";
 import { useEffect, useState } from "react";
 import { SessionData } from "@/lib/auth/session";
 import SignUp from "./(auth-routes)/signup/page";
+import Sidebar from "@/components/layout/Sidebar/page";
+import Card from "@/components/layout/Card/page";
 
 export default function Home() {
   const [session, setSession] = useState<SessionData | undefined>(undefined); // Initialize session state
@@ -52,16 +54,23 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <input type="text" name="" id="" />
-      <button onClick={handleInput}>Sign up</button>
-      <input type="text" />
-      <button onClick={handleLogin}>Log in</button>
-      {session
-        ? session.isLoggedIn
-          ? "Logged in"
-          : "Logged out"
-        : "Loading..."}
-      <SignUp />
+      <Sidebar />
+      <div>
+        <p>Pages/Dashboard</p>
+        <p>Dashboard</p>
+        <div>
+          <Card />
+          <Card />
+          <Card />
+        </div>
+        <h3>Table</h3>
+        <h3>Table</h3>
+        <h3>Table</h3>
+        <h3>Table</h3>
+        <h3>Table</h3>
+        <h3>Table</h3>
+        <h3>Table</h3>
+      </div>
     </main>
   );
 }
