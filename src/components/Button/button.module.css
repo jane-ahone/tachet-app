@@ -1,0 +1,44 @@
+/* Button.module.css */
+
+.button {
+  padding: 10px 2rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  width: 80%;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: "Helvetica";
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.primary {
+  background-color: #62910c;
+  color: white;
+}
+
+.primary:hover:enabled {
+  background-color: rgb(90, 109, 62);
+}
+
+.secondary {
+  background-color: #eaeaea;
+  color: #000;
+}
+
+.secondary:hover:enabled {
+  background-color: #c9c9c9;
+}
+
+.danger {
+  background-color: #e00;
+  color: white;
+}
+
+.danger:hover:enabled {
+  background-color: #c00;
+}

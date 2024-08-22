@@ -1,0 +1,73 @@
+.signupMain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+}
+.signupMain input {
+  display: flex;
+  width: 21.875rem;
+  height: 3.125rem;
+  padding: 0rem 1.25rem;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 0.5rem;
+  border: 1px solid var(--Gray-Gray-200);
+  background: white;
+}
+.signupMain input::placeholder {
+  color: var(--Gray-Gray-400);
+  font-family: Helvetica;
+  font-size: 0.875rem;
+  line-height: 140%;
+  opacity: 0.5;
+}
+.signupForm {
+  background-color: white;
+  border-radius: 0.9375rem;
+  box-shadow: 0px 7px 23px 0px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2rem;
+  /* styles.css */
+
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Offset to center the element */
+}
+.heading {
+  color: var(--Gray-Gray-700);
+  text-align: center;
+  font-family: Helvetica;
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 140%;
+}
+
+.inputLabel {
+  color: var(--Gray-Gray-700);
+  font-family: Helvetica;
+  font-size: 0.875rem;
+  line-height: 140%;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.routingMessage {
+  color: var(--Gray-Gray-400);
+  text-align: center;
+  font-family: Helvetica;
+  font-size: 0.875rem;
+  line-height: 140%; /* 1.225rem */
+}
+
+.signInMessage {
+  color: var(--Teal-Teal-300, #4fd1c5);
+  font-size: 0.875rem;
+  font-weight: 700;
+}

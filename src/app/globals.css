@@ -38,6 +38,12 @@
   --callout-border-rgb: 172, 175, 176;
   --card-rgb: 180, 185, 188;
   --card-border-rgb: 131, 134, 135;
+
+  --Gray-Gray-700: #2d3748;
+  --Gray-Gray-400: #a0aec0;
+  --Gray-Gray-200: #e2e8f0;
+
+  --Default-Green: #4b5b2f;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -85,23 +91,7 @@ body {
   overflow-x: hidden;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
 a {
   color: inherit;
   text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
 }

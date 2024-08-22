@@ -9,13 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
     "@vercel/postgres": "^0.9.0",
     "bcrypt": "^5.1.1",
+    "connect-pg-simple": "^9.0.1",
     "dotenv": "^16.4.5",
+    "express-session": "^1.18.0",
+    "framer-motion": "^11.3.28",
+    "iron-session": "^8.0.2",
     "next": "14.2.5",
+    "next-session": "^4.0.5",
     "pg": "^8.12.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20",
