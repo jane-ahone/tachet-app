@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "./signup.module.css";
+import styles from "./login.module.css";
 import { useState } from "react";
 import { z, ZodError } from "zod";
 import Image from "next/image";
@@ -8,19 +8,16 @@ import Button from "@/components/Button/button";
 import Link from "next/link";
 
 const schema = z.object({
-  username: z.string().min(2, "Username must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(10, "Password must be at least 10 characters"),
 });
 
-const SignUp = () => {
+const Login = () => {
   const [formData, setFormData] = useState({
-    username: "",
     email: "",
     password: "",
   });
   const [errors, setErrors] = useState({
-    username: "",
     email: "",
     password: "",
   });
@@ -87,7 +84,7 @@ const SignUp = () => {
     const password = "123456789";
     const email = "john@example.com";
 
-    const response = await fetch("http://localhost:3000/api/signup", {
+    const response = await fetch("http://localhost:3000/api/Login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -99,89 +96,82 @@ const SignUp = () => {
     console.log(data);
   };
   return (
-    <div className={styles.signupMain}>
+    <div className={styles.loginMain}>
+      <div className={styles.mainLeft}>
+        <Image
+          className={styles.logo}
+          src="/assets/tachet-logo 2.svg"
+          alt="logo"
+          width={150}
+          height={100}
+        ></Image>
+        <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
+          <p className={styles.heading}>Welcome Back</p>
+          <p className={styles.subheading}>
+            Enter your email and password to sign in
+          </p>
+
+          <div>
+            <label className={styles.inputLabel} htmlFor="email">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              aria-invalid={!!errors.email}
+              aria-describedby="email-error"
+              placeholder="Your email"
+              required
+            />
+            {errors.email && (
+              <span id="email-error" role="alert">
+                {errors.email}
+              </span>
+            )}
+          </div>
+          <div>
+            <label className={styles.inputLabel} htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Your password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+            {errors.password && (
+              <span id="password-error" role="alert">
+                {errors.password}
+              </span>
+            )}
+          </div>
+          <Button disabled={isSubmitting} className={styles.button}>
+            SIGN IN
+          </Button>
+          <p className={styles.routingMessage}>
+            Don&apos;t have an account yet?{" "}
+            <Link href="\signup">
+              <span className={styles.loginMessage}>Sign up</span>
+            </Link>
+          </p>
+          {submitResult && <p role="status">{submitResult}</p>}
+        </form>
+      </div>
       <Image
-        src="/assets/Image.png"
+        src="/assets/loginImage.png"
         alt="green image with spirals"
         width="1870"
         height="520"
         layout="responsive"
       />
-      <form onSubmit={handleSubmit} noValidate className={styles.signupForm}>
-        <div className={styles.heading}>Register</div>
-        <div>
-          <label className={styles.inputLabel} htmlFor="username">
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            placeholder="Jane Doe"
-            value={formData.username}
-            onChange={handleChange}
-            required
-          />
-          {errors.username && (
-            <span id="username-error" role="alert">
-              {errors.username}
-            </span>
-          )}
-        </div>
-        <div>
-          <label className={styles.inputLabel} htmlFor="email">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            aria-invalid={!!errors.email}
-            aria-describedby="email-error"
-            placeholder="janedoe@gmail.com"
-            required
-          />
-          {errors.email && (
-            <span id="email-error" role="alert">
-              {errors.email}
-            </span>
-          )}
-        </div>
-        <div>
-          <label className={styles.inputLabel} htmlFor="password">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Your password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-          {errors.password && (
-            <span id="password-error" role="alert">
-              {errors.password}
-            </span>
-          )}
-        </div>
-        <Button disabled={isSubmitting}>Register</Button>
-
-        {/* {isSubmitting ? "Submitting..." : "Submit"} */}
-
-        <p className={styles.routingMessage}>
-          Already have an account?{" "}
-          <Link href="\login">
-            <span className={styles.signInMessage}>Sign in</span>
-          </Link>
-        </p>
-        {submitResult && <p role="status">{submitResult}</p>}
-      </form>
     </div>
   );
 };
 
-export default SignUp;
+export default Login;
