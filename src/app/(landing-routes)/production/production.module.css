@@ -1,77 +1,342 @@
 .container {
-  display: grid;
-  grid-template-columns: 15vw 3fr;
   min-height: 100vh;
-  margin: 0 auto;
-  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 2rem;
 }
 
 .title {
-  color: #333;
   text-align: center;
-  margin-bottom: 20px;
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 2.5rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.searchContainer {
+  position: relative;
+  flex-grow: 1;
+  max-width: 400px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #7f8c8d;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.dateFilterContainer {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.dateFilterContainer:focus-within {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.calendarIcon {
+  color: #7f8c8d;
+  margin-right: 0.5rem;
+}
+
+.dateInput {
+  border: none;
+  font-size: 1rem;
+  width: 130px;
+  padding: 0.25rem;
+}
+
+.dateInput:focus {
+  outline: none;
+}
+
+.dateRangeSeparator {
+  margin: 0 0.5rem;
+  color: #7f8c8d;
+}
+
+.filterSelect {
+  margin-left: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  font-size: 1rem;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.addButton:hover {
+  background-color: #27ae60;
+}
+
+.addButton svg {
+  margin-right: 0.5rem;
 }
 
 .card {
-  background-color: #fff;
+  background-color: white;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th,
+.table td {
+  padding: 1rem;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f1f3f5;
+  font-weight: 600;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.table th:hover {
+  background-color: #e9ecef;
+}
+
+.table tbody tr {
+  transition: background-color 0.3s ease;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.status {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.completed {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.inprogress {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.pending {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+/* Input thingy */
+.pageContainer {
+  display: flex;
+  min-height: 100vh;
+}
+
+.contentContainer {
+  flex-grow: 1;
+  padding: 2rem;
+  background-color: #f9faf9;
+}
+
+.title {
+  color: #2c5e1a;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
 .form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.inputGroup {
-  display: flex;
-  flex-direction: column;
+.formGroup {
+  margin-bottom: 1.5rem;
 }
 
 .label {
-  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
   font-weight: bold;
-  color: #555;
+  margin-bottom: 0.5rem;
+  color: #2c5e1a;
+}
+
+.icon {
+  margin-right: 0.5rem;
 }
 
 .input,
-.select {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
+.select,
+.textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #2c5e1a;
 }
 
 .select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232c5e1a' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 10px center;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
 }
 
-.button {
-  padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
+.textarea {
+  resize: vertical;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.submitButton,
+.resetButton {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
+  font-size: 1rem;
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease;
 }
 
-.button:hover {
-  background-color: #45a049;
+.submitButton {
+  background-color: #2c5e1a;
+  color: white;
 }
 
-.alert {
-  margin-top: 20px;
-  padding: 10px;
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  border-radius: 4px;
-  color: #155724;
-  text-align: center;
+.submitButton:hover {
+  background-color: #1e4012;
+}
+
+.resetButton {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.resetButton:hover {
+  background-color: #e0e0e0;
+}
+
+.submitButton svg,
+.resetButton svg {
+  margin-right: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .form {
+    padding: 1.5rem;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .submitButton,
+  .resetButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchContainer,
+  .filterSelect,
+  .addButton {
+    margin: 0.5rem 0;
+  }
+
+  .table {
+    font-size: 0.875rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.75rem 0.5rem;
+  }
 }

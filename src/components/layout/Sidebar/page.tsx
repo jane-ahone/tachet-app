@@ -1,4 +1,3 @@
-"use client";
 import {
   LucideProps,
   ChartNoAxesColumn,
@@ -6,6 +5,7 @@ import {
   ShoppingBag,
   UserRound,
   LogOut,
+  House,
 } from "lucide-react";
 import styles from "./sidebar.module.css";
 import Link from "next/link";
@@ -15,18 +15,6 @@ import { Avatar } from "@chakra-ui/react";
 import clsx from "clsx";
 
 const sideItems = [
-  // {
-  //   route: "Dashboard",
-  //   link: "/",
-  //   icon: House,
-  //   id: "dashboard",
-  // },
-  {
-    route: "Reports",
-    link: "/reports",
-    icon: ChartNoAxesColumn,
-    id: "reports",
-  },
   {
     route: "Production",
     link: "/production",
@@ -40,17 +28,12 @@ const sideItems = [
     id: "purchasing",
   },
   {
-    route: "Profile",
-    link: "/profile",
-    icon: UserRound,
-    id: "profile",
+    route: "Reports",
+    link: "/reports",
+    icon: ChartNoAxesColumn,
+    id: "reports",
   },
-  {
-    route: "Tappers",
-    link: "/Tappers",
-    icon: UserRound,
-    id: "Tappers",
-  },
+
   {
     route: "Sign Out",
     link: "/logout",
@@ -69,31 +52,38 @@ interface Iproperties {
     id: string;
   }[];
   currenPathName?: string;
-  alignment: string;
+  alignment: "top" | "left";
+  title: string;
 }
 
-const Sidebar: FC<Iproperties> = ({ sideNavitems = sideItems }) => {
+const Sidebar: FC<Iproperties> = ({
+  sideNavitems = sideItems,
+  title,
+  alignment,
+}) => {
   const pathname = usePathname();
   const currentPath = pathname?.split("/")[3];
   console.log(pathname);
 
+  const showAvatar: boolean = title.toUpperCase() === "TACHET";
+
+  // Determine the alignment-specific class
+  const alignmentClass = alignment === "left" ? styles.leftAlignment : "";
+
   return (
-    <div className={clsx(styles.sidebarMain)}>
-      <p className={styles.title}>TACHET</p>
-      <section className={styles.sidebarList}>
+    <div className={clsx(alignmentClass, styles.sidebarMain)}>
+      <p className={styles.title}>{title}</p>
+      <section className={clsx(alignmentClass, styles.sidebarList)}>
         {sideNavitems.map((item, index) => (
           <div key={index}>
-            {/* Render 'Account Pages' only before the 'Profile' route */}
-            {/* {item.route === "Profile" && (
-              <p className={styles.heading}>ACCOUNT PAGES</p>
-            )} */}
             <Link href={item.link} className={styles.linkRoutes}>
               <item.icon className={styles.linkIcon} size={30} />
               <span className={styles.route}>{item.route}</span>
             </Link>
           </div>
         ))}
-        <Avatar size="sm" name="Jane Ahone" />
+        {showAvatar && <Avatar size="sm" name="Jane Ahone" />}
+        {/* link avatar to profile management */}
       </section>
     </div>
   );

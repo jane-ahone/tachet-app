@@ -26,7 +26,6 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 import { Grape, Milk, Pickaxe, Truck, Warehouse } from "lucide-react";
-import { Wallet } from "lucide-react";
 
 export default function Home() {
   const [session, setSession] = useState<SessionData | undefined>(undefined); // Initialize session state
@@ -74,7 +73,7 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <Sidebar />
+      <Sidebar title="Tachet" alignment="top" />
 
       <div className={styles.mainDetails}>
         <div className={styles.heading}></div>

@@ -1,0 +1,168 @@
+.pageContainer {
+  display: flex;
+  min-height: 100vh;
+}
+
+.contentContainer {
+  flex-grow: 1;
+  padding: 2rem;
+  background-color: #f9faf9;
+}
+
+.title {
+  color: #2c5e1a;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.actionBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  background-color: #f0f4f0;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  width: 300px;
+}
+
+.searchInput {
+  border: none;
+  background: transparent;
+  margin-left: 0.5rem;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.searchInput:focus {
+  outline: none;
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  background-color: #2c5e1a;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.addButton:hover {
+  background-color: #1e4012;
+}
+
+.addButton svg {
+  margin-right: 0.5rem;
+}
+
+.addForm {
+  background-color: #f0f4f0;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.saveButton,
+.cancelButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.saveButton {
+  background-color: #2c5e1a;
+  color: white;
+}
+
+.saveButton:hover {
+  background-color: #1e4012;
+}
+
+.cancelButton {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.cancelButton:hover {
+  background-color: #e0e0e0;
+}
+
+.tapperList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.tapperCard {
+  background-color: #f0f4f0;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.tapperInfo h3 {
+  color: #2c5e1a;
+  margin-bottom: 0.5rem;
+}
+
+.tapperInfo p {
+  margin: 0.25rem 0;
+  color: #555;
+}
+
+.tapperActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.editButton,
+.deleteButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.editButton {
+  color: #2c5e1a;
+}
+
+.editButton:hover {
+  color: #1e4012;
+}
+
+.deleteButton {
+  color: #e74c3c;
+}
+
+.deleteButton:hover {
+  color: #c0392b;
+}

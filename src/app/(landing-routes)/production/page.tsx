@@ -3,13 +3,46 @@
 import { useState, useEffect } from "react";
 import styles from "./production.module.css";
 import { useRouter } from "next/navigation";
-import Sidebar from "@/components/layout/Sidebar/page";
 
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
+  Save,
+  RotateCcw,
+  Droplet,
+  Thermometer,
+  FlaskRound,
+} from "lucide-react";
+
+interface ProductionData {
+  date: string;
+  tapperId: string;
+  volumeCollected: string;
+  alcoholContent: string;
+  temperature: string;
+  ph: string;
+  notes: string;
+}
+import Sidebar from "@/components/layout/Sidebar/page";
+import {
+  LogOut,
+  Pickaxe,
+  SquarePen,
+  ChevronDown,
+  ChevronUp,
+  Search,
+  Filter,
+  PlusCircle,
+  Calendar,
+} from "lucide-react";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  Button,
 } from "@chakra-ui/react";
 
 interface Tapper {
@@ -36,9 +69,59 @@ interface FormData {
 
 const ProductionPage: React.FC = () => {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"input" | "view" | "tappers">(
-    "input"
-  );
+  const sideItems = [
+    {
+      route: "Tappers",
+      link: "/production/tappers",
+      icon: Pickaxe,
+      id: "Tappers",
+    },
+    {
+      route: "Sign Out",
+      link: "/logout",
+      icon: LogOut,
+      id: "logout",
+    },
+  ];
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [productionData, setProductionData] = useState<ProductionData>({
+    date: "",
+    tapperId: "",
+    volumeCollected: "",
+    alcoholContent: "",
+    temperature: "",
+    ph: "",
+    notes: "",
+  });
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setProductionData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleNewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Submitted production data:", productionData);
+    // Here you would typically send this data to your API
+    // After successful submission, you might want to clear the form or show a success message
+  };
+
+  const handleReset = () => {
+    setProductionData({
+      date: "",
+      tapperId: "",
+      volumeCollected: "",
+      alcoholContent: "",
+      temperature: "",
+      ph: "",
+      notes: "",
+    });
+  };
+
   const [formData, setFormData] = useState<FormData>({
     dateReceived: "",
     tapperId: "",
@@ -50,9 +133,14 @@ const ProductionPage: React.FC = () => {
     { id: 1, name: "John Doe" },
     { id: 2, name: "Jane Smith" },
   ]);
-  const [newTapper, setNewTapper] = useState<{ name: string }>({ name: "" });
+
   const [previousEntries, setPreviousEntries] = useState<ProductionEntry[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
     // Simulate fetching previous entries from an API
@@ -73,6 +161,22 @@ const ProductionPage: React.FC = () => {
         purchasePrice: 750,
         processingStatus: "in progress",
       },
+      {
+        id: 3,
+        dateReceived: "2024-09-03",
+        tapperId: 1,
+        volumePurchased: 120,
+        purchasePrice: 600,
+        processingStatus: "pending",
+      },
+      {
+        id: 4,
+        dateReceived: "2024-09-04",
+        tapperId: 2,
+        volumePurchased: 180,
+        purchasePrice: 900,
+        processingStatus: "completed",
+      },
     ]);
   }, []);
 
@@ -86,242 +190,333 @@ const ProductionPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Submitted data:", formData);
-    // Here you would typically send the data to your backend
-    // For example:
-    // try {
-    //   const response = await fetch('/api/production', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(formData),
-    //   });
-    //   if (response.ok) {
-    //     const newEntry = await response.json();
-    //     setPreviousEntries(prev => [...prev, newEntry]);
-    //     setIsSubmitted(true);
-    //     setTimeout(() => setIsSubmitted(false), 3000);
-    //   }
-    // } catch (error) {
-    //   console.error('Failed to submit production data:', error);
-    // }
+    // Implement submission logic here
   };
 
-  const handleNewTapperSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Here you would typically send the new tapper data to your backend
-    // For example:
-    // try {
-    //   const response = await fetch('/api/tappers', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(newTapper),
-    //   });
-    //   if (response.ok) {
-    //     const newTapperData = await response.json();
-    //     setTappers(prev => [...prev, newTapperData]);
-    //     setNewTapper({ name: '' });
-    //   }
-    // } catch (error) {
-    //   console.error('Failed to add new tapper:', error);
-    // }
+  const handleSort = (key: keyof ProductionEntry) => {
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
   };
+
+  const sortedEntries = [...previousEntries].sort((a, b) => {
+    if (
+      a[sortConfig.key as keyof ProductionEntry] <
+      b[sortConfig.key as keyof ProductionEntry]
+    ) {
+      return sortConfig.direction === "ascending" ? -1 : 1;
+    }
+    if (
+      a[sortConfig.key as keyof ProductionEntry] >
+      b[sortConfig.key as keyof ProductionEntry]
+    ) {
+      return sortConfig.direction === "ascending" ? 1 : -1;
+    }
+    return 0;
+  });
+
+  const filteredEntries = sortedEntries.filter((entry) => {
+    const matchesStatus = entry.processingStatus
+      .toLowerCase()
+      .includes(filterStatus.toLowerCase());
+    const matchesSearch =
+      entry.dateReceived.includes(searchTerm) ||
+      tappers
+        .find((t) => t.id === entry.tapperId)
+        ?.name.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      entry.volumePurchased.toString().includes(searchTerm) ||
+      entry.purchasePrice.toString().includes(searchTerm) ||
+      entry.processingStatus.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesDateRange =
+      (!startDate || entry.dateReceived >= startDate) &&
+      (!endDate || entry.dateReceived <= endDate);
+
+    return matchesStatus && matchesSearch && matchesDateRange;
+  });
 
   return (
     <div className={styles.container}>
-      <Sidebar />
+      <Sidebar title="Production" sideNavitems={sideItems} alignment="top" />
 
-      <div>
-        <Breadcrumb spacing="8px" separator="-">
-          <BreadcrumbItem>
-            <BreadcrumbLink href="#">Home</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="#">About</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink href="#">Contact</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-        <div className={styles.tabs}>
-          <button
-            className={`${styles.tabButton} ${
-              activeTab === "input" ? styles.activeTab : ""
-            }`}
-            onClick={() => setActiveTab("input")}
+      <div className={styles.content}>
+        <div className={styles.actions}>
+          <div className={styles.searchContainer}>
+            <Search className={styles.searchIcon} />
+            <input
+              type="text"
+              placeholder="Search entries..."
+              className={styles.searchInput}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className={styles.dateFilterContainer}>
+            <Calendar className={styles.calendarIcon} />
+            <input
+              type="date"
+              className={styles.dateInput}
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              placeholder="Start Date"
+            />
+            <span className={styles.dateRangeSeparator}>to</span>
+            <input
+              type="date"
+              className={styles.dateInput}
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              placeholder="End Date"
+            />
+          </div>
+          <select
+            className={styles.filterSelect}
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
           >
-            Input Data
+            <option value="">All Statuses</option>
+            <option value="completed">Completed</option>
+            <option value="in progress">In Progress</option>
+            <option value="pending">Pending</option>
+          </select>
+          <button className={styles.addButton} onClick={onOpen}>
+            <PlusCircle size={20} />
+            Add New Entry
           </button>
-          <button
-            className={`${styles.tabButton} ${
-              activeTab === "view" ? styles.activeTab : ""
-            }`}
-            onClick={() => setActiveTab("view")}
-          >
-            View Data
-          </button>
-          <button
-            className={`${styles.tabButton} ${
-              activeTab === "tappers" ? styles.activeTab : ""
-            }`}
-            onClick={() => setActiveTab("tappers")}
-          >
-            Manage Tappers
-          </button>
+          {/* Modal */}
+          <Modal isOpen={isOpen} onClose={onClose} size="full">
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Production Data Input</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <div className={styles.pageContainer}>
+                  <div className={styles.contentContainer}>
+                    <form onSubmit={handleSubmit} className={styles.form}>
+                      <div className={styles.formGroup}>
+                        <label htmlFor="date" className={styles.label}>
+                          Date:
+                        </label>
+                        <input
+                          type="date"
+                          id="date"
+                          name="date"
+                          value={productionData.date}
+                          onChange={handleInputChange}
+                          className={styles.input}
+                          required
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label htmlFor="tapperId" className={styles.label}>
+                          Tapper:
+                        </label>
+                        <select
+                          id="tapperId"
+                          name="tapperId"
+                          value={productionData.tapperId}
+                          onChange={handleInputChange}
+                          className={styles.select}
+                          required
+                        >
+                          <option value="">Select Tapper</option>
+                          <option value="1">John Doe</option>
+                          <option value="2">Jane Smith</option>
+                          {/* Add more options based on your tapper data */}
+                        </select>
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label
+                          htmlFor="volumeCollected"
+                          className={styles.label}
+                        >
+                          <Droplet size={18} className={styles.icon} />
+                          Volume Collected (L):
+                        </label>
+                        <input
+                          type="number"
+                          id="volumeCollected"
+                          name="volumeCollected"
+                          value={productionData.volumeCollected}
+                          onChange={handleInputChange}
+                          className={styles.input}
+                          required
+                          min="0"
+                          step="0.1"
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label
+                          htmlFor="alcoholContent"
+                          className={styles.label}
+                        >
+                          <FlaskRound size={18} className={styles.icon} />
+                          Alcohol Content (%):
+                        </label>
+                        <input
+                          type="number"
+                          id="alcoholContent"
+                          name="alcoholContent"
+                          value={productionData.alcoholContent}
+                          onChange={handleInputChange}
+                          className={styles.input}
+                          required
+                          min="0"
+                          max="100"
+                          step="0.1"
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label htmlFor="temperature" className={styles.label}>
+                          <Thermometer size={18} className={styles.icon} />
+                          Temperature (°C):
+                        </label>
+                        <input
+                          type="number"
+                          id="temperature"
+                          name="temperature"
+                          value={productionData.temperature}
+                          onChange={handleInputChange}
+                          className={styles.input}
+                          required
+                          step="0.1"
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label htmlFor="ph" className={styles.label}>
+                          pH Level:
+                        </label>
+                        <input
+                          type="number"
+                          id="ph"
+                          name="ph"
+                          value={productionData.ph}
+                          onChange={handleInputChange}
+                          className={styles.input}
+                          required
+                          min="0"
+                          max="14"
+                          step="0.1"
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label htmlFor="notes" className={styles.label}>
+                          Additional Notes:
+                        </label>
+                        <textarea
+                          id="notes"
+                          name="notes"
+                          value={productionData.notes}
+                          onChange={handleInputChange}
+                          className={styles.textarea}
+                          rows={4}
+                        />
+                      </div>
+
+                      <div className={styles.buttonGroup}>
+                        <button
+                          type="submit"
+                          onClick={onClose}
+                          className={styles.submitButton}
+                        >
+                          <Save size={18} />
+                          Save Production Data
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleReset}
+                          className={styles.resetButton}
+                        >
+                          <RotateCcw size={18} />
+                          Reset Form
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button colorScheme="blue" mr={3} onClick={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
         </div>
-        {activeTab === "input" && (
-          <div className={styles.card}>
-            <h2 className={styles.cardTitle}>Input Production Data</h2>
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <div className={styles.inputGroup}>
-                <label htmlFor="dateReceived" className={styles.label}>
-                  Date Received:
-                </label>
-                <input
-                  type="date"
-                  id="dateReceived"
-                  name="dateReceived"
-                  value={formData.dateReceived}
-                  onChange={handleChange}
-                  className={styles.input}
-                  required
-                />
-              </div>
-              <div className={styles.inputGroup}>
-                <label htmlFor="tapperId" className={styles.label}>
-                  Tapper:
-                </label>
-                <select
-                  id="tapperId"
-                  name="tapperId"
-                  value={formData.tapperId}
-                  onChange={handleChange}
-                  className={styles.select}
-                  required
-                >
-                  <option value="">Select a tapper</option>
-                  {tappers.map((tapper) => (
-                    <option key={tapper.id} value={tapper.id.toString()}>
-                      {tapper.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.inputGroup}>
-                <label htmlFor="volumePurchased" className={styles.label}>
-                  Volume Purchased (L):
-                </label>
-                <input
-                  type="number"
-                  id="volumePurchased"
-                  name="volumePurchased"
-                  value={formData.volumePurchased}
-                  onChange={handleChange}
-                  className={styles.input}
-                  required
-                />
-              </div>
-              <div className={styles.inputGroup}>
-                <label htmlFor="purchasePrice" className={styles.label}>
-                  Purchase Price:
-                </label>
-                <input
-                  type="number"
-                  id="purchasePrice"
-                  name="purchasePrice"
-                  value={formData.purchasePrice}
-                  onChange={handleChange}
-                  className={styles.input}
-                  required
-                />
-              </div>
-              <div className={styles.inputGroup}>
-                <label htmlFor="processingStatus" className={styles.label}>
-                  Processing Status:
-                </label>
-                <select
-                  id="processingStatus"
-                  name="processingStatus"
-                  value={formData.processingStatus}
-                  onChange={handleChange}
-                  className={styles.select}
-                  required
-                >
-                  <option value="">Select status</option>
-                  <option value="not begun">Not Begun</option>
-                  <option value="in progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                  <option value="paused">Paused</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-              </div>
-              <button type="submit" className={styles.button}>
-                Submit Production Data
-              </button>
-            </form>
-            {isSubmitted && (
-              <div className={styles.alert}>
-                <p>Production data submitted successfully!</p>
-              </div>
-            )}
-          </div>
-        )}
-        {activeTab === "view" && (
-          <div className={styles.card}>
-            <h2 className={styles.cardTitle}>Previous Entries</h2>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Tapper</th>
-                  <th>Volume (L)</th>
-                  <th>Price</th>
-                  <th>Status</th>
+
+        <div className={styles.card}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th onClick={() => handleSort("dateReceived")}>
+                  Date
+                  {sortConfig.key === "dateReceived" &&
+                    (sortConfig.direction === "ascending" ? (
+                      <ChevronUp size={14} />
+                    ) : (
+                      <ChevronDown size={14} />
+                    ))}
+                </th>
+                <th>Tapper</th>
+                <th onClick={() => handleSort("volumePurchased")}>
+                  Volume (L)
+                  {sortConfig.key === "volumePurchased" &&
+                    (sortConfig.direction === "ascending" ? (
+                      <ChevronUp size={14} />
+                    ) : (
+                      <ChevronDown size={14} />
+                    ))}
+                </th>
+                <th onClick={() => handleSort("purchasePrice")}>
+                  Price
+                  {sortConfig.key === "purchasePrice" &&
+                    (sortConfig.direction === "ascending" ? (
+                      <ChevronUp size={14} />
+                    ) : (
+                      <ChevronDown size={14} />
+                    ))}
+                </th>
+                <th onClick={() => handleSort("processingStatus")}>
+                  Status
+                  {sortConfig.key === "processingStatus" &&
+                    (sortConfig.direction === "ascending" ? (
+                      <ChevronUp size={14} />
+                    ) : (
+                      <ChevronDown size={14} />
+                    ))}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredEntries.map((entry) => (
+                <tr key={entry.id}>
+                  <td>{entry.dateReceived}</td>
+                  <td>{tappers.find((t) => t.id === entry.tapperId)?.name}</td>
+                  <td>{entry.volumePurchased}</td>
+                  <td>${entry.purchasePrice.toFixed(2)}</td>
+                  <td>
+                    <span
+                      className={`${styles.status} ${
+                        styles[entry.processingStatus.replace(" ", "")]
+                      }`}
+                    >
+                      {entry.processingStatus}
+                    </span>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {previousEntries.map((entry) => (
-                  <tr key={entry.id}>
-                    <td>{entry.dateReceived}</td>
-                    <td>
-                      {tappers.find((t) => t.id === entry.tapperId)?.name}
-                    </td>
-                    <td>{entry.volumePurchased}</td>
-                    <td>{entry.purchasePrice}</td>
-                    <td>{entry.processingStatus}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-        {activeTab === "tappers" && (
-          <div className={styles.card}>
-            <h2 className={styles.cardTitle}>Manage Tappers</h2>
-            <form onSubmit={handleNewTapperSubmit} className={styles.form}>
-              <div className={styles.inputGroup}>
-                <label htmlFor="newTapperName" className={styles.label}>
-                  New Tapper Name:
-                </label>
-                <input
-                  type="text"
-                  id="newTapperName"
-                  value={newTapper.name}
-                  onChange={(e) => setNewTapper({ name: e.target.value })}
-                  className={styles.input}
-                  required
-                />
-              </div>
-              <button type="submit" className={styles.button}>
-                Add New Tapper
-              </button>
-            </form>
-            <h3 className={styles.subTitle}>Existing Tappers</h3>
-            <ul className={styles.tapperList}>
-              {tappers.map((tapper) => (
-                <li key={tapper.id}>{tapper.name}</li>
               ))}
-            </ul>
-          </div>
-        )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
