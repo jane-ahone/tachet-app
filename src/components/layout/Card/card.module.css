@@ -1,0 +1,34 @@
+.cardMain {
+  display: grid;
+  grid-template-columns: 1fr 0.7fr;
+  border-radius: 0.9375rem;
+  background: #fff;
+  box-shadow: 0px 3.5px 5.5px 0px rgba(0, 0, 0, 0.02);
+  padding: 1rem;
+  width: 25%;
+}
+.heading {
+  color: var(--Gray-Gray-400, #a0aec0);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 150%; /* 1.125rem */
+}
+.detail {
+  color: var(--Gray-Gray-700, #2d3748);
+  font-family: Helvetica;
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 140%; /* 1.575rem */
+}
+
+.iconWrapper {
+  background-color: #3498db; /* Choose your desired color */
+  border-radius: 50%;
+  width: 50px; /* Adjust size as needed */
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: end;
+}

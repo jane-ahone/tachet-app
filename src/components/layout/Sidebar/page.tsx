@@ -18,6 +18,7 @@ import styles from "./sidebar.module.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FC, ForwardRefExoticComponent, RefAttributes } from "react";
+import Image from "next/image";
 
 const sideItems = [
   {
@@ -76,14 +77,22 @@ const Sidebar: FC<Iproperties> = ({ sideNavitems = sideItems }) => {
   console.log(pathname);
 
   return (
-    <div>
-      <img src="" alt="" />
-      <span>Tachet</span>
-      <section className={styles.sidebarMain}>
+    <div className={styles.sidebarMain}>
+      <Image
+        className={styles.logo}
+        src="/assets/tachet-logo 2.svg"
+        alt="logo"
+        width={150}
+        height={100}
+      ></Image>
+      {/* <span>TACHET</span> */}
+      <section className={styles.sidebarList}>
         {sideNavitems.map((item, index) => (
           <div key={index}>
             {/* Render 'Account Pages' only before the 'Profile' route */}
-            {item.route === "Profile" && <p>Account Pages</p>}
+            {item.route === "Profile" && (
+              <p className={styles.heading}>ACCOUNT PAGES</p>
+            )}
             <Link href={item.link} className={styles.linkRoutes}>
               <item.icon className={styles.linkIcon} size={30} />
               <span className={styles.route}>{item.route}</span>
