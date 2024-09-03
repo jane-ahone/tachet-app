@@ -1,13 +1,17 @@
 .sidebarMain {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   background-color: white;
   height: 100vh;
   width: 25vh;
   padding: 0.8rem;
+  padding-top: 0;
+  gap: 1rem;
 }
 .logo {
+  align-self: center;
+  margin-top: 1rem;
   margin-bottom: 1rem;
   width: 70%;
 }

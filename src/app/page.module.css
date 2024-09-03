@@ -5,15 +5,18 @@
   min-height: 100vh;
   background: #f8f9fa;
 }
+.mainDetails {
+  padding: 1rem;
+}
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
+}
 
 .cardSummary {
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
-}
-.mainDetails {
-  margin-top: 2rem;
-}
-.Breadcrumb {
-  margin: 1rem;
 }

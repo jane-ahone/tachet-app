@@ -8,6 +8,7 @@ import SignUp from "./(auth-routes)/signup/page";
 import Sidebar from "@/components/layout/Sidebar/page";
 import CustomCard from "@/components/layout/Card/page";
 import {
+  Avatar,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -72,16 +73,19 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <Sidebar />
-      <div className={styles.mainDetails}>
-        <Breadcrumb className={styles.Breadcrumb}>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="#">Home</BreadcrumbLink>
-          </BreadcrumbItem>
 
-          <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
+      <div className={styles.mainDetails}>
+        <div className={styles.heading}>
+          <Breadcrumb className={styles.Breadcrumb}>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="#">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem isCurrentPage>
+              <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+          </Breadcrumb>
+          <Avatar />
+        </div>
         <div>
           <div className={styles.cardSummary}>
             <CustomCard />
