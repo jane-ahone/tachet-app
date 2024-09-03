@@ -12,6 +12,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FC, ForwardRefExoticComponent, RefAttributes } from "react";
 import { Avatar } from "@chakra-ui/react";
+import clsx from "clsx";
 
 const sideItems = [
   // {
@@ -45,6 +46,12 @@ const sideItems = [
     id: "profile",
   },
   {
+    route: "Tappers",
+    link: "/Tappers",
+    icon: UserRound,
+    id: "Tappers",
+  },
+  {
     route: "Sign Out",
     link: "/logout",
     icon: LogOut,
@@ -62,6 +69,7 @@ interface Iproperties {
     id: string;
   }[];
   currenPathName?: string;
+  alignment: string;
 }
 
 const Sidebar: FC<Iproperties> = ({ sideNavitems = sideItems }) => {
@@ -70,7 +78,7 @@ const Sidebar: FC<Iproperties> = ({ sideNavitems = sideItems }) => {
   console.log(pathname);
 
   return (
-    <div className={styles.sidebarMain}>
+    <div className={clsx(styles.sidebarMain)}>
       <p className={styles.title}>TACHET</p>
       <section className={styles.sidebarList}>
         {sideNavitems.map((item, index) => (
@@ -85,7 +93,7 @@ const Sidebar: FC<Iproperties> = ({ sideNavitems = sideItems }) => {
             </Link>
           </div>
         ))}
-        <Avatar size="sm" />
+        <Avatar size="sm" name="Jane Ahone" />
       </section>
     </div>
   );
