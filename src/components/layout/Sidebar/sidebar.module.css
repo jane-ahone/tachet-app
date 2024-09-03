@@ -1,13 +1,15 @@
 .sidebarMain {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  background-color: white;
-  height: 100vh;
-  width: 25vh;
-  padding: 0.8rem;
-  padding-top: 0;
+  align-items: center;
+  background-color: rgb(255, 255, 255);
+  padding: 1rem;
   gap: 1rem;
+}
+.title {
+  align-self: center;
+  font-weight: 700;
+  color: #2a3c0a;
+  font-size: larger;
 }
 .logo {
   align-self: center;
@@ -17,15 +19,17 @@
 }
 .sidebarList {
   display: flex;
-  flex-direction: column;
+  width: 100%;
+  height: 50%;
+  justify-content: flex-end;
   gap: 2rem;
 }
 .heading {
-  color: var(--Gray-Gray-700, #2d3748);
+  color: #0000;
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 150%;
-  margin-bottom: 0.5rem;
+  margin: 1rem 0;
 }
 .linkRoutes {
   display: flex;
@@ -48,11 +52,10 @@
   border: 1px solid white;
 }
 .route {
-  color: var(--Gray-Gray-400, #a0aec0);
-  font-family: Helvetica;
+  color: black;
   font-size: 0.75rem;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 150%; /* 1.125rem */
 }
 

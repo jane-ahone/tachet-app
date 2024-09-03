@@ -1,13 +1,6 @@
 "use client";
 import {
-  Box,
-  House,
-  List,
   LucideProps,
-  Mail,
-  Settings,
-  TabletSmartphone,
-  Users,
   ChartNoAxesColumn,
   Hammer,
   ShoppingBag,
@@ -18,15 +11,15 @@ import styles from "./sidebar.module.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FC, ForwardRefExoticComponent, RefAttributes } from "react";
-import Image from "next/image";
+import { Avatar } from "@chakra-ui/react";
 
 const sideItems = [
-  {
-    route: "Dashboard",
-    link: "/",
-    icon: House,
-    id: "dashboard",
-  },
+  // {
+  //   route: "Dashboard",
+  //   link: "/",
+  //   icon: House,
+  //   id: "dashboard",
+  // },
   {
     route: "Reports",
     link: "/reports",
@@ -78,27 +71,21 @@ const Sidebar: FC<Iproperties> = ({ sideNavitems = sideItems }) => {
 
   return (
     <div className={styles.sidebarMain}>
-      <Image
-        className={styles.logo}
-        src="/assets/tachet-logo 2.svg"
-        alt="logo"
-        width={150}
-        height={100}
-      ></Image>
-      {/* <span>TACHET</span> */}
+      <p className={styles.title}>TACHET</p>
       <section className={styles.sidebarList}>
         {sideNavitems.map((item, index) => (
           <div key={index}>
             {/* Render 'Account Pages' only before the 'Profile' route */}
-            {item.route === "Profile" && (
+            {/* {item.route === "Profile" && (
               <p className={styles.heading}>ACCOUNT PAGES</p>
-            )}
+            )} */}
             <Link href={item.link} className={styles.linkRoutes}>
               <item.icon className={styles.linkIcon} size={30} />
               <span className={styles.route}>{item.route}</span>
             </Link>
           </div>
         ))}
+        <Avatar size="sm" />
       </section>
     </div>
   );

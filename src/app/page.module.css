@@ -1,7 +1,7 @@
 .main {
-  display: grid;
-  grid-template-columns: 25vh 3fr;
-  gap: 2rem;
+  /* display: grid;
+  grid-template-columns: 20vh 3fr;
+  gap: 2rem; */
   min-height: 100vh;
   background: #f8f9fa;
 }
@@ -17,6 +17,7 @@
 
 .cardSummary {
   display: flex;
+  flex-direction: column;
   gap: 1rem;
   margin-bottom: 2rem;
 }

@@ -25,6 +25,8 @@ import {
   TableCaption,
   TableContainer,
 } from "@chakra-ui/react";
+import { Grape, Milk, Pickaxe, Truck, Warehouse } from "lucide-react";
+import { Wallet } from "lucide-react";
 
 export default function Home() {
   const [session, setSession] = useState<SessionData | undefined>(undefined); // Initialize session state
@@ -75,23 +77,29 @@ export default function Home() {
       <Sidebar />
 
       <div className={styles.mainDetails}>
-        <div className={styles.heading}>
-          <Breadcrumb className={styles.Breadcrumb}>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="#">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem isCurrentPage>
-              <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
-          <Avatar />
-        </div>
+        <div className={styles.heading}></div>
         <div>
           <div className={styles.cardSummary}>
-            <CustomCard />
-            <CustomCard />
-            <CustomCard />
-            <CustomCard />
+            <CustomCard
+              title="Total Producion"
+              data="15,000L"
+              icon={<Milk color="white" />}
+            />
+            <CustomCard
+              title="Total Sales"
+              data="15,000L"
+              icon={<Truck color="white" />}
+            />
+            <CustomCard
+              title="Current Inventory"
+              data="15,000L"
+              icon={<Warehouse color="white" />}
+            />
+            <CustomCard
+              title="Tappers"
+              data="2,000"
+              icon={<Pickaxe color="white" />}
+            />
           </div>
           <div>
             <TableContainer>
