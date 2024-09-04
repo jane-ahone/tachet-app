@@ -2,14 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "./tapper.module.css";
-import { UserPlus, Edit, Trash2, Search } from "lucide-react";
+import { UserPlus, Edit, Trash2, Search, LogOut } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar/page";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-} from "@chakra-ui/react";
 
 interface Tapper {
   id: number;
@@ -29,6 +23,15 @@ const TapperManagementPage: React.FC = () => {
   });
   const [isAdding, setIsAdding] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const sideItems = [
+    {
+      route: "Sign Out",
+      link: "/logout",
+      icon: LogOut,
+      id: "logout",
+    },
+  ];
 
   useEffect(() => {
     // Fetch tappers data from API
@@ -75,20 +78,8 @@ const TapperManagementPage: React.FC = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <Sidebar title="Tappers" alignment="left" />
+      <Sidebar title="Tappers" alignment="top" sideNavitems={sideItems} />
       <div className={styles.contentContainer}>
-        <Breadcrumb spacing="8px" separator="-">
-          <BreadcrumbItem>
-            <BreadcrumbLink href="#">Home</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="#">About</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink href="#">Contact</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-
         <div className={styles.actionBar}>
           <div className={styles.searchBar}>
             <Search size={20} />

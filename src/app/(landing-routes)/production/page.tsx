@@ -22,17 +22,7 @@ interface ProductionData {
   notes: string;
 }
 import Sidebar from "@/components/layout/Sidebar/page";
-import {
-  LogOut,
-  Pickaxe,
-  SquarePen,
-  ChevronDown,
-  ChevronUp,
-  Search,
-  Filter,
-  PlusCircle,
-  Calendar,
-} from "lucide-react";
+import { LogOut, Pickaxe, ArrowDown, ArrowUp, PlusCircle } from "lucide-react";
 import {
   Modal,
   ModalOverlay,
@@ -180,13 +170,6 @@ const ProductionPage: React.FC = () => {
     ]);
   }, []);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Submitted data:", formData);
@@ -244,7 +227,6 @@ const ProductionPage: React.FC = () => {
       <div className={styles.content}>
         <div className={styles.actions}>
           <div className={styles.searchContainer}>
-            <Search className={styles.searchIcon} />
             <input
               type="text"
               placeholder="Search entries..."
@@ -254,7 +236,6 @@ const ProductionPage: React.FC = () => {
             />
           </div>
           <div className={styles.dateFilterContainer}>
-            <Calendar className={styles.calendarIcon} />
             <input
               type="date"
               className={styles.dateInput}
@@ -281,6 +262,119 @@ const ProductionPage: React.FC = () => {
             <option value="in progress">In Progress</option>
             <option value="pending">Pending</option>
           </select>
+        </div>
+
+        <div className={styles.card}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th onClick={() => handleSort("dateReceived")}>
+                  Date
+                  {sortConfig.key === "dateReceived" &&
+                    (sortConfig.direction === "ascending" ? (
+                      <ArrowUp
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.7rem",
+                        }}
+                      />
+                    ) : (
+                      <ArrowDown
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.7rem",
+                        }}
+                      />
+                    ))}
+                </th>
+                <th>Tapper</th>
+                <th onClick={() => handleSort("volumePurchased")}>
+                  Volume (L)
+                  {sortConfig.key === "volumePurchased" &&
+                    (sortConfig.direction === "ascending" ? (
+                      <ArrowUp
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.7rem",
+                        }}
+                      />
+                    ) : (
+                      <ArrowDown
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.7rem",
+                        }}
+                      />
+                    ))}
+                </th>
+                <th onClick={() => handleSort("purchasePrice")}>
+                  Price
+                  {sortConfig.key === "purchasePrice" &&
+                    (sortConfig.direction === "ascending" ? (
+                      <ArrowUp
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.7rem",
+                        }}
+                      />
+                    ) : (
+                      <ArrowDown
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.7rem",
+                        }}
+                      />
+                    ))}
+                </th>
+                <th onClick={() => handleSort("processingStatus")}>
+                  Status
+                  {sortConfig.key === "processingStatus" &&
+                    (sortConfig.direction === "ascending" ? (
+                      <ArrowUp
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.7rem",
+                        }}
+                      />
+                    ) : (
+                      <ArrowDown
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.7rem",
+                        }}
+                      />
+                    ))}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredEntries.map((entry) => (
+                <tr key={entry.id}>
+                  <td>{entry.dateReceived}</td>
+                  <td>{tappers.find((t) => t.id === entry.tapperId)?.name}</td>
+                  <td>{entry.volumePurchased}</td>
+                  <td>${entry.purchasePrice.toFixed(2)}</td>
+                  <td>
+                    <span
+                      className={`${styles.status} ${
+                        styles[entry.processingStatus.replace(" ", "")]
+                      }`}
+                    >
+                      {entry.processingStatus}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <button className={styles.addButton} onClick={onOpen}>
             <PlusCircle size={20} />
             Add New Entry
@@ -351,31 +445,9 @@ const ProductionPage: React.FC = () => {
                       </div>
 
                       <div className={styles.formGroup}>
-                        <label
-                          htmlFor="alcoholContent"
-                          className={styles.label}
-                        >
-                          <FlaskRound size={18} className={styles.icon} />
-                          Alcohol Content (%):
-                        </label>
-                        <input
-                          type="number"
-                          id="alcoholContent"
-                          name="alcoholContent"
-                          value={productionData.alcoholContent}
-                          onChange={handleInputChange}
-                          className={styles.input}
-                          required
-                          min="0"
-                          max="100"
-                          step="0.1"
-                        />
-                      </div>
-
-                      <div className={styles.formGroup}>
                         <label htmlFor="temperature" className={styles.label}>
                           <Thermometer size={18} className={styles.icon} />
-                          Temperature (°C):
+                          Volume Paid For (°C):
                         </label>
                         <input
                           type="number"
@@ -391,7 +463,7 @@ const ProductionPage: React.FC = () => {
 
                       <div className={styles.formGroup}>
                         <label htmlFor="ph" className={styles.label}>
-                          pH Level:
+                          Payment Status
                         </label>
                         <input
                           type="number"
@@ -451,71 +523,6 @@ const ProductionPage: React.FC = () => {
               </ModalFooter>
             </ModalContent>
           </Modal>
-        </div>
-
-        <div className={styles.card}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th onClick={() => handleSort("dateReceived")}>
-                  Date
-                  {sortConfig.key === "dateReceived" &&
-                    (sortConfig.direction === "ascending" ? (
-                      <ChevronUp size={14} />
-                    ) : (
-                      <ChevronDown size={14} />
-                    ))}
-                </th>
-                <th>Tapper</th>
-                <th onClick={() => handleSort("volumePurchased")}>
-                  Volume (L)
-                  {sortConfig.key === "volumePurchased" &&
-                    (sortConfig.direction === "ascending" ? (
-                      <ChevronUp size={14} />
-                    ) : (
-                      <ChevronDown size={14} />
-                    ))}
-                </th>
-                <th onClick={() => handleSort("purchasePrice")}>
-                  Price
-                  {sortConfig.key === "purchasePrice" &&
-                    (sortConfig.direction === "ascending" ? (
-                      <ChevronUp size={14} />
-                    ) : (
-                      <ChevronDown size={14} />
-                    ))}
-                </th>
-                <th onClick={() => handleSort("processingStatus")}>
-                  Status
-                  {sortConfig.key === "processingStatus" &&
-                    (sortConfig.direction === "ascending" ? (
-                      <ChevronUp size={14} />
-                    ) : (
-                      <ChevronDown size={14} />
-                    ))}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredEntries.map((entry) => (
-                <tr key={entry.id}>
-                  <td>{entry.dateReceived}</td>
-                  <td>{tappers.find((t) => t.id === entry.tapperId)?.name}</td>
-                  <td>{entry.volumePurchased}</td>
-                  <td>${entry.purchasePrice.toFixed(2)}</td>
-                  <td>
-                    <span
-                      className={`${styles.status} ${
-                        styles[entry.processingStatus.replace(" ", "")]
-                      }`}
-                    >
-                      {entry.processingStatus}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </div>
     </div>

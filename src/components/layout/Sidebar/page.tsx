@@ -72,7 +72,9 @@ const Sidebar: FC<Iproperties> = ({
 
   return (
     <div className={clsx(alignmentClass, styles.sidebarMain)}>
-      <p className={styles.title}>{title}</p>
+      <Link href="/">
+        <p className={styles.title}>{title}</p>
+      </Link>
       <section className={clsx(alignmentClass, styles.sidebarList)}>
         {sideNavitems.map((item, index) => (
           <div key={index}>
