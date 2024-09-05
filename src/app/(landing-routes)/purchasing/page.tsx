@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import styles from "./purchasing.module.css";
 import {
   PlusCircle,
-  Search,
   LogOut,
   ShoppingBag,
   ArrowUp,
@@ -90,6 +89,7 @@ const PurchaseRecordPage: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    console.log(name, value);
     setNewPurchase((prev) => ({
       ...prev,
       [name]:
@@ -131,12 +131,14 @@ const PurchaseRecordPage: React.FC = () => {
 
   const sortedPurchases = React.useMemo(() => {
     let sortablePurchases = [...purchases];
-    if (sortConfig !== null) {
+    if (sortConfig !== null && sortablePurchases.length >= 2) {
       sortablePurchases.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
+        const valueA = a[sortConfig.key] ?? ""; // Default value if undefined
+        const valueB = b[sortConfig.key] ?? ""; // Default value if undefined
+        if (valueA < valueB) {
           return sortConfig.direction === "ascending" ? -1 : 1;
         }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
+        if (valueA > valueB) {
           return sortConfig.direction === "ascending" ? 1 : -1;
         }
         return 0;
@@ -159,10 +161,8 @@ const PurchaseRecordPage: React.FC = () => {
     <div className={styles.pageContainer}>
       <Sidebar title="Purchases" alignment="top" sideNavitems={sideItems} />
       <div className={styles.contentContainer}>
-        <h1 className={styles.title}>Purchase Records</h1>
         <div className={styles.actionBar}>
           <div className={styles.searchBar}>
-            <Search size={20} />
             <input
               type="text"
               placeholder="Search purchases..."
@@ -182,44 +182,57 @@ const PurchaseRecordPage: React.FC = () => {
 
         {isAdding && (
           <div className={styles.addForm}>
-            <input
-              type="date"
-              name="date"
-              value={newPurchase.date}
-              onChange={handleInputChange}
-              className={styles.input}
-              required
-            />
-            <select
-              name="itemType"
-              value={newPurchase.itemType}
-              onChange={handleInputChange}
-              className={styles.input}
-              required
-            >
-              <option value="">Select Item Type</option>
-              <option value="Bottles">Bottles</option>
-              <option value="Labels">Labels</option>
-              <option value="Other">Other</option>
-            </select>
-            <input
-              type="number"
-              name="quantity"
-              value={newPurchase.quantity}
-              onChange={handleInputChange}
-              placeholder="Quantity"
-              className={styles.input}
-              required
-            />
-            <input
-              type="number"
-              name="price"
-              value={newPurchase.price}
-              onChange={handleInputChange}
-              placeholder="Total Price"
-              className={styles.input}
-              required
-            />
+            <div className="dateField">
+              <label htmlFor="date">Date</label>
+              <input
+                type="date"
+                name="date"
+                value={newPurchase.date}
+                onChange={handleInputChange}
+                className={styles.input}
+                required
+              />
+            </div>
+            <div className="itemTypeField">
+              <label htmlFor="itemType">Select Item Type</label>
+              <select
+                name="itemType"
+                value={newPurchase.itemType}
+                onChange={handleInputChange}
+                className={styles.input}
+                required
+              >
+                <option value="">Item </option>
+                <option value="Bottles">Bottles</option>
+                <option value="Labels">Labels</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div className="quantityField">
+              <label htmlFor="quantity">Quantity</label>
+              <input
+                type="number"
+                name="quantity"
+                value={newPurchase.quantity}
+                onChange={handleInputChange}
+                placeholder="Quantity"
+                className={styles.input}
+                required
+              />
+            </div>
+            <div className="priceField">
+              <label htmlFor="price">Price</label>
+              <input
+                type="number"
+                name="price"
+                id="price"
+                value={newPurchase.price}
+                onChange={handleInputChange}
+                placeholder="Total Price"
+                className={styles.input}
+                required
+              />
+            </div>
             {newPurchase.itemType === "Bottles" && (
               <select
                 name="orderId"
