@@ -8,10 +8,10 @@
   max-width: 100%;
 }
 .cardMain:hover {
-  background-color: #bfd9a029;
+  background-color: #68836e14;
 }
 .cardMain:active {
-  background-color: #bfd9a029;
+  background-color: #32593b3e;
 }
 .heading {
   color: var(--Gray-Gray-400, #a0aec0);
@@ -29,7 +29,7 @@
 }
 
 .iconWrapper {
-  background-color: #4b5b2f; /* Choose your desired color */
+  background-color: #593b32; /* Choose your desired color */
   border-radius: 50%;
   width: 50px; /* Adjust size as needed */
   height: 50px;

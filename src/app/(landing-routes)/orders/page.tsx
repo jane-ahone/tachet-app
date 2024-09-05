@@ -230,74 +230,60 @@ const OrderPage: React.FC = () => {
             <option value="in progress">In Progress</option>
             <option value="completed">Completed</option>
           </select>
+
           <Button
-            leftIcon={<PlusCircle size={20} />}
+            leftIcon={<PlusCircle size={15} />}
+            iconSpacing={2}
             className={styles.newOrderBtn}
             sx={{
               position: "absolute",
               bottom: "0",
               right: "0",
               margin: "2rem",
-              backgroundColor: "var(--Default-Green)",
+              padding: "1rem",
+              backgroundColor: "#7f8c8d",
               color: "white",
             }}
-            size="lg"
+            size="md"
             onClick={onOpen}
           >
             Create New Order
           </Button>
+          {/* Edit this button styling */}
         </div>
 
         <Table variant="simple" className={styles.table}>
           <Thead>
-            <Tr sx={{ backgroundColor: "#42974b45" }}>
-              <Th onClick={() => handleSort("orderDate")}>
+            <Tr sx={{ backgroundColor: "#32593b" }}>
+              <Th color="white" onClick={() => handleSort("orderDate")}>
                 Date
                 {sortConfig.key === "orderDate" &&
                   (sortConfig.direction === "ascending" ? (
-                    <ArrowUp
-                      size={14}
-                      style={{ display: "inline-block", marginLeft: "1rem" }}
-                    />
+                    <ArrowUp style={{ display: "inline-block" }} size={14} />
                   ) : (
-                    <ArrowDown
-                      size={14}
-                      style={{ display: "inline-block", marginLeft: "1rem" }}
-                    />
+                    <ArrowDown style={{ display: "inline-block" }} size={14} />
                   ))}
               </Th>
-              <Th>Customer</Th>
-              <Th onClick={() => handleSort("orderQty")}>
+              <Th color="white">Customer</Th>
+              <Th color="white" onClick={() => handleSort("orderQty")}>
                 Quantity
                 {sortConfig.key === "orderQty" &&
                   (sortConfig.direction === "ascending" ? (
-                    <ArrowUp
-                      size={14}
-                      style={{ display: "inline-block", marginLeft: "1rem" }}
-                    />
+                    <ArrowUp style={{ display: "inline-block" }} size={14} />
                   ) : (
-                    <ArrowDown
-                      size={14}
-                      style={{ display: "inline-block", marginLeft: "1rem" }}
-                    />
+                    <ArrowDown style={{ display: "inline-block" }} size={14} />
                   ))}
               </Th>
-              <Th onClick={() => handleSort("status")}>
+              <Th color="white" onClick={() => handleSort("status")}>
                 Status
                 {sortConfig.key === "status" &&
                   (sortConfig.direction === "ascending" ? (
-                    <ArrowUp
-                      size={14}
-                      style={{ display: "inline-block", marginLeft: "1rem" }}
-                    />
+                    <ArrowUp style={{ display: "inline-block" }} size={14} />
                   ) : (
-                    <ArrowDown
-                      size={14}
-                      style={{ display: "inline-block", marginLeft: "1rem" }}
-                    />
+                    <ArrowDown style={{ display: "inline-block" }} size={14} />
                   ))}
               </Th>
-              <Th>Actions</Th>
+              <Th color="white">Actions</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -336,7 +322,9 @@ const OrderPage: React.FC = () => {
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Create New Order</ModalHeader>
+            <ModalHeader textAlign="center" color="#593b32" fontWeight={700}>
+              Create New Order
+            </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <form onSubmit={handleSubmit}>
@@ -381,7 +369,12 @@ const OrderPage: React.FC = () => {
                   />
                 </FormControl>
 
-                <Button mt={6} colorScheme="blue" type="submit">
+                <Button
+                  mt={6}
+                  color="white"
+                  backgroundColor="#7f8c8d"
+                  type="submit"
+                >
                   Create Order
                 </Button>
               </form>

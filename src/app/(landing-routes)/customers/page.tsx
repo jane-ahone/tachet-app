@@ -105,7 +105,6 @@ const CustomerManagementPage: React.FC = () => {
       <div className={styles.contentContainer}>
         <div className={styles.actionBar}>
           <div className={styles.searchBar}>
-            <Search size={20} />
             <input
               type="text"
               placeholder="Search customers..."
@@ -157,13 +156,7 @@ const CustomerManagementPage: React.FC = () => {
               placeholder="Address"
               className={styles.input}
             />
-            <input
-              type="date"
-              name="registrationDate"
-              value={newCustomer.registrationDate}
-              onChange={handleInputChange}
-              className={styles.input}
-            />
+
             <button onClick={handleAddCustomer} className={styles.saveButton}>
               Save
             </button>
