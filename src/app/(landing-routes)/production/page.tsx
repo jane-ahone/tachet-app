@@ -11,16 +11,12 @@ import {
   ArrowUp,
   PlusCircle,
   Save,
-  RotateCcw,
-  Droplet,
-  Thermometer,
 } from "lucide-react";
 import {
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   useDisclosure,
@@ -31,6 +27,7 @@ import {
   Select,
   Textarea,
 } from "@chakra-ui/react";
+import Link from "next/link";
 
 interface Tapper {
   id: number;
@@ -255,15 +252,21 @@ const ProductionPage: React.FC = () => {
 
         <div className={styles.card}>
           <table className={styles.table}>
-            <thead>
+            <thead className={styles.thead}>
               <tr>
                 <th onClick={() => handleSort("date")}>
                   Date
                   {sortConfig.key === "date" &&
                     (sortConfig.direction === "ascending" ? (
-                      <ArrowUp size={14} />
+                      <ArrowUp
+                        size={14}
+                        style={{ display: "inline-block", marginLeft: "1rem" }}
+                      />
                     ) : (
-                      <ArrowDown size={14} />
+                      <ArrowDown
+                        size={14}
+                        style={{ display: "inline-block", marginLeft: "1rem" }}
+                      />
                     ))}
                 </th>
                 <th>Order</th>
@@ -272,27 +275,45 @@ const ProductionPage: React.FC = () => {
                   Volume Collected (L)
                   {sortConfig.key === "volumeCollected" &&
                     (sortConfig.direction === "ascending" ? (
-                      <ArrowUp size={14} />
+                      <ArrowUp
+                        size={14}
+                        style={{ display: "inline-block", marginLeft: "1rem" }}
+                      />
                     ) : (
-                      <ArrowDown size={14} />
+                      <ArrowDown
+                        size={14}
+                        style={{ display: "inline-block", marginLeft: "1rem" }}
+                      />
                     ))}
                 </th>
                 <th onClick={() => handleSort("volumePaidFor")}>
                   Volume Paid For (L)
                   {sortConfig.key === "volumePaidFor" &&
                     (sortConfig.direction === "ascending" ? (
-                      <ArrowUp size={14} />
+                      <ArrowUp
+                        size={14}
+                        style={{ display: "inline-block", marginLeft: "1rem" }}
+                      />
                     ) : (
-                      <ArrowDown size={14} />
+                      <ArrowDown
+                        size={14}
+                        style={{ display: "inline-block", marginLeft: "1rem" }}
+                      />
                     ))}
                 </th>
                 <th onClick={() => handleSort("paymentStatus")}>
                   Payment Status
                   {sortConfig.key === "paymentStatus" &&
                     (sortConfig.direction === "ascending" ? (
-                      <ArrowUp size={14} />
+                      <ArrowUp
+                        size={14}
+                        style={{ display: "inline-block", marginLeft: "1rem" }}
+                      />
                     ) : (
-                      <ArrowDown size={14} />
+                      <ArrowDown
+                        size={14}
+                        style={{ display: "inline-block", marginLeft: "1rem" }}
+                      />
                     ))}
                 </th>
               </tr>
@@ -337,7 +358,7 @@ const ProductionPage: React.FC = () => {
         <Modal isOpen={isOpen} onClose={onClose} size="xl">
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Production Data Input</ModalHeader>
+            <ModalHeader textAlign="center">Production Data Input</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <form onSubmit={handleSubmit}>
@@ -365,6 +386,9 @@ const ProductionPage: React.FC = () => {
                       </option>
                     ))}
                   </Select>
+                  <Link href="/orders" className={styles.link}>
+                    Create New Order
+                  </Link>
                 </FormControl>
 
                 <FormControl isRequired mt={4}>
@@ -381,16 +405,13 @@ const ProductionPage: React.FC = () => {
                       </option>
                     ))}
                   </Select>
+                  <Link href="/production/tappers" className={styles.link}>
+                    Add New Tapper
+                  </Link>
                 </FormControl>
 
                 <FormControl isRequired mt={4}>
-                  <FormLabel>
-                    <Droplet
-                      size={18}
-                      style={{ display: "inline", marginRight: "0.5rem" }}
-                    />
-                    Volume Collected (L)
-                  </FormLabel>
+                  <FormLabel>Volume Collected (L)</FormLabel>
                   <Input
                     type="number"
                     name="volumeCollected"
@@ -402,13 +423,7 @@ const ProductionPage: React.FC = () => {
                 </FormControl>
 
                 <FormControl isRequired mt={4}>
-                  <FormLabel>
-                    <Thermometer
-                      size={18}
-                      style={{ display: "inline", marginRight: "0.5rem" }}
-                    />
-                    Volume Paid For (L)
-                  </FormLabel>
+                  <FormLabel>Volume Paid For (L)</FormLabel>
                   <Input
                     type="number"
                     name="volumePaidFor"

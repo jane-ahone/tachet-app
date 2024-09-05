@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "./tapper.module.css";
-import { UserPlus, Edit, Trash2, Search, LogOut } from "lucide-react";
+import { UserPlus, Edit, Trash2, Search, LogOut, Hammer } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar/page";
 
 interface Tapper {
@@ -25,6 +25,12 @@ const TapperManagementPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const sideItems = [
+    {
+      route: "Production",
+      link: "/production",
+      icon: Hammer,
+      id: "production",
+    },
     {
       route: "Sign Out",
       link: "/logout",
@@ -82,7 +88,6 @@ const TapperManagementPage: React.FC = () => {
       <div className={styles.contentContainer}>
         <div className={styles.actionBar}>
           <div className={styles.searchBar}>
-            <Search size={20} />
             <input
               type="text"
               placeholder="Search tappers..."
@@ -145,16 +150,16 @@ const TapperManagementPage: React.FC = () => {
           </div>
         )}
 
-        <div className={styles.tapperList}>
+        <div className={styles.list}>
           {filteredTappers.map((tapper) => (
-            <div key={tapper.id} className={styles.tapperCard}>
-              <div className={styles.tapperInfo}>
+            <div key={tapper.id} className={styles.card}>
+              <div className={styles.info}>
                 <h3>{tapper.name}</h3>
                 <p>{tapper.contactNumber}</p>
                 <p>{tapper.address}</p>
                 <p>Joined: {tapper.joiningDate}</p>
               </div>
-              <div className={styles.tapperActions}>
+              <div className={styles.actions}>
                 <button className={styles.editButton}>
                   <Edit size={18} />
                 </button>

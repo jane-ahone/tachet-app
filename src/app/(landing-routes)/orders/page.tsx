@@ -12,6 +12,7 @@ import {
   ArrowDown,
   Edit,
   Trash2,
+  Hammer,
 } from "lucide-react";
 import {
   Modal,
@@ -69,6 +70,12 @@ const OrderPage: React.FC = () => {
   const toast = useToast();
 
   const sideItems = [
+    {
+      route: "Production",
+      link: "/production",
+      icon: Hammer,
+      id: "production",
+    },
     {
       route: "Customers",
       link: "/customers",

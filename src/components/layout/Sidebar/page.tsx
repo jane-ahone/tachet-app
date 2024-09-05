@@ -3,9 +3,7 @@ import {
   ChartNoAxesColumn,
   Hammer,
   ShoppingBag,
-  UserRound,
   LogOut,
-  House,
   ListOrdered,
 } from "lucide-react";
 import styles from "./sidebar.module.css";
@@ -91,7 +89,15 @@ const Sidebar: FC<Iproperties> = ({
             </Link>
           </div>
         ))}
-        {showAvatar && <Avatar size="sm" name="Jane Ahone" />}
+        {showAvatar && (
+          <Avatar
+            size="sm"
+            name="Jane Ahone"
+            backgroundColor="white"
+            color="#325953"
+            fontWeight={900}
+          />
+        )}
         {/* link avatar to profile management */}
       </section>
     </div>

@@ -1,18 +1,11 @@
 .pageContainer {
   min-height: 100vh;
+  background-color: #f8f9fa;
 }
 
 .contentContainer {
   flex-grow: 1;
   padding: 2rem;
-  background-color: #f9faf9;
-}
-
-.title {
-  color: #2c5e1a;
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  text-align: center;
 }
 
 .actionBar {
@@ -25,10 +18,10 @@
 .searchBar {
   display: flex;
   align-items: center;
-  background-color: #f0f4f0;
+  background-color: #fff;
   border-radius: 20px;
   padding: 0.5rem 1rem;
-  width: 300px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .searchInput {
@@ -36,7 +29,7 @@
   background: transparent;
   margin-left: 0.5rem;
   font-size: 1rem;
-  width: 100%;
+  width: 200px;
 }
 
 .searchInput:focus {
@@ -46,18 +39,18 @@
 .addButton {
   display: flex;
   align-items: center;
-  background-color: #2c5e1a;
+  background-color: #c7cdcd;
   color: white;
   border: none;
   border-radius: 20px;
   padding: 0.5rem 1rem;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
 }
 
 .addButton:hover {
-  background-color: #1e4012;
+  background-color: #7f8c8d;
 }
 
 .addButton svg {
@@ -65,10 +58,11 @@
 }
 
 .addForm {
-  background-color: #f0f4f0;
-  border-radius: 10px;
+  background-color: #fff;
+  border-radius: 8px;
   padding: 1rem;
   margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
@@ -76,8 +70,8 @@
 
 .input {
   padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   font-size: 1rem;
 }
 
@@ -85,57 +79,62 @@
 .cancelButton {
   padding: 0.5rem 1rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
 }
 
 .saveButton {
-  background-color: #2c5e1a;
+  background-color: #14a265;
   color: white;
 }
 
 .saveButton:hover {
-  background-color: #1e4012;
+  background-color: #0c5d3a;
 }
 
 .cancelButton {
-  background-color: #f0f0f0;
-  color: #333;
+  background-color: #f44336;
+  color: white;
 }
 
 .cancelButton:hover {
-  background-color: #e0e0e0;
+  background-color: #d32f2f;
 }
 
-.tapperList {
+.list {
+  margin-top: 2rem;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
 }
 
-.tapperCard {
-  background-color: #f0f4f0;
-  border-radius: 10px;
+.card {
+  background-color: #fff;
+  border-radius: 8px;
   padding: 1rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.card .info {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 0.25rem;
 }
 
-.tapperInfo h3 {
-  color: #2c5e1a;
-  margin-bottom: 0.5rem;
+.info h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: #333;
+  font-weight: 700;
 }
 
-.tapperInfo p {
+.info p {
   margin: 0.25rem 0;
-  color: #555;
+  color: #666;
 }
 
-.tapperActions {
+.actions {
   display: flex;
   justify-content: flex-end;
   margin-top: 1rem;
@@ -147,21 +146,21 @@
   border: none;
   cursor: pointer;
   margin-left: 0.5rem;
-  transition: color 0.3s ease;
+  transition: color 0.3s;
 }
 
 .editButton {
-  color: #2c5e1a;
+  color: #14a265;
 }
 
 .editButton:hover {
-  color: #1e4012;
+  color: #0c5d3a;
 }
 
 .deleteButton {
-  color: #e74c3c;
+  color: #f44336;
 }
 
 .deleteButton:hover {
-  color: #c0392b;
+  color: #d32f2f;
 }
