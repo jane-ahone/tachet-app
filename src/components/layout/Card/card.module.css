@@ -8,10 +8,10 @@
   max-width: 100%;
 }
 .cardMain:hover {
-  background-color: #2d374837;
+  background-color: #bfd9a029;
 }
 .cardMain:active {
-  background-color: #1c1d1f37;
+  background-color: #bfd9a029;
 }
 .heading {
   color: var(--Gray-Gray-400, #a0aec0);

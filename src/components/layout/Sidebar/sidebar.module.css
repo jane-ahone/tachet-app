@@ -1,14 +1,14 @@
 .sidebarMain {
   display: flex;
   align-items: center;
-  background-color: rgb(255, 255, 255);
+  background-color: #4b5b2f;
   padding: 1rem;
   gap: 1rem;
 }
 .title {
   margin-left: 1rem;
   font-weight: 700;
-  color: #2a3c0a;
+  color: white;
   font-size: larger;
 }
 .sidebarList {
@@ -25,28 +25,25 @@
 }
 
 .linkIcon {
-  color: var(--Default-Green);
-  background-color: white;
-  border: 1px solid white;
+  color: white;
+  background-color: transparent;
   border-radius: 50%;
   padding: 0.5rem;
   box-shadow: 0px 3.5px 5.5px 0px rgba(0, 0, 0, 0.05);
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
-.linkIcon:hover {
-}
+
 .route {
-  color: black;
+  color: white;
   font-size: 0.75rem;
   font-style: normal;
   font-weight: 500;
-  line-height: 150%; /* 1.125rem */
+  line-height: 150%;
 }
 
 .route:hover {
-  color: var(--Default-Green);
   font-weight: 700;
-  border: 1px solid white;
+  color: #2a3c0a;
 }
 /* Alignment-specific styles */
 .leftAlignment.sidebarMain {

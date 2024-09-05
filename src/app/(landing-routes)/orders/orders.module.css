@@ -51,15 +51,16 @@
   border: 1px solid #58575726;
   background-color: white;
   border-radius: 0.5rem;
+  font-size: 0.7rem;
   color: #7f8c8d;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-/* .filterSelect:focus {
+.filterSelect:focus {
   outline: none;
-  border-color: var(--Default-Green);
-} */
+  /* border-color: var(--Default-Green); */
+}
 
 .filterSelect option {
   color: #7f8c8d;
