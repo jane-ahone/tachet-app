@@ -6,31 +6,18 @@
   gap: 1rem;
 }
 .title {
-  align-self: center;
+  margin-left: 1rem;
   font-weight: 700;
   color: #2a3c0a;
   font-size: larger;
 }
-.logo {
-  align-self: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  width: 70%;
-}
 .sidebarList {
   display: flex;
   width: 100%;
-  height: 50%;
   justify-content: flex-end;
-  gap: 2rem;
+  gap: 3rem;
 }
-.heading {
-  color: #0000;
-  font-size: 0.75rem;
-  font-weight: 700;
-  line-height: 150%;
-  margin: 1rem 0;
-}
+
 .linkRoutes {
   display: flex;
   align-items: center;
@@ -47,9 +34,6 @@
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 .linkIcon:hover {
-  color: white;
-  background-color: var(--Default-Green);
-  border: 1px solid white;
 }
 .route {
   color: black;
@@ -61,6 +45,8 @@
 
 .route:hover {
   color: var(--Default-Green);
+  font-weight: 700;
+  border: 1px solid white;
 }
 /* Alignment-specific styles */
 .leftAlignment.sidebarMain {

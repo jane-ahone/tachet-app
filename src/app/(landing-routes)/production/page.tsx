@@ -3,26 +3,18 @@
 import { useState, useEffect } from "react";
 import styles from "./production.module.css";
 import { useRouter } from "next/navigation";
-
+import Sidebar from "@/components/layout/Sidebar/page";
 import {
+  LogOut,
+  Pickaxe,
+  ArrowDown,
+  ArrowUp,
+  PlusCircle,
   Save,
   RotateCcw,
   Droplet,
   Thermometer,
-  FlaskRound,
 } from "lucide-react";
-
-interface ProductionData {
-  date: string;
-  tapperId: string;
-  volumeCollected: string;
-  alcoholContent: string;
-  temperature: string;
-  ph: string;
-  notes: string;
-}
-import Sidebar from "@/components/layout/Sidebar/page";
-import { LogOut, Pickaxe, ArrowDown, ArrowUp, PlusCircle } from "lucide-react";
 import {
   Modal,
   ModalOverlay,
@@ -33,6 +25,11 @@ import {
   ModalCloseButton,
   useDisclosure,
   Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Select,
+  Textarea,
 } from "@chakra-ui/react";
 
 interface Tapper {
@@ -40,25 +37,30 @@ interface Tapper {
   name: string;
 }
 
-interface ProductionEntry {
+interface Order {
   id: number;
-  dateReceived: string;
-  tapperId: number;
-  volumePurchased: number;
-  purchasePrice: number;
-  processingStatus: string;
+  customerName: string;
+  orderDate: string;
 }
 
-interface FormData {
-  dateReceived: string;
+interface ProductionData {
+  date: string;
+  orderId: string;
   tapperId: string;
-  volumePurchased: string;
-  purchasePrice: string;
-  processingStatus: string;
+  volumeCollected: string;
+  volumePaidFor: string;
+  paymentStatus: string;
+  notes: string;
+}
+
+interface ProductionEntry extends ProductionData {
+  id: number;
 }
 
 const ProductionPage: React.FC = () => {
   const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const sideItems = [
     {
       route: "Tappers",
@@ -73,17 +75,61 @@ const ProductionPage: React.FC = () => {
       id: "logout",
     },
   ];
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [productionData, setProductionData] = useState<ProductionData>({
     date: "",
+    orderId: "",
     tapperId: "",
     volumeCollected: "",
-    alcoholContent: "",
-    temperature: "",
-    ph: "",
+    volumePaidFor: "",
+    paymentStatus: "",
     notes: "",
   });
+
+  const [tappers, setTappers] = useState<Tapper[]>([
+    { id: 1, name: "John Doe" },
+    { id: 2, name: "Jane Smith" },
+  ]);
+
+  const [orders, setOrders] = useState<Order[]>([
+    { id: 1, customerName: "Customer A", orderDate: "2024-09-01" },
+    { id: 2, customerName: "Customer B", orderDate: "2024-09-02" },
+  ]);
+
+  const [previousEntries, setPreviousEntries] = useState<ProductionEntry[]>([]);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  useEffect(() => {
+    // Fetch previous entries, tappers, and orders from API
+    // For now, we'll use dummy data
+    setPreviousEntries([
+      {
+        id: 1,
+        date: "2024-09-01",
+        orderId: "1",
+        tapperId: "1",
+        volumeCollected: "100",
+        volumePaidFor: "90",
+        paymentStatus: "completed",
+        notes: "First batch",
+      },
+      {
+        id: 2,
+        date: "2024-09-02",
+        orderId: "2",
+        tapperId: "2",
+        volumeCollected: "150",
+        volumePaidFor: "150",
+        paymentStatus: "pending",
+        notes: "Second batch",
+      },
+    ]);
+  }, []);
+
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -93,87 +139,27 @@ const ProductionPage: React.FC = () => {
     setProductionData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleNewSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Submitted production data:", productionData);
     // Here you would typically send this data to your API
-    // After successful submission, you might want to clear the form or show a success message
-  };
-
-  const handleReset = () => {
+    // After successful submission:
+    const newEntry: ProductionEntry = {
+      ...productionData,
+      id: previousEntries.length + 1,
+    };
+    setPreviousEntries((prev) => [...prev, newEntry]);
+    onClose();
+    // Reset form
     setProductionData({
       date: "",
+      orderId: "",
       tapperId: "",
       volumeCollected: "",
-      alcoholContent: "",
-      temperature: "",
-      ph: "",
+      volumePaidFor: "",
+      paymentStatus: "",
       notes: "",
     });
-  };
-
-  const [formData, setFormData] = useState<FormData>({
-    dateReceived: "",
-    tapperId: "",
-    volumePurchased: "",
-    purchasePrice: "",
-    processingStatus: "",
-  });
-  const [tappers, setTappers] = useState<Tapper[]>([
-    { id: 1, name: "John Doe" },
-    { id: 2, name: "Jane Smith" },
-  ]);
-
-  const [previousEntries, setPreviousEntries] = useState<ProductionEntry[]>([]);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-
-  useEffect(() => {
-    // Simulate fetching previous entries from an API
-    setPreviousEntries([
-      {
-        id: 1,
-        dateReceived: "2024-09-01",
-        tapperId: 1,
-        volumePurchased: 100,
-        purchasePrice: 500,
-        processingStatus: "completed",
-      },
-      {
-        id: 2,
-        dateReceived: "2024-09-02",
-        tapperId: 2,
-        volumePurchased: 150,
-        purchasePrice: 750,
-        processingStatus: "in progress",
-      },
-      {
-        id: 3,
-        dateReceived: "2024-09-03",
-        tapperId: 1,
-        volumePurchased: 120,
-        purchasePrice: 600,
-        processingStatus: "pending",
-      },
-      {
-        id: 4,
-        dateReceived: "2024-09-04",
-        tapperId: 2,
-        volumePurchased: 180,
-        purchasePrice: 900,
-        processingStatus: "completed",
-      },
-    ]);
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Submitted data:", formData);
-    // Implement submission logic here
   };
 
   const handleSort = (key: keyof ProductionEntry) => {
@@ -201,21 +187,25 @@ const ProductionPage: React.FC = () => {
   });
 
   const filteredEntries = sortedEntries.filter((entry) => {
-    const matchesStatus = entry.processingStatus
+    const matchesStatus = entry.paymentStatus
       .toLowerCase()
       .includes(filterStatus.toLowerCase());
     const matchesSearch =
-      entry.dateReceived.includes(searchTerm) ||
+      entry.date.includes(searchTerm) ||
       tappers
-        .find((t) => t.id === entry.tapperId)
+        .find((t) => t.id.toString() === entry.tapperId)
         ?.name.toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      entry.volumePurchased.toString().includes(searchTerm) ||
-      entry.purchasePrice.toString().includes(searchTerm) ||
-      entry.processingStatus.toLowerCase().includes(searchTerm.toLowerCase());
+      orders
+        .find((o) => o.id.toString() === entry.orderId)
+        ?.customerName.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      entry.volumeCollected.includes(searchTerm) ||
+      entry.volumePaidFor.includes(searchTerm) ||
+      entry.paymentStatus.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDateRange =
-      (!startDate || entry.dateReceived >= startDate) &&
-      (!endDate || entry.dateReceived <= endDate);
+      (!startDate || entry.date >= startDate) &&
+      (!endDate || entry.date <= endDate);
 
     return matchesStatus && matchesSearch && matchesDateRange;
   });
@@ -259,7 +249,6 @@ const ProductionPage: React.FC = () => {
           >
             <option value="">All Statuses</option>
             <option value="completed">Completed</option>
-            <option value="in progress">In Progress</option>
             <option value="pending">Pending</option>
           </select>
         </div>
@@ -268,89 +257,42 @@ const ProductionPage: React.FC = () => {
           <table className={styles.table}>
             <thead>
               <tr>
-                <th onClick={() => handleSort("dateReceived")}>
+                <th onClick={() => handleSort("date")}>
                   Date
-                  {sortConfig.key === "dateReceived" &&
+                  {sortConfig.key === "date" &&
                     (sortConfig.direction === "ascending" ? (
-                      <ArrowUp
-                        size={14}
-                        style={{
-                          display: "inline-block",
-                          marginLeft: "0.7rem",
-                        }}
-                      />
+                      <ArrowUp size={14} />
                     ) : (
-                      <ArrowDown
-                        size={14}
-                        style={{
-                          display: "inline-block",
-                          marginLeft: "0.7rem",
-                        }}
-                      />
+                      <ArrowDown size={14} />
                     ))}
                 </th>
+                <th>Order</th>
                 <th>Tapper</th>
-                <th onClick={() => handleSort("volumePurchased")}>
-                  Volume (L)
-                  {sortConfig.key === "volumePurchased" &&
+                <th onClick={() => handleSort("volumeCollected")}>
+                  Volume Collected (L)
+                  {sortConfig.key === "volumeCollected" &&
                     (sortConfig.direction === "ascending" ? (
-                      <ArrowUp
-                        size={14}
-                        style={{
-                          display: "inline-block",
-                          marginLeft: "0.7rem",
-                        }}
-                      />
+                      <ArrowUp size={14} />
                     ) : (
-                      <ArrowDown
-                        size={14}
-                        style={{
-                          display: "inline-block",
-                          marginLeft: "0.7rem",
-                        }}
-                      />
+                      <ArrowDown size={14} />
                     ))}
                 </th>
-                <th onClick={() => handleSort("purchasePrice")}>
-                  Price
-                  {sortConfig.key === "purchasePrice" &&
+                <th onClick={() => handleSort("volumePaidFor")}>
+                  Volume Paid For (L)
+                  {sortConfig.key === "volumePaidFor" &&
                     (sortConfig.direction === "ascending" ? (
-                      <ArrowUp
-                        size={14}
-                        style={{
-                          display: "inline-block",
-                          marginLeft: "0.7rem",
-                        }}
-                      />
+                      <ArrowUp size={14} />
                     ) : (
-                      <ArrowDown
-                        size={14}
-                        style={{
-                          display: "inline-block",
-                          marginLeft: "0.7rem",
-                        }}
-                      />
+                      <ArrowDown size={14} />
                     ))}
                 </th>
-                <th onClick={() => handleSort("processingStatus")}>
-                  Status
-                  {sortConfig.key === "processingStatus" &&
+                <th onClick={() => handleSort("paymentStatus")}>
+                  Payment Status
+                  {sortConfig.key === "paymentStatus" &&
                     (sortConfig.direction === "ascending" ? (
-                      <ArrowUp
-                        size={14}
-                        style={{
-                          display: "inline-block",
-                          marginLeft: "0.7rem",
-                        }}
-                      />
+                      <ArrowUp size={14} />
                     ) : (
-                      <ArrowDown
-                        size={14}
-                        style={{
-                          display: "inline-block",
-                          marginLeft: "0.7rem",
-                        }}
-                      />
+                      <ArrowDown size={14} />
                     ))}
                 </th>
               </tr>
@@ -358,17 +300,28 @@ const ProductionPage: React.FC = () => {
             <tbody>
               {filteredEntries.map((entry) => (
                 <tr key={entry.id}>
-                  <td>{entry.dateReceived}</td>
-                  <td>{tappers.find((t) => t.id === entry.tapperId)?.name}</td>
-                  <td>{entry.volumePurchased}</td>
-                  <td>${entry.purchasePrice.toFixed(2)}</td>
+                  <td>{entry.date}</td>
+                  <td>
+                    {
+                      orders.find((o) => o.id.toString() === entry.orderId)
+                        ?.customerName
+                    }
+                  </td>
+                  <td>
+                    {
+                      tappers.find((t) => t.id.toString() === entry.tapperId)
+                        ?.name
+                    }
+                  </td>
+                  <td>{entry.volumeCollected}</td>
+                  <td>{entry.volumePaidFor}</td>
                   <td>
                     <span
                       className={`${styles.status} ${
-                        styles[entry.processingStatus.replace(" ", "")]
+                        styles[entry.paymentStatus]
                       }`}
                     >
-                      {entry.processingStatus}
+                      {entry.paymentStatus}
                     </span>
                   </td>
                 </tr>
@@ -379,151 +332,123 @@ const ProductionPage: React.FC = () => {
             <PlusCircle size={20} />
             Add New Entry
           </button>
-          {/* Modal */}
-          <Modal isOpen={isOpen} onClose={onClose} size="full">
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>Production Data Input</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody>
-                <div className={styles.pageContainer}>
-                  <div className={styles.contentContainer}>
-                    <form onSubmit={handleSubmit} className={styles.form}>
-                      <div className={styles.formGroup}>
-                        <label htmlFor="date" className={styles.label}>
-                          Date:
-                        </label>
-                        <input
-                          type="date"
-                          id="date"
-                          name="date"
-                          value={productionData.date}
-                          onChange={handleInputChange}
-                          className={styles.input}
-                          required
-                        />
-                      </div>
-
-                      <div className={styles.formGroup}>
-                        <label htmlFor="tapperId" className={styles.label}>
-                          Tapper:
-                        </label>
-                        <select
-                          id="tapperId"
-                          name="tapperId"
-                          value={productionData.tapperId}
-                          onChange={handleInputChange}
-                          className={styles.select}
-                          required
-                        >
-                          <option value="">Select Tapper</option>
-                          <option value="1">John Doe</option>
-                          <option value="2">Jane Smith</option>
-                          {/* Add more options based on your tapper data */}
-                        </select>
-                      </div>
-
-                      <div className={styles.formGroup}>
-                        <label
-                          htmlFor="volumeCollected"
-                          className={styles.label}
-                        >
-                          <Droplet size={18} className={styles.icon} />
-                          Volume Collected (L):
-                        </label>
-                        <input
-                          type="number"
-                          id="volumeCollected"
-                          name="volumeCollected"
-                          value={productionData.volumeCollected}
-                          onChange={handleInputChange}
-                          className={styles.input}
-                          required
-                          min="0"
-                          step="0.1"
-                        />
-                      </div>
-
-                      <div className={styles.formGroup}>
-                        <label htmlFor="temperature" className={styles.label}>
-                          <Thermometer size={18} className={styles.icon} />
-                          Volume Paid For (°C):
-                        </label>
-                        <input
-                          type="number"
-                          id="temperature"
-                          name="temperature"
-                          value={productionData.temperature}
-                          onChange={handleInputChange}
-                          className={styles.input}
-                          required
-                          step="0.1"
-                        />
-                      </div>
-
-                      <div className={styles.formGroup}>
-                        <label htmlFor="ph" className={styles.label}>
-                          Payment Status
-                        </label>
-                        <input
-                          type="number"
-                          id="ph"
-                          name="ph"
-                          value={productionData.ph}
-                          onChange={handleInputChange}
-                          className={styles.input}
-                          required
-                          min="0"
-                          max="14"
-                          step="0.1"
-                        />
-                      </div>
-
-                      <div className={styles.formGroup}>
-                        <label htmlFor="notes" className={styles.label}>
-                          Additional Notes:
-                        </label>
-                        <textarea
-                          id="notes"
-                          name="notes"
-                          value={productionData.notes}
-                          onChange={handleInputChange}
-                          className={styles.textarea}
-                          rows={4}
-                        />
-                      </div>
-
-                      <div className={styles.buttonGroup}>
-                        <button
-                          type="submit"
-                          onClick={onClose}
-                          className={styles.submitButton}
-                        >
-                          <Save size={18} />
-                          Save Production Data
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleReset}
-                          className={styles.resetButton}
-                        >
-                          <RotateCcw size={18} />
-                          Reset Form
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </ModalBody>
-
-              <ModalFooter>
-                <Button colorScheme="blue" mr={3} onClick={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
         </div>
+
+        <Modal isOpen={isOpen} onClose={onClose} size="xl">
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Production Data Input</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <form onSubmit={handleSubmit}>
+                <FormControl isRequired>
+                  <FormLabel>Date</FormLabel>
+                  <Input
+                    type="date"
+                    name="date"
+                    value={productionData.date}
+                    onChange={handleInputChange}
+                  />
+                </FormControl>
+
+                <FormControl isRequired mt={4}>
+                  <FormLabel>Order</FormLabel>
+                  <Select
+                    name="orderId"
+                    value={productionData.orderId}
+                    onChange={handleInputChange}
+                    placeholder="Select Order"
+                  >
+                    {orders.map((order) => (
+                      <option key={order.id} value={order.id}>
+                        {order.customerName} - {order.orderDate}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl isRequired mt={4}>
+                  <FormLabel>Tapper</FormLabel>
+                  <Select
+                    name="tapperId"
+                    value={productionData.tapperId}
+                    onChange={handleInputChange}
+                    placeholder="Select Tapper"
+                  >
+                    {tappers.map((tapper) => (
+                      <option key={tapper.id} value={tapper.id}>
+                        {tapper.name}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl isRequired mt={4}>
+                  <FormLabel>
+                    <Droplet
+                      size={18}
+                      style={{ display: "inline", marginRight: "0.5rem" }}
+                    />
+                    Volume Collected (L)
+                  </FormLabel>
+                  <Input
+                    type="number"
+                    name="volumeCollected"
+                    value={productionData.volumeCollected}
+                    onChange={handleInputChange}
+                    min="0"
+                    step="0.1"
+                  />
+                </FormControl>
+
+                <FormControl isRequired mt={4}>
+                  <FormLabel>
+                    <Thermometer
+                      size={18}
+                      style={{ display: "inline", marginRight: "0.5rem" }}
+                    />
+                    Volume Paid For (L)
+                  </FormLabel>
+                  <Input
+                    type="number"
+                    name="volumePaidFor"
+                    value={productionData.volumePaidFor}
+                    onChange={handleInputChange}
+                    min="0"
+                    step="0.1"
+                  />
+                </FormControl>
+
+                <FormControl isRequired mt={4}>
+                  <FormLabel>Payment Status</FormLabel>
+                  <Select
+                    name="paymentStatus"
+                    value={productionData.paymentStatus}
+                    onChange={handleInputChange}
+                  >
+                    <option value="completed">Completed</option>
+                    <option value="pending">Pending</option>
+                  </Select>
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <FormLabel>Additional Notes</FormLabel>
+                  <Textarea
+                    name="notes"
+                    value={productionData.notes}
+                    onChange={handleInputChange}
+                    rows={4}
+                  />
+                </FormControl>
+
+                <Button mt={6} colorScheme="blue" type="submit">
+                  <Save size={18} style={{ marginRight: "0.5rem" }} />
+                  Save Production Data
+                </Button>
+              </form>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       </div>
     </div>
   );

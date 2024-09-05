@@ -6,6 +6,7 @@ import {
   UserRound,
   LogOut,
   House,
+  ListOrdered,
 } from "lucide-react";
 import styles from "./sidebar.module.css";
 import Link from "next/link";
@@ -15,6 +16,12 @@ import { Avatar } from "@chakra-ui/react";
 import clsx from "clsx";
 
 const sideItems = [
+  {
+    route: "Orders",
+    link: "/orders",
+    icon: ListOrdered,
+    id: "orders",
+  },
   {
     route: "Production",
     link: "/production",
@@ -63,7 +70,7 @@ const Sidebar: FC<Iproperties> = ({
 }) => {
   const pathname = usePathname();
   const currentPath = pathname?.split("/")[3];
-  console.log(pathname);
+  // console.log(pathname);
 
   const showAvatar: boolean = title.toUpperCase() === "TACHET";
 

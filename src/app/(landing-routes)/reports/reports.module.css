@@ -1,0 +1,67 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.contentContainer {
+  flex-grow: 1;
+  padding: 2rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+.reportSection {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.reportSection h2 {
+  font-size: 1.5rem;
+  color: #34495e;
+  margin-bottom: 1rem;
+}
+
+.dateRangePicker {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.dateRangePicker svg {
+  margin-right: 0.5rem;
+}
+
+.dateRangePicker input[type="date"] {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+
+.dateRangePicker span {
+  margin: 0 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .contentContainer {
+    padding: 1rem;
+  }
+
+  .dateRangePicker {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dateRangePicker input[type="date"] {
+    margin-bottom: 0.5rem;
+  }
+}

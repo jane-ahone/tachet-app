@@ -34,7 +34,7 @@ export default function Home() {
     const fetchSessionData = async () => {
       const sessionData = await getSession(); // Await the promise to resolve
       setSession(sessionData); // Update session state
-      console.log(sessionData); // Log the session data after it's resolved
+      // console.log(sessionData); // Log the session data after it's resolved
     };
 
     fetchSessionData(); // Call the async function inside useEffect
@@ -54,7 +54,7 @@ export default function Home() {
     });
 
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
   };
 
   const handleLogin = async () => {
@@ -68,7 +68,7 @@ export default function Home() {
       body: JSON.stringify({ password, email }),
     });
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
   };
 
   return (

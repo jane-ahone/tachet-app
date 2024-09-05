@@ -7,6 +7,12 @@
   padding: 1rem;
   max-width: 100%;
 }
+.cardMain:hover {
+  background-color: #2d374837;
+}
+.cardMain:active {
+  background-color: #1c1d1f37;
+}
 .heading {
   color: var(--Gray-Gray-400, #a0aec0);
   font-size: 0.75rem;
