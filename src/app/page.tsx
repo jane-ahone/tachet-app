@@ -69,7 +69,7 @@ export default function Home() {
         <div>
           <div className={styles.cardSummary}>
             <CustomCard
-              title="Total Producion"
+              title="Total Production"
               data="15,000L"
               icon={<Milk color="white" />}
             />

@@ -8,7 +8,11 @@ import {
   ShoppingBag,
   ArrowUp,
   ArrowDown,
+  Edit,
+  Trash2,
 } from "lucide-react";
+import EditModal from "@/components/EditModal/editModal";
+
 import Sidebar from "@/components/layout/Sidebar/page";
 
 interface Purchase {
@@ -36,6 +40,8 @@ const PurchaseRecordPage: React.FC = () => {
     price: 0,
     orderId: undefined,
   });
+  const [updateModal, setUpdateModal] = useState<boolean>(false);
+
   const [isAdding, setIsAdding] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{
@@ -116,7 +122,10 @@ const PurchaseRecordPage: React.FC = () => {
     });
     setIsAdding(false);
   };
-
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Hello");
+  };
   const handleSort = (key: keyof Purchase) => {
     let direction: "ascending" | "descending" = "ascending";
     if (
@@ -301,6 +310,7 @@ const PurchaseRecordPage: React.FC = () => {
                     ))}
                 </th>
                 <th>Linked Order</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -316,11 +326,34 @@ const PurchaseRecordPage: React.FC = () => {
                           ?.customerName || "Unknown"
                       : "N/A"}
                   </td>
+                  <td>
+                    <div className={styles.customerActions}>
+                      <button className="edit-btn">
+                        <Edit
+                          size={18}
+                          onClick={() => {
+                            setUpdateModal(true);
+                          }}
+                        />
+                      </button>
+                      <button className="delete-btn" onClick={() => {}}>
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+
+        {updateModal ? (
+          <EditModal
+            updateModal={updateModal}
+            setUpdateModal={setUpdateModal}
+            handleSubmit={handleSubmit}
+          />
+        ) : null}
       </div>
     </div>
   );

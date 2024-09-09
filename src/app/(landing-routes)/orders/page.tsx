@@ -14,6 +14,7 @@ import {
   Trash2,
   Hammer,
   X,
+  BadgeDollarSign,
 } from "lucide-react";
 import {
   Modal,
@@ -72,6 +73,12 @@ const OrderPage: React.FC = () => {
   const toast = useToast();
 
   const sideItems = [
+    {
+      route: "Sales",
+      link: "/orders/sales",
+      icon: BadgeDollarSign,
+      id: "sales",
+    },
     {
       route: "Production",
       link: "/production",
