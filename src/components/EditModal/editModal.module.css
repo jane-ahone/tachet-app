@@ -1,0 +1,40 @@
+.CloseButton {
+  align-self: flex-end;
+}
+
+.updateModal {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+
+  background-color: #0d0e0f88;
+}
+.form {
+  background-color: #f8f9fa;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  bottom: 1rem;
+  width: 95%;
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 4px;
+}
+.formFields {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.submitButton {
+  background-color: var(--Default-Green);
+  padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+}

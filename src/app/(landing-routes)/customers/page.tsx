@@ -2,15 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "./customer.module.css";
-import {
-  UserPlus,
-  Edit,
-  Trash2,
-  Search,
-  LogOut,
-  ShoppingBag,
-} from "lucide-react";
+import { UserPlus, Edit, Trash2, LogOut, ShoppingBag } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar/page";
+import EditModal from "@/components/EditModal/editModal";
 
 interface Customer {
   id: number;
@@ -32,6 +26,7 @@ const CustomerManagementPage: React.FC = () => {
   });
   const [isAdding, setIsAdding] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [updateModal, setUpdateModal] = useState<boolean>(false);
 
   const sideItems = [
     {
@@ -93,6 +88,13 @@ const CustomerManagementPage: React.FC = () => {
   const handleDeleteCustomer = (id: number) => {
     // In a real application, you would send a delete request to your API
     setCustomers((prev) => prev.filter((customer) => customer.id !== id));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("Submitted order data:");
+    // Here you would typically send this data to your backend
+    // After successful submission:
   };
 
   const filteredCustomers = customers.filter((customer) =>
@@ -181,7 +183,12 @@ const CustomerManagementPage: React.FC = () => {
               </div>
               <div className={styles.customerActions}>
                 <button className={styles.editButton}>
-                  <Edit size={18} />
+                  <Edit
+                    size={18}
+                    onClick={() => {
+                      setUpdateModal(true);
+                    }}
+                  />
                 </button>
                 <button
                   className={styles.deleteButton}
@@ -194,6 +201,13 @@ const CustomerManagementPage: React.FC = () => {
           ))}
         </div>
       </div>
+      {updateModal ? (
+        <EditModal
+          updateModal={updateModal}
+          setUpdateModal={setUpdateModal}
+          handleSubmit={handleSubmit}
+        />
+      ) : null}
     </div>
   );
 };

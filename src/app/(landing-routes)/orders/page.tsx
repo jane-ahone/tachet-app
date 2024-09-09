@@ -13,6 +13,7 @@ import {
   Edit,
   Trash2,
   Hammer,
+  X,
 } from "lucide-react";
 import {
   Modal,
@@ -41,6 +42,7 @@ import {
   IconButton,
   useToast,
 } from "@chakra-ui/react";
+import EditModal from "@/components/EditModal/editModal";
 
 interface Customer {
   id: number;
@@ -101,6 +103,7 @@ const OrderPage: React.FC = () => {
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [updateModal, setUpdateModal] = useState<boolean>(false);
 
   useEffect(() => {
     // Fetch customers and orders from API
@@ -156,6 +159,15 @@ const OrderPage: React.FC = () => {
 
   const handleOrderQtyChange = (value: string) => {
     setOrderData((prev) => ({ ...prev, orderQty: parseInt(value) }));
+  };
+
+  const handleUpdate = (id: any) => {
+    console.log("Edit order", id);
+    setUpdateModal(true);
+  };
+  const handleDelete = (id: any) => {
+    console.log("Delete order", id);
+    <p>Are you sure you want to delete this field?</p>;
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -241,22 +253,12 @@ const OrderPage: React.FC = () => {
           <Button
             leftIcon={<PlusCircle size={15} />}
             iconSpacing={2}
-            className={styles.newOrderBtn}
-            sx={{
-              position: "absolute",
-              bottom: "0",
-              right: "0",
-              margin: "2rem",
-              padding: "1rem",
-              backgroundColor: "#7f8c8d",
-              color: "white",
-            }}
+            className="new-order-btn"
             size="md"
             onClick={onOpen}
           >
             Create New Order
           </Button>
-          {/* Edit this button styling */}
         </div>
 
         <Table variant="simple" className={styles.table}>
@@ -309,16 +311,20 @@ const OrderPage: React.FC = () => {
                   <IconButton
                     aria-label="Edit order"
                     icon={<Edit size={18} />}
+                    className="edit-btn"
                     size="sm"
                     mr={2}
-                    onClick={() => console.log("Edit order", order.id)}
+                    onClick={() => {
+                      handleUpdate(order.id);
+                    }}
                   />
+
                   <IconButton
                     aria-label="Delete order"
                     icon={<Trash2 size={18} />}
+                    className="delete-btn"
                     size="sm"
-                    colorScheme="red"
-                    onClick={() => console.log("Delete order", order.id)}
+                    onClick={() => handleDelete(order.id)}
                   />
                 </Td>
               </Tr>
@@ -388,6 +394,14 @@ const OrderPage: React.FC = () => {
             </ModalBody>
           </ModalContent>
         </Modal>
+
+        {updateModal ? (
+          <EditModal
+            updateModal={updateModal}
+            setUpdateModal={setUpdateModal}
+            handleSubmit={handleSubmit}
+          />
+        ) : null}
       </div>
     </div>
   );

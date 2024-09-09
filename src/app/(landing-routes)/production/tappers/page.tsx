@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./tapper.module.css";
 import { UserPlus, Edit, Trash2, Search, LogOut, Hammer } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar/page";
+import EditModal from "@/components/EditModal/editModal";
 
 interface Tapper {
   id: number;
@@ -23,6 +24,7 @@ const TapperManagementPage: React.FC = () => {
   });
   const [isAdding, setIsAdding] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [updateModal, setUpdateModal] = useState<boolean>(false);
 
   const sideItems = [
     {
@@ -63,6 +65,12 @@ const TapperManagementPage: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewTapper((prev) => ({ ...prev, [name]: value }));
+  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("Submitted order data:");
+    // Here you would typically send this data to your backend
+    // After successful submission:
   };
 
   const handleAddTapper = () => {
@@ -159,20 +167,29 @@ const TapperManagementPage: React.FC = () => {
                 <p>{tapper.address}</p>
                 <p>Joined: {tapper.joiningDate}</p>
               </div>
-              <div className={styles.actions}>
+              <div className={styles.customerActions}>
                 <button className={styles.editButton}>
-                  <Edit size={18} />
+                  <Edit
+                    size={18}
+                    onClick={() => {
+                      setUpdateModal(true);
+                    }}
+                  />
                 </button>
-                <button
-                  className={styles.deleteButton}
-                  onClick={() => handleDeleteTapper(tapper.id)}
-                >
+                <button className={styles.deleteButton} onClick={() => {}}>
                   <Trash2 size={18} />
                 </button>
               </div>
             </div>
           ))}
         </div>
+        {updateModal ? (
+          <EditModal
+            updateModal={updateModal}
+            setUpdateModal={setUpdateModal}
+            handleSubmit={handleSubmit}
+          />
+        ) : null}
       </div>
     </div>
   );

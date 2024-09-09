@@ -1,7 +1,4 @@
 .main {
-  /* display: grid;
-  grid-template-columns: 20vh 3fr;
-  gap: 2rem; */
   min-height: 100vh;
   background: #f8f9fa;
 }
@@ -28,37 +25,6 @@
   height: 100vh;
   background-color: #f0f8ff;
   overflow: hidden;
-}
-
-.loadingContent {
-  text-align: center;
-  position: relative;
-}
-
-.palmTree {
-  animation: sway 3s ease-in-out infinite;
-  transform-origin: bottom center;
-}
-
-@keyframes sway {
-  0%,
-  100% {
-    transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(5deg);
-  }
-}
-
-.dropContainer {
-  position: absolute;
-  top: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.drop {
-  animation: bounce 1s ease-in-out infinite;
 }
 
 @keyframes bounce {

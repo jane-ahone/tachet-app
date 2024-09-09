@@ -4,25 +4,15 @@ import styles from "./page.module.css";
 import { getSession } from "@/lib/auth/action";
 import { useEffect, useState } from "react";
 import { SessionData } from "@/lib/auth/session";
-import SignUp from "./(auth-routes)/signup/page";
 import Sidebar from "@/components/layout/Sidebar/page";
 import CustomCard from "@/components/layout/Card/page";
-import {
-  Avatar,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-} from "@chakra-ui/react";
 import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
 } from "@chakra-ui/react";
 import { Grape, Milk, Pickaxe, Truck, Warehouse } from "lucide-react";
@@ -74,7 +64,6 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <Sidebar title="Tachet" alignment="top" />
-
       <div className={styles.mainDetails}>
         <div className={styles.heading}></div>
         <div>

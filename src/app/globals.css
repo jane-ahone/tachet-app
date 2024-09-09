@@ -47,7 +47,7 @@
   --Gray-Gray-400: #a0aec0;
   --Gray-Gray-200: #e2e8f0;
 
-  --Default-Green: #4b5b2f;
+  --Default-Green: #32593b;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -99,6 +99,35 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+.new-order-btn {
+  position: absolute !important ;
+  bottom: 0 !important ;
+  right: 0 !important ;
+  margin: 2rem !important ;
+  padding: 1rem !important ;
+  background-color: #7f8c8d !important ;
+  color: white !important ;
+}
+.new-order-btn {
+  margin: 2rem;
+  padding: 1rem;
+  background-color: #7f8c8d;
+  color: white;
+}
+
+.edit-btn {
+  background-color: transparent !important;
+}
+.edit-btn:hover {
+  color: #139631;
+}
+.delete-btn {
+  background-color: transparent !important;
+}
+.delete-btn:hover {
+  color: red;
 }
 
 @layer base {

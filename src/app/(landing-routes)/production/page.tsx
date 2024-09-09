@@ -11,6 +11,8 @@ import {
   ArrowUp,
   PlusCircle,
   Save,
+  Edit,
+  Trash2,
 } from "lucide-react";
 import {
   Modal,
@@ -28,6 +30,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import Link from "next/link";
+import EditModal from "@/components/EditModal/editModal";
 
 interface Tapper {
   id: number;
@@ -99,6 +102,7 @@ const ProductionPage: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [updateModal, setUpdateModal] = useState<boolean>(false);
 
   useEffect(() => {
     // Fetch previous entries, tappers, and orders from API
@@ -316,6 +320,7 @@ const ProductionPage: React.FC = () => {
                       />
                     ))}
                 </th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -344,6 +349,21 @@ const ProductionPage: React.FC = () => {
                     >
                       {entry.paymentStatus}
                     </span>
+                  </td>
+                  <td>
+                    <div className={styles.actions}>
+                      <button className="edit-btn">
+                        <Edit
+                          size={18}
+                          onClick={() => {
+                            setUpdateModal(true);
+                          }}
+                        />
+                      </button>
+                      <button className="delete-btn" onClick={() => {}}>
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -464,6 +484,13 @@ const ProductionPage: React.FC = () => {
             </ModalBody>
           </ModalContent>
         </Modal>
+        {updateModal ? (
+          <EditModal
+            updateModal={updateModal}
+            setUpdateModal={setUpdateModal}
+            handleSubmit={handleSubmit}
+          />
+        ) : null}
       </div>
     </div>
   );
