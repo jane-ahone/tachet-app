@@ -2,14 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "./reports.module.css";
-import {
-  LogOut,
-  BarChart2,
-  Users,
-  Package,
-  ShoppingBag,
-  Calendar,
-} from "lucide-react";
+import { LogOut, BarChart2, Calendar } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar/page";
 import {
   LineChart,
@@ -164,10 +157,8 @@ const ReportsPage: React.FC = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <Sidebar title="Reports" alignment="top" sideNavitems={sideItems} />
+      {/* <Sidebar title="Reports" alignment="top" sideNavitems={sideItems} /> */}
       <div className={styles.contentContainer}>
-        <h1 className={styles.title}>Production Reports</h1>
-
         <div className={styles.reportSection}>
           <h2>Daily Production</h2>
           <DateRangePicker

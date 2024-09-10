@@ -28,7 +28,7 @@ let tappers = [
   },
 ];
 
-export default async function handler(req: NextRequest, res: NextResponse) {
+export default async function GET(req: NextRequest, res: NextResponse) {
   switch (req.method) {
     case "GET":
       // Read all tappers

@@ -43,6 +43,11 @@ const TapperManagementPage: React.FC = () => {
 
   useEffect(() => {
     // Fetch tappers data from API
+    const fetchTappers = async () => {
+      try {
+        const tappers = await fetch("/api/");
+      } catch (error) {}
+    };
     // For now, we'll use dummy data
     setTappers([
       {
