@@ -12,7 +12,7 @@ import Sidebar from "@/components/layout/Sidebar/page";
 import EditModal from "@/components/EditModal/editModal";
 
 interface Tapper {
-  id: number;
+  tapper_id: number;
   tapper_name: string;
   phone_number: string;
   email: string;
@@ -22,7 +22,7 @@ interface Tapper {
 
 const TapperManagementPage: React.FC = () => {
   const [tappers, setTappers] = useState<Tapper[]>([]);
-  const [newTapper, setNewTapper] = useState<Omit<Tapper, "id">>({
+  const [newTapper, setNewTapper] = useState<Omit<Tapper, "tapper_id">>({
     tapper_name: "",
     phone_number: "",
     email: "",
@@ -64,7 +64,7 @@ const TapperManagementPage: React.FC = () => {
         console.log(error);
         setTappers([
           {
-            id: 1,
+            tapper_id: 1,
             tapper_name: "John Doe",
             phone_number: "1234567890",
             email: "there's been an error",
@@ -92,7 +92,7 @@ const TapperManagementPage: React.FC = () => {
   const handleAddTapper = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const tapper = { id: tappers.length + 1, ...newTapper };
+    const tapper = { tapper_id: tappers.length + 1, ...newTapper };
     setTappers((prev) => [...prev, tapper]);
 
     //sending data to API
@@ -135,26 +135,26 @@ const TapperManagementPage: React.FC = () => {
   };
 
   const handleDeleteTapper = (id: number) => {
-    setTappers((prev) => prev.filter((tapper) => tapper.id !== id));
-    // In a real application, you would send a delete request to your API
-
-    const deleteTapperDB = async () => {
+    // request call
+    const deleteTapperDB = async (id: number) => {
       try {
         const response = await fetch(`/api/tapper/${id}`, {
           method: "DELETE",
         });
 
         if (!response.ok) {
-          throw new Error("Failed to add tapper");
+          throw new Error("Failed to delete tapper");
         }
 
         const data = await response.json();
-        console.log(`New tapper added: ${data}`);
+        console.log(`Tapper succesfully deleted: ${data}`);
       } catch (error) {
         console.log(`Error: ${error}`);
       }
     };
-    deleteTapperDB();
+
+    deleteTapperDB(id);
+    setTappers((prev) => prev.filter((tapper) => tapper.tapper_id !== id));
   };
 
   const filteredTappers = tappers.filter((tapper) =>
@@ -245,7 +245,7 @@ const TapperManagementPage: React.FC = () => {
 
         <div className={styles.list}>
           {filteredTappers.map((tapper) => (
-            <div key={tapper.id} className={styles.card}>
+            <div key={tapper.tapper_id} className={styles.card}>
               <div className={styles.info}>
                 <h3>{tapper.tapper_name}</h3>
                 <p>{tapper.phone_number}</p>
@@ -265,7 +265,7 @@ const TapperManagementPage: React.FC = () => {
                 <button
                   className={styles.deleteButton}
                   onClick={() => {
-                    handleDeleteTapper(tapper.id);
+                    handleDeleteTapper(tapper.tapper_id);
                   }}
                 >
                   <Trash2 size={18} />

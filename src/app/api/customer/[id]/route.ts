@@ -8,19 +8,22 @@ export async function DELETE(
   const id = params.id;
 
   try {
-    // Check if the tapper exists
+    // Check if the customer exists
     const checkResult = await query(
-      "SELECT * FROM tapper WHERE tapper_id = $1",
+      "SELECT * FROM customer WHERE customer_id = $1",
       [id]
     );
 
     if (checkResult.rowCount === 0) {
-      return NextResponse.json({ error: "Tapper not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Customer not found" },
+        { status: 404 }
+      );
     }
 
     // Proceed with deletion
     const deleteResult = await query(
-      "DELETE FROM tapper WHERE tapper_id = $1",
+      "DELETE FROM customer WHERE customer_id = $1",
       [id]
     );
 
@@ -28,17 +31,17 @@ export async function DELETE(
 
     if (deleteResult.rowCount > 0) {
       return NextResponse.json(
-        { message: "Tapper deleted successfully" },
+        { message: "Customer deleted successfully" },
         { status: 200 }
       );
     } else {
       return NextResponse.json(
-        { error: "Failed to delete tapper" },
+        { error: "Failed to delete customer" },
         { status: 500 }
       );
     }
   } catch (error) {
-    console.error("Error deleting tapper:", error);
+    console.error("Error deleting customer:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -52,32 +55,36 @@ export async function PUT(
   const id = params.id;
 
   try {
-    const { tapper_name, phone_number, home_address } = await request.json();
+    const { customer_name, phone_number, email, home_address } =
+      await request.json();
 
     // Validate input
-    if (!tapper_name || !phone_number || !home_address) {
+    if (!customer_name || !phone_number || !email || !home_address) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    // Update tapper in the database
+    // Update customer in the database
     const result = await query(
-      `UPDATE tapper 
+      `UPDATE customer 
        SET name = $1, contact_number = $2, address = $3,
-       WHERE tapper_id = $4
+       WHERE customer_id = $4
        RETURNING *`,
-      [tapper_name, phone_number, home_address, id]
+      [customer_name, phone_number, home_address, id]
     );
 
     if (result.rowCount === 0) {
-      return NextResponse.json({ error: "Tapper not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Customer not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(result.rows[0], { status: 200 });
   } catch (error) {
-    console.error("Error updating tapper:", error);
+    console.error("Error updating customer:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
