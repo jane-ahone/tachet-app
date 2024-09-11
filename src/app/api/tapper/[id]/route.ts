@@ -1,49 +1,43 @@
-import { query } from "@/lib/db/db";
+// app/api/tappers/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import { query } from "@/lib/db/db";
 
-let tappers = [
-  {
-    id: 1,
-    name: "John Doe",
-    contactNumber: "1234567890",
-    address: "123 Palm St",
-    joiningDate: "2023-01-15",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    contactNumber: "0987654321",
-    address: "456 Coconut Ave",
-    joiningDate: "2023-03-22",
-  },
-];
+export async function DELETE({ params }: { params: { id: string } }) {
+  const id = params.id;
 
-export default async function handler(req: NextRequest, res: NextResponse) {
-  const { id, name, contactNumber, email, address } = await req.json();
-  const tapperId = parseInt(id as string);
+  try {
+    // First, check if the tapper exists
+    const queryString = `
+      SELECT * FROM tapper WHERE tapper_id = ${id}
+    `;
+    const checkResult = await query(queryString);
 
-  switch (req.method) {
-    case "PUT":
-      // Update a tapper
-      try {
-        const queryString = "UPDATE tappers";
-      } catch (error) {}
+    if (checkResult.rowCount === 0) {
+      return NextResponse.json({ error: "Tapper not found" }, { status: 404 });
+    }
 
-      break;
-    case "DELETE":
-      // Delete a tapper
-      try {
-        const queryString = "DELETE * WHERE tapper_id= $1";
-        const result = await query(queryString, [id]);
-        return NextResponse.json(
-          { message: "Deleted tapper entry sucessfully" },
-          { status: 201 }
-        );
-      } catch (error) {}
+    const queryStringDelete = ` DELETE FROM tapper WHERE tapper_id = ${id}`;
 
-    default:
-      // res.setHeader("Allow", ["GET", "PUT", "DELETE"]);
-      // res.status(405).end(`Method ${req.method} Not Allowed`);
-      return NextResponse.json({ status: 405 });
+    // If tapper exists, proceed with deletion
+    const result = await query(queryStringDelete);
+    console.log(result);
+
+    // if (result.rowCount > 0) {
+    //   return NextResponse.json(
+    //     { message: "Tapper deleted successfully" },
+    //     { status: 200 }
+    //   );
+    // } else {
+    //   return NextResponse.json(
+    //     { error: "Failed to delete tapper" },
+    //     { status: 500 }
+    //   );
+    // }
+  } catch (error) {
+    console.error("Error deleting tapper:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
