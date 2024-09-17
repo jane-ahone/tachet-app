@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import styles from "./purchasing.module.css";
+import styles from "./purchases.module.css";
 import {
   PlusCircle,
   LogOut,
@@ -12,23 +12,8 @@ import {
   Trash2,
 } from "lucide-react";
 import EditModal from "@/components/EditModal/editModal";
-
+import { Order, Purchase, FieldConfig } from "@/lib/types/interface";
 import Sidebar from "@/components/layout/Sidebar/page";
-
-interface Purchase {
-  id: number;
-  date: string;
-  itemType: string;
-  quantity: number;
-  price: number;
-  orderId?: number; // Optional because not all purchases (e.g., labels) are linked to orders
-}
-
-interface Order {
-  id: number;
-  customerName: string;
-  orderDate: string;
-}
 
 const PurchaseRecordPage: React.FC = () => {
   const [purchases, setPurchases] = useState<Purchase[]>([]);
@@ -40,8 +25,15 @@ const PurchaseRecordPage: React.FC = () => {
     price: 0,
     orderId: undefined,
   });
+  const [formInitialData, setFormInitialData] = useState<Order>({
+    id: 1,
+    customerName: "John Doe",
+    customerId: 2,
+    orderQty: 1,
+    orderDate: new Date().toISOString().split("T")[0],
+    status: "Pending",
+  });
   const [updateModal, setUpdateModal] = useState<boolean>(false);
-
   const [isAdding, setIsAdding] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{
@@ -61,6 +53,44 @@ const PurchaseRecordPage: React.FC = () => {
       link: "/logout",
       icon: LogOut,
       id: "logout",
+    },
+  ];
+
+  const fields: FieldConfig[] = [
+    { name: "purchaseDate", label: "Date", type: "date", required: true },
+    {
+      name: "itemType",
+      label: "Item Type",
+      type: "select",
+      options: [
+        { value: "Bottles", label: "Bottles" },
+        { value: "Labels", label: "Labels" },
+        { value: "Completed", label: "Completed" },
+      ],
+      required: true,
+    },
+    {
+      name: "purchaseQty",
+      label: "Purchase Quantity",
+      type: "number",
+      required: true,
+    },
+    {
+      name: "Unit Price",
+      label: "Unit Price",
+      type: "text",
+      required: true,
+    },
+
+    {
+      name: "status",
+      label: "Production Status",
+      type: "select",
+      options: [
+        { value: "John Doe", label: "John Doe" },
+        { value: "N/A", label: "N/A" },
+      ],
+      required: true,
     },
   ];
 
@@ -86,8 +116,22 @@ const PurchaseRecordPage: React.FC = () => {
 
     // Fetch orders data from API
     setOrders([
-      { id: 1, customerName: "John Doe", orderDate: "2023-08-30" },
-      { id: 2, customerName: "Jane Smith", orderDate: "2023-09-10" },
+      {
+        id: 1,
+        customerName: "John Doe",
+        customerId: 2,
+        orderDate: "2023-08-30",
+        status: "John Doe",
+        orderQty: 1,
+      },
+      {
+        id: 2,
+        customerName: "Jane Smith",
+        customerId: 2,
+        orderDate: "2023-09-10",
+        status: "Pending",
+        orderQty: 1,
+      },
     ]);
   }, []);
 
@@ -124,7 +168,6 @@ const PurchaseRecordPage: React.FC = () => {
   };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Hello");
   };
   const handleSort = (key: keyof Purchase) => {
     let direction: "ascending" | "descending" = "ascending";
@@ -349,6 +392,8 @@ const PurchaseRecordPage: React.FC = () => {
 
         {updateModal ? (
           <EditModal
+            initialData={formInitialData}
+            fields={fields}
             updateModal={updateModal}
             setUpdateModal={setUpdateModal}
             handleSubmit={handleSubmit}

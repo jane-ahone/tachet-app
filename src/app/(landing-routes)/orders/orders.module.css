@@ -5,7 +5,7 @@
 
 .content {
   flex-grow: 1;
-  padding: 1.5rem;
+  padding: 1.5rem 2rem;
 }
 
 .title {
@@ -19,7 +19,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 0.5rem;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
 }
 
 .searchContainer {
@@ -55,6 +55,13 @@
   color: #7f8c8d;
   cursor: pointer;
   transition: all 0.3s ease;
+}
+
+.cardSummary {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
 .filterSelect:focus {

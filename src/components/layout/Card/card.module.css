@@ -15,7 +15,8 @@
 }
 .heading {
   color: var(--Gray-Gray-400, #a0aec0);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
   font-weight: 600;
   line-height: 150%; /* 1.125rem */
 }
@@ -23,13 +24,12 @@
   color: var(--Gray-Gray-700, #2d3748);
   font-family: Helvetica;
   font-size: 1.125rem;
-  font-style: normal;
   font-weight: 700;
   line-height: 140%; /* 1.575rem */
 }
 
 .iconWrapper {
-  background-color: #593b32; /* Choose your desired color */
+  background-color: var(--Default-Green); /* Choose your desired color */
   border-radius: 50%;
   width: 50px; /* Adjust size as needed */
   height: 50px;

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "./orders.module.css";
-import { useRouter } from "next/navigation";
 import Sidebar from "@/components/layout/Sidebar/page";
 import {
   LogOut,
@@ -13,7 +12,6 @@ import {
   Edit,
   Trash2,
   Hammer,
-  X,
   BadgeDollarSign,
 } from "lucide-react";
 import {
@@ -44,38 +42,20 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import EditModal from "@/components/EditModal/editModal";
-
-interface Customer {
-  id: number;
-  customerName: string;
-  phoneNumber: string;
-  email: string;
-  homeAddress: string;
-}
-
-interface Order {
-  id: number;
-  customerId: number;
-  orderQty: number;
-  orderDate: string;
-  status: string;
-}
-
-interface OrderData {
-  customerId: string;
-  orderQty: number;
-  orderDate: string;
-}
+import { Customer, Order, OrderData, FieldConfig } from "@/lib/types/interface";
+import CustomCard from "@/components/layout/Card/page";
+import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
 
 const OrderPage: React.FC = () => {
-  const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
-  const sideItems = [
+  //Navbar icons and route links
+
+  const navBarItems = [
     {
       route: "Sales",
-      link: "/orders/sales",
+      link: "/sales",
       icon: BadgeDollarSign,
       id: "sales",
     },
@@ -99,12 +79,27 @@ const OrderPage: React.FC = () => {
     },
   ];
 
+  /*OrderData stores field values when adding information to the table
+  Orders stores all the order information
+  formInitialData stores the initial information to be updated
+  UpdateModal is used to toggle the visibility of the update modal
+  */
+
   const [orderData, setOrderData] = useState<OrderData>({
-    customerId: "",
+    customerId: 1,
+    customerName: "",
     orderQty: 1,
     orderDate: new Date().toISOString().split("T")[0],
+    status: "pending",
   });
-
+  const [formInitialData, setFormInitialData] = useState<Order>({
+    id: 1,
+    customerName: "",
+    customerId: 1,
+    orderQty: 1,
+    orderDate: new Date().toISOString().split("T")[0],
+    status: "Pending",
+  });
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
@@ -112,9 +107,42 @@ const OrderPage: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState("");
   const [updateModal, setUpdateModal] = useState<boolean>(false);
 
+  const fields: FieldConfig[] = [
+    { name: "orderDate", label: "Date", type: "date", required: true },
+    {
+      name: "customerId",
+      label: "Customer",
+      type: "select",
+      options: customers.map((c) => ({
+        value: c.id.toString(),
+        label: c.customerName,
+      })),
+      required: true,
+    },
+    {
+      name: "orderQty",
+      label: "Order Quantity",
+      type: "number",
+      required: true,
+    },
+
+    {
+      name: "status",
+      label: "Production Status",
+      type: "select",
+      options: [
+        { value: "Pending", label: "Pending" },
+        { value: "In Progress", label: "In Progress" },
+        { value: "Completed", label: "Completed" },
+      ],
+      required: true,
+    },
+  ];
+
   useEffect(() => {
     // Fetch customers and orders from API
     // For now, we'll use dummy data
+    // I will use a join so this set Customers will go
     setCustomers([
       {
         id: 1,
@@ -132,37 +160,48 @@ const OrderPage: React.FC = () => {
       },
     ]);
 
-    setOrders([
-      {
-        id: 1,
-        customerId: 1,
-        orderQty: 100,
-        orderDate: "2024-09-01",
-        status: "Pending",
-      },
-      {
-        id: 2,
-        customerId: 2,
-        orderQty: 150,
-        orderDate: "2024-09-02",
-        status: "Completed",
-      },
-      {
-        id: 3,
-        customerId: 1,
-        orderQty: 200,
-        orderDate: "2024-09-03",
-        status: "In Progress",
-      },
-    ]);
+    (async () => {
+      try {
+        const response = await fetch("/api/orderss");
+        if (!response.ok) {
+          throw new Error("Failed to fetch ordersss");
+        }
+        const data = await response.json();
+        console.log(data.ordersss);
+        setOrders(data.ordersss);
+      } catch (error) {
+        console.log(error);
+        setOrders([
+          {
+            id: 1,
+            customerId: 1,
+            customerName: "John Doe",
+            orderQty: 100,
+            orderDate: "2024-09-01",
+            status: "Pending",
+          },
+          {
+            id: 2,
+            customerId: 2,
+            customerName: "John Doe",
+            orderQty: 150,
+            orderDate: "2024-09-02",
+            status: "Completed",
+          },
+          {
+            id: 3,
+            customerId: 1,
+            customerName: "John Doe",
+            orderQty: 200,
+            orderDate: "2024-09-03",
+            status: "In Progress",
+          },
+        ]);
+      }
+    })();
   }, []);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setOrderData((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleInputChange = createHandleInputChange(setOrderData);
 
   const handleOrderQtyChange = (value: string) => {
     setOrderData((prev) => ({ ...prev, orderQty: parseInt(value) }));
@@ -170,21 +209,68 @@ const OrderPage: React.FC = () => {
 
   const handleUpdate = (id: any) => {
     console.log("Edit order", id);
+    orders.map((order) => {
+      if (order.id == id) {
+        setFormInitialData(order);
+      }
+    });
     setUpdateModal(true);
   };
   const handleDelete = (id: any) => {
     console.log("Delete order", id);
-    <p>Are you sure you want to delete this field?</p>;
+    alert("Are you sure you want to delete this field?");
+
+    const deleteOrderDB = async (id: number) => {
+      try {
+        const response = await fetch(`/api/orderss/${id}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete orderss");
+        }
+
+        const data = await response.json();
+        console.log(`Order succesfully deleted: ${data}`);
+      } catch (error) {
+        console.log(`Error: ${error}`);
+      }
+    };
+
+    deleteOrderDB(id);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Submitted order data:", orderData);
     // Here you would typically send this data to your backend
+
+    (async () => {
+      try {
+        const response = await fetch("/api/orderss", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderData),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to add order");
+        }
+
+        const data = await response.json();
+        console.log(`New order added: ${data}`);
+      } catch (error) {
+        console.log(`Error: ${error}`);
+      }
+    })();
+
     // After successful submission:
     const newOrder: Order = {
       id: orders.length + 1,
-      customerId: parseInt(orderData.customerId),
+      customerId: orderData.customerId,
+      customerName: "",
       orderQty: orderData.orderQty,
       orderDate: orderData.orderDate,
       status: "Pending",
@@ -233,7 +319,7 @@ const OrderPage: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <Sidebar title="Orders" sideNavitems={sideItems} alignment="top" />
+      <Sidebar title="Orders" sideNavitems={navBarItems} alignment="top" />
 
       <div className={styles.content}>
         <div className={styles.actions}>
@@ -266,6 +352,12 @@ const OrderPage: React.FC = () => {
           >
             Create New Order
           </Button>
+        </div>
+
+        <div className={styles.cardSummary}>
+          <CustomCard title="Pending" data="Orders: 1 Volume:200L" />
+          <CustomCard title="In Progress" data="Orders: 1 Volume:200L" />
+          <CustomCard title="Completed" data="Orders: 1 Volume:200L" />
         </div>
 
         <Table variant="simple" className={styles.table}>
@@ -404,6 +496,8 @@ const OrderPage: React.FC = () => {
 
         {updateModal ? (
           <EditModal
+            initialData={formInitialData}
+            fields={fields}
             updateModal={updateModal}
             setUpdateModal={setUpdateModal}
             handleSubmit={handleSubmit}

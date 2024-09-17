@@ -3,7 +3,7 @@ import styles from "./card.module.css";
 interface CustomCardProps {
   title: string;
   data: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
 }
 const CustomCard: React.FC<CustomCardProps> = ({ title, data, icon }) => {
   return (
@@ -12,7 +12,7 @@ const CustomCard: React.FC<CustomCardProps> = ({ title, data, icon }) => {
         <p className={styles.heading}>{title}</p>
         <p className={styles.detail}>{data}</p>
       </div>
-      <div className={styles.iconWrapper}>{icon}</div>
+      {icon ? <div className={styles.iconWrapper}>{icon}</div> : null}
     </div>
   );
 };

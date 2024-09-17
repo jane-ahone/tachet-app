@@ -1,22 +1,13 @@
 "use client";
-import Image from "next/image";
 import styles from "./page.module.css";
 import { getSession } from "@/lib/auth/action";
 import { useEffect, useState } from "react";
 import { SessionData } from "@/lib/auth/session";
 import Sidebar from "@/components/layout/Sidebar/page";
 import CustomCard from "@/components/layout/Card/page";
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-} from "@chakra-ui/react";
-import { Grape, Milk, Pickaxe, Truck, Warehouse } from "lucide-react";
+import { Milk, Pickaxe, Truck, Warehouse } from "lucide-react";
 import ReportsPage from "./(landing-routes)/reports/page";
+import Link from "next/link";
 
 export default function Home() {
   const [session, setSession] = useState<SessionData | undefined>(undefined); // Initialize session state
@@ -69,28 +60,39 @@ export default function Home() {
         <div className={styles.heading}></div>
         <div>
           <div className={styles.cardSummary}>
-            <CustomCard
-              title="Total Production"
-              data="15,000L"
-              icon={<Milk color="white" />}
-            />
-            <CustomCard
-              title="Total Sales"
-              data="15,000L"
-              icon={<Truck color="white" />}
-            />
-            <CustomCard
-              title="Current Inventory"
-              data="15,000L"
-              icon={<Warehouse color="white" />}
-            />
-            <CustomCard
-              title="Tappers"
-              data="2,000"
-              icon={<Pickaxe color="white" />}
-            />
+            <Link href="/production">
+              <CustomCard
+                title="Total Palm Wine Collected"
+                data="15,000L"
+                icon={<Milk color="white" />}
+              />
+            </Link>
+            <Link href="/sales">
+              <CustomCard
+                title="Total Number of Sales"
+                data="19,071"
+                icon={<Truck color="white" />}
+              />
+            </Link>
+            <Link href="">
+              <CustomCard
+                title="Total Number of Purchases"
+                data="15,000"
+                icon={<Warehouse color="white" />}
+              />
+            </Link>
+            <Link href="/production/tapper">
+              <CustomCard
+                title="Total Number of Registered Tappers"
+                data="2,000"
+                icon={<Pickaxe color="white" />}
+              />
+            </Link>
           </div>
           <div>
+            <Link href="/reports">
+              <p>View all reports</p>
+            </Link>
             <ReportsPage />
           </div>
         </div>

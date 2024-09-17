@@ -35,6 +35,14 @@
   color: #7f8c8d;
 }
 
+.cardSummary {
+  display: flex;
+  flex-direction: column;
+}
+.cardDiv {
+  margin-bottom: 5rem;
+}
+
 .searchInput {
   width: 70%;
   padding: 0.3rem 0.7rem 0.3rem 1rem;

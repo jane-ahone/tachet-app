@@ -13,6 +13,7 @@ import {
   Save,
   Edit,
   Trash2,
+  Warehouse,
 } from "lucide-react";
 import {
   Modal,
@@ -31,34 +32,20 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import EditModal from "@/components/EditModal/editModal";
-
-interface Tapper {
-  id: number;
-  name: string;
-}
-
-interface Order {
-  id: number;
-  customerName: string;
-  orderDate: string;
-}
-
-interface ProductionData {
-  date: string;
-  orderId: string;
-  tapperId: string;
-  volumeCollected: string;
-  volumePaidFor: string;
-  paymentStatus: string;
-  notes: string;
-}
+import CustomCard from "@/components/layout/Card/page";
+import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
+import {
+  Order,
+  ProductionData,
+  Tapper,
+  FieldConfig,
+} from "@/lib/types/interface";
 
 interface ProductionEntry extends ProductionData {
   id: number;
 }
 
 const ProductionPage: React.FC = () => {
-  const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const sideItems = [
@@ -86,14 +73,83 @@ const ProductionPage: React.FC = () => {
     notes: "",
   });
 
+  const fields: FieldConfig[] = [
+    { name: "orderDate", label: "Date", type: "date", required: true },
+    // {
+    //   // name: "customerId",
+    //   // label: "Customer",
+    //   // type: "select",
+    //   // options: customers.map((c) => ({
+    //   //   value: c.id.toString(),
+    //   //   label: c.customerName,
+    //   // })),
+    //   required: true,
+    // },
+    {
+      name: "orderQty",
+      label: "Order Quantity",
+      type: "number",
+      required: true,
+    },
+
+    {
+      name: "status",
+      label: "Production Status",
+      type: "select",
+      options: [
+        { value: "Pending", label: "Pending" },
+        { value: "In Progress", label: "In Progress" },
+        { value: "Completed", label: "Completed" },
+      ],
+      required: true,
+    },
+  ];
+
+  const [formInitialData, setFormInitialData] = useState<Order>({
+    id: 1,
+    customerId: 1,
+    customerName: "John Doe",
+    orderQty: 1,
+    orderDate: new Date().toISOString().split("T")[0],
+    status: "Pending",
+  });
+
   const [tappers, setTappers] = useState<Tapper[]>([
-    { id: 1, name: "John Doe" },
-    { id: 2, name: "Jane Smith" },
+    {
+      tapper_id: 1,
+      tapper_name: "John Doe",
+      phone_number: "123-456-7890",
+      email: "johndoe@example.com",
+      home_address: "123 Main St, Anytown, USA",
+      joiningDate: "2024-01-01",
+    },
+    {
+      tapper_id: 1,
+      tapper_name: "John Doe",
+      phone_number: "123-456-7890",
+      email: "johndoe@example.com",
+      home_address: "123 Main St, Anytown, USA",
+      joiningDate: "2024-01-01",
+    },
   ]);
 
   const [orders, setOrders] = useState<Order[]>([
-    { id: 1, customerName: "Customer A", orderDate: "2024-09-01" },
-    { id: 2, customerName: "Customer B", orderDate: "2024-09-02" },
+    {
+      id: 1,
+      customerId: 2,
+      customerName: "Customer A",
+      orderDate: "2024-09-01",
+      status: "Progress",
+      orderQty: 1,
+    },
+    {
+      id: 2,
+      customerId: 3,
+      customerName: "Customer B",
+      orderDate: "2024-09-02",
+      status: "Progress",
+      orderQty: 1,
+    },
   ]);
 
   const [previousEntries, setPreviousEntries] = useState<ProductionEntry[]>([]);
@@ -131,14 +187,7 @@ const ProductionPage: React.FC = () => {
     ]);
   }, []);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setProductionData((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleInputChange = createHandleInputChange(setProductionData);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,8 +243,8 @@ const ProductionPage: React.FC = () => {
     const matchesSearch =
       entry.date.includes(searchTerm) ||
       tappers
-        .find((t) => t.id.toString() === entry.tapperId)
-        ?.name.toLowerCase()
+        .find((t) => t.tapper_id.toString() === entry.tapperId)
+        ?.tapper_name.toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
       orders
         .find((o) => o.id.toString() === entry.orderId)
@@ -252,6 +301,14 @@ const ProductionPage: React.FC = () => {
             <option value="completed">Completed</option>
             <option value="pending">Pending</option>
           </select>
+        </div>
+
+        <div className={styles.cardDiv}>
+          <CustomCard
+            title="Current Inventory"
+            data="15,000L"
+            icon={<Warehouse color="white" />}
+          />
         </div>
 
         <div className={styles.card}>
@@ -335,8 +392,9 @@ const ProductionPage: React.FC = () => {
                   </td>
                   <td>
                     {
-                      tappers.find((t) => t.id.toString() === entry.tapperId)
-                        ?.name
+                      tappers.find(
+                        (t) => t.tapper_id.toString() === entry.tapperId
+                      )?.tapper_name
                     }
                   </td>
                   <td>{entry.volumeCollected}</td>
@@ -420,8 +478,8 @@ const ProductionPage: React.FC = () => {
                     placeholder="Select Tapper"
                   >
                     {tappers.map((tapper) => (
-                      <option key={tapper.id} value={tapper.id}>
-                        {tapper.name}
+                      <option key={tapper.tapper_id} value={tapper.tapper_id}>
+                        {tapper.tapper_name}
                       </option>
                     ))}
                   </Select>
@@ -486,6 +544,8 @@ const ProductionPage: React.FC = () => {
         </Modal>
         {updateModal ? (
           <EditModal
+            initialData={formInitialData}
+            fields={fields}
             updateModal={updateModal}
             setUpdateModal={setUpdateModal}
             handleSubmit={handleSubmit}

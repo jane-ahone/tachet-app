@@ -5,6 +5,7 @@ import {
   ShoppingBag,
   LogOut,
   ListOrdered,
+  DollarSign,
 } from "lucide-react";
 import styles from "./sidebar.module.css";
 import Link from "next/link";
@@ -21,24 +22,24 @@ const sideItems = [
     id: "orders",
   },
   {
+    route: "Sales",
+    link: "/sales",
+    icon: DollarSign,
+    id: "sales",
+  },
+  {
     route: "Production",
     link: "/production",
     icon: Hammer,
     id: "production",
   },
   {
-    route: "Purchasing",
-    link: "/purchasing",
+    route: "Purchases",
+    link: "/purchases",
     icon: ShoppingBag,
-    id: "purchasing",
+    id: "purchases",
   },
-  {
-    route: "Reports",
-    link: "/reports",
-    icon: ChartNoAxesColumn,
-    id: "reports",
-  },
-
+  // To be moved under avatar
   {
     route: "Sign Out",
     link: "/logout",

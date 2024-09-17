@@ -10,15 +10,8 @@ import styles from "./tapper.module.css";
 import { UserPlus, Edit, Trash2, Search, LogOut, Hammer } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar/page";
 import EditModal from "@/components/EditModal/editModal";
-
-interface Tapper {
-  tapper_id: number;
-  tapper_name: string;
-  phone_number: string;
-  email: string;
-  home_address: string;
-  joiningDate: string;
-}
+import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
+import { FieldConfig, Tapper, Order } from "@/lib/types/interface";
 
 const TapperManagementPage: React.FC = () => {
   const [tappers, setTappers] = useState<Tapper[]>([]);
@@ -28,6 +21,14 @@ const TapperManagementPage: React.FC = () => {
     email: "",
     home_address: "",
     joiningDate: "",
+  });
+  const [formInitialData, setFormInitialData] = useState<Order>({
+    id: 1,
+    customerId: 2,
+    customerName: "John Doe",
+    orderQty: 1,
+    orderDate: new Date().toISOString().split("T")[0],
+    status: "Pending",
   });
   const [isAdding, setIsAdding] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -49,11 +50,43 @@ const TapperManagementPage: React.FC = () => {
     },
   ];
 
+  const fields: FieldConfig[] = [
+    { name: "orderDate", label: "Date", type: "date", required: true },
+    // {
+    //   // name: "customerId",
+    //   // label: "Customer",
+    //   // type: "select",
+    //   // options: customers.map((c) => ({
+    //   //   value: c.id.toString(),
+    //   //   label: c.customerName,
+    //   // })),
+    //   required: true,
+    // },
+    {
+      name: "orderQty",
+      label: "Order Quantity",
+      type: "number",
+      required: true,
+    },
+
+    {
+      name: "status",
+      label: "Production Status",
+      type: "select",
+      options: [
+        { value: "Pending", label: "Pending" },
+        { value: "In Progress", label: "In Progress" },
+        { value: "Completed", label: "Completed" },
+      ],
+      required: true,
+    },
+  ];
+
   useEffect(() => {
     // Fetch tappers data from API
     const fetchTappers = async () => {
       try {
-        const response = await fetch("/api/tapper");
+        const response = await fetch("/api/tappers");
         if (!response.ok) {
           throw new Error("Failed to fetch tappers");
         }
@@ -77,11 +110,7 @@ const TapperManagementPage: React.FC = () => {
     fetchTappers();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const { name, value } = e.target;
-    setNewTapper((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleInputChange = createHandleInputChange(setNewTapper);
   const handleUpdateTapper = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("UpdateTapperted order data:");
@@ -276,6 +305,8 @@ const TapperManagementPage: React.FC = () => {
         </div>
         {updateModal ? (
           <EditModal
+            initialData={formInitialData}
+            fields={fields}
             updateModal={updateModal}
             setUpdateModal={setUpdateModal}
             handleSubmit={handleUpdateTapper}

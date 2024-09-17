@@ -5,25 +5,28 @@ import styles from "./customer.module.css";
 import { UserPlus, Edit, Trash2, LogOut, ShoppingBag } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar/page";
 import EditModal from "@/components/EditModal/editModal";
+import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
 
 interface Customer {
-  id: number;
-  name: string;
-  contactNumber: string;
+  customer_id: number;
+  customer_name: string;
+  phone_number: string;
   email: string;
-  address: string;
+  home_address: string;
   registrationDate: string;
 }
 
 const CustomerManagementPage: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [newCustomer, setNewCustomer] = useState<Omit<Customer, "id">>({
-    name: "",
-    contactNumber: "",
-    email: "",
-    address: "",
-    registrationDate: "",
-  });
+  const [newCustomer, setNewCustomer] = useState<Omit<Customer, "customer_id">>(
+    {
+      customer_name: "",
+      phone_number: "",
+      email: "",
+      home_address: "",
+      registrationDate: "",
+    }
+  );
   const [isAdding, setIsAdding] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [updateModal, setUpdateModal] = useState<boolean>(false);
@@ -44,42 +47,67 @@ const CustomerManagementPage: React.FC = () => {
   ];
 
   useEffect(() => {
-    // Fetch customers data from API
-    // For now, we'll use dummy data
-    setCustomers([
-      {
-        id: 1,
-        name: "Alice Johnson",
-        contactNumber: "1234567890",
-        email: "alice@example.com",
-        address: "123 Main St",
-        registrationDate: "2023-01-15",
-      },
-      {
-        id: 2,
-        name: "Bob Williams",
-        contactNumber: "0987654321",
-        email: "bob@example.com",
-        address: "456 Elm Ave",
-        registrationDate: "2023-03-22",
-      },
-    ]);
+    // Fetch tappers data from API
+    const fetchCustomers = async () => {
+      try {
+        const response = await fetch("/api/customerss");
+        if (!response.ok) {
+          throw new Error("Failed to fetch tappers");
+        }
+        const data = await response.json();
+        console.log(data.tappers);
+        setCustomers(data.tappers);
+      } catch (error) {
+        console.log(error);
+        setCustomers([
+          {
+            customer_id: 1,
+            customer_name: "John Doe",
+            phone_number: "1234567890",
+            email: "there's been an error",
+            home_address: "123 Palm St",
+            registrationDate: "2023-01-15",
+          },
+        ]);
+      }
+    };
+    fetchCustomers();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewCustomer((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleInputChange = createHandleInputChange(setNewCustomer);
 
   const handleAddCustomer = () => {
     // In a real application, you would send this data to your API
-    const customer = { id: customers.length + 1, ...newCustomer };
+    const customer = { customer_id: customers.length + 1, ...newCustomer };
     setCustomers((prev) => [...prev, customer]);
+    //
+    (async () => {
+      try {
+        const response = await fetch("/api/customerss", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newCustomer),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to add customerss");
+        }
+
+        const data = await response.json();
+        console.log(`New customerss added: ${data}`);
+      } catch (error) {
+        console.log(`Error: ${error}`);
+      }
+    })();
+
+    //Resetting customer
     setNewCustomer({
-      name: "",
-      contactNumber: "",
+      customer_name: "",
+      phone_number: "",
       email: "",
-      address: "",
+      home_address: "",
       registrationDate: "",
     });
     setIsAdding(false);
@@ -87,7 +115,29 @@ const CustomerManagementPage: React.FC = () => {
 
   const handleDeleteCustomer = (id: number) => {
     // In a real application, you would send a delete request to your API
-    setCustomers((prev) => prev.filter((customer) => customer.id !== id));
+    setCustomers((prev) =>
+      prev.filter((customer) => customer.customer_id !== id)
+    );
+
+    // request call
+    const deleteCustomerDB = async (id: number) => {
+      try {
+        const response = await fetch(`/api/customerss/${id}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete customerss");
+        }
+
+        const data = await response.json();
+        console.log(`Customer succesfully deleted: ${data}`);
+      } catch (error) {
+        console.log(`Error: ${error}`);
+      }
+    };
+
+    deleteCustomerDB(id);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -98,7 +148,7 @@ const CustomerManagementPage: React.FC = () => {
   };
 
   const filteredCustomers = customers.filter((customer) =>
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase())
+    customer.customer_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -129,15 +179,15 @@ const CustomerManagementPage: React.FC = () => {
             <input
               type="text"
               name="name"
-              value={newCustomer.name}
+              value={newCustomer.customer_name}
               onChange={handleInputChange}
               placeholder="Name"
               className={styles.input}
             />
             <input
               type="text"
-              name="contactNumber"
-              value={newCustomer.contactNumber}
+              name="phone_number"
+              value={newCustomer.phone_number}
               onChange={handleInputChange}
               placeholder="Contact Number"
               className={styles.input}
@@ -152,8 +202,8 @@ const CustomerManagementPage: React.FC = () => {
             />
             <input
               type="text"
-              name="address"
-              value={newCustomer.address}
+              name="home_address"
+              value={newCustomer.home_address}
               onChange={handleInputChange}
               placeholder="Address"
               className={styles.input}
@@ -173,12 +223,12 @@ const CustomerManagementPage: React.FC = () => {
 
         <div className={styles.customerList}>
           {filteredCustomers.map((customer) => (
-            <div key={customer.id} className={styles.customerCard}>
+            <div key={customer.customer_id} className={styles.customerCard}>
               <div className={styles.customerInfo}>
-                <h3>{customer.name}</h3>
-                <p>{customer.contactNumber}</p>
+                <h3>{customer.customer_name}</h3>
+                <p>{customer.phone_number}</p>
                 <p>{customer.email}</p>
-                <p>{customer.address}</p>
+                <p>{customer.home_address}</p>
                 <p>Registered: {customer.registrationDate}</p>
               </div>
               <div className={styles.customerActions}>
@@ -192,7 +242,7 @@ const CustomerManagementPage: React.FC = () => {
                 </button>
                 <button
                   className={styles.deleteButton}
-                  onClick={() => handleDeleteCustomer(customer.id)}
+                  onClick={() => handleDeleteCustomer(customer.customer_id)}
                 >
                   <Trash2 size={18} />
                 </button>
