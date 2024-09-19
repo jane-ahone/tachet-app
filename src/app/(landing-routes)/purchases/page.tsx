@@ -211,7 +211,7 @@ const PurchaseRecordPage: React.FC = () => {
   );
 
   return (
-    <div className={styles.pageContainer}>
+    <div className="page-container-routes">
       <Sidebar title="Purchases" alignment="top" sideNavitems={sideItems} />
       <div className={styles.contentContainer}>
         <div className={styles.actionBar}>

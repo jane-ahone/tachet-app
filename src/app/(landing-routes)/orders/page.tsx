@@ -80,7 +80,7 @@ const OrderPage: React.FC = () => {
     },
   ];
 
-  const statusOptions = ["Pending", "In Progress", "Completed"];
+  const statusOptions = ["pending", "inprogress", "completed"];
 
   /*OrderData stores field values when adding information to the table
   Orders stores all the order information
@@ -101,7 +101,7 @@ const OrderPage: React.FC = () => {
     customerId: 1,
     orderQty: 1,
     orderDate: new Date().toISOString().split("T")[0],
-    status: "Pending",
+    status: "pending",
   });
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -134,9 +134,9 @@ const OrderPage: React.FC = () => {
       label: "Production Status",
       type: "select",
       options: [
-        { value: "Pending", label: "Pending" },
-        { value: "In Progress", label: "In Progress" },
-        { value: "Completed", label: "Completed" },
+        { value: "pending", label: "pending" },
+        { value: "inprogress", label: "inprogress" },
+        { value: "completed", label: "completed" },
       ],
       required: true,
     },
@@ -174,7 +174,7 @@ const OrderPage: React.FC = () => {
             customerName: "John Doe",
             orderQty: 100,
             orderDate: "2024-09-01",
-            status: "Pending",
+            status: "pending",
           },
           {
             id: 2,
@@ -182,7 +182,7 @@ const OrderPage: React.FC = () => {
             customerName: "John Doe",
             orderQty: 150,
             orderDate: "2024-09-02",
-            status: "Completed",
+            status: "completed",
           },
           {
             id: 3,
@@ -190,7 +190,7 @@ const OrderPage: React.FC = () => {
             customerName: "John Doe",
             orderQty: 200,
             orderDate: "2024-09-03",
-            status: "In Progress",
+            status: "inprogress",
           },
         ]);
       }
@@ -269,7 +269,7 @@ const OrderPage: React.FC = () => {
       customerName: "",
       orderQty: orderData.orderQty,
       orderDate: orderData.orderDate,
-      status: "Pending",
+      status: "pending",
     };
     setOrders((prev) => [...prev, newOrder]);
     onClose();
@@ -316,7 +316,7 @@ const OrderPage: React.FC = () => {
   });
 
   return (
-    <div className={styles.container}>
+    <div className="page-container-routes">
       <Sidebar title="Orders" sideNavitems={navBarItems} alignment="top" />
 
       <div className={styles.content}>
@@ -336,17 +336,17 @@ const OrderPage: React.FC = () => {
             onChange={(e) => setFilterStatus(e.target.value)}
           >
             <option value="">All Statuses</option>
-            <option value="pending">Pending</option>
-            <option value="in progress">In Progress</option>
-            <option value="completed">Completed</option>
+            <option value="pending">pending</option>
+            <option value="inprogress">inprogress</option>
+            <option value="completed">completed</option>
           </select>
         </div>
 
-        <div className="cardSummary">
-          <CustomCard title="Pending" data={`Orders: 1 Volume:200L`} />
-          <CustomCard title="In Progress" data="Orders: 1 Volume:200L" />
-          <CustomCard title="Completed" data="Orders: 1 Volume:200L" />
-        </div>
+        {/* <div className="cardSummary">
+          <CustomCard title="pending" data={`Orders: 1 Volume:200L`} />
+          <CustomCard title="inprogress" data="Orders: 1 Volume:200L" />
+          <CustomCard title="completed" data="Orders: 1 Volume:200L" />
+        </div> */}
 
         <Table variant="simple" className="dataTable">
           <Thead>
@@ -393,7 +393,12 @@ const OrderPage: React.FC = () => {
                   }
                 </Td>
                 <Td>{order.orderQty}</Td>
-                <Td>{order.status}</Td>
+
+                <Td>
+                  <span className={"status " + `${[order.status]}`}>
+                    {order.status}
+                  </span>
+                </Td>
                 <Td>
                   <IconButton
                     aria-label="Edit order"

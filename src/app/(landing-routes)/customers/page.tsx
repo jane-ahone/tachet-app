@@ -178,7 +178,7 @@ const CustomerManagementPage: React.FC = () => {
   );
 
   return (
-    <div className={styles.pageContainer}>
+    <div className="page-container-routes">
       <Sidebar title="Customers" alignment="top" sideNavitems={sideItems} />
       <div className={styles.contentContainer}>
         <div className={styles.actionBar}>

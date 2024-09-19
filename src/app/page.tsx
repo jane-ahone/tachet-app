@@ -8,6 +8,7 @@ import CustomCard from "@/components/layout/Card/page";
 import { Milk, Pickaxe, Truck, Warehouse } from "lucide-react";
 import ReportsPage from "./(landing-routes)/reports/page";
 import Link from "next/link";
+import { Card } from "@chakra-ui/react";
 
 export default function Home() {
   const [session, setSession] = useState<SessionData | undefined>(undefined); // Initialize session state
@@ -63,35 +64,36 @@ export default function Home() {
         <div className={styles.cardSummary}>
           <Link href="/production">
             <CustomCard
-              title="Total Palm Wine Collected"
+              title="Palm Wine Collected"
               data="15,000L"
-              icon={<Milk color="white" />}
+              icon={<Milk size={12} color="var(--Gray-Gray-700)" />}
             />
           </Link>
           <Link href="/sales">
             <CustomCard
-              title="Total Number of Sales"
+              title="Sales"
               data="19,071"
-              icon={<Truck color="white" />}
+              icon={<Truck size={12} color="var(--Gray-Gray-700)" />}
             />
           </Link>
           <Link href="">
             <CustomCard
-              title="Total Number of Purchases"
+              title="Purchases"
               data="15,000"
-              icon={<Warehouse color="white" />}
+              icon={<Warehouse size={12} color="var(--Gray-Gray-700)" />}
             />
           </Link>
           <Link href="/production/tapper">
             <CustomCard
-              title="Total Number of Registered Tappers"
+              title="Registered Tappers"
               data="2,000"
-              icon={<Pickaxe color="white" />}
+              icon={<Pickaxe size={12} color="var(--Gray-Gray-700)" />}
             />
           </Link>
         </div>
         <div>
           <ReportsPage />
+          <Card>Hello</Card>
         </div>
       </div>
     </main>

@@ -12,36 +12,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-
-  --primary-glow: conic-gradient(
-    from 180deg at 50% 50%,
-    #16abff33 0deg,
-    #0885ff33 55deg,
-    #54d6ff33 120deg,
-    #0071ff33 160deg,
-    transparent 360deg
-  );
-  --secondary-glow: radial-gradient(
-    rgba(255, 255, 255, 1),
-    rgba(255, 255, 255, 0)
-  );
-
-  --tile-start-rgb: 239, 245, 249;
-  --tile-end-rgb: 228, 232, 233;
-  --tile-border: conic-gradient(
-    #00000080,
-    #00000040,
-    #00000030,
-    #00000020,
-    #00000010,
-    #00000010,
-    #00000080
-  );
-
-  --callout-rgb: 238, 240, 241;
-  --callout-border-rgb: 172, 175, 176;
-  --card-rgb: 180, 185, 188;
-  --card-border-rgb: 131, 134, 135;
+  --background-off-white: #bcbcbc3d;
 
   --Gray-Gray-700: #2d3748;
   --Gray-Gray-400: #a0aec0;
@@ -104,6 +75,14 @@ a {
   text-decoration: none;
 }
 
+.pageContainer {
+  min-height: 100vh;
+  background-color: var(--background-off-white, #bcbcbc3d);
+}
+.page-container-routes {
+  background-color: #fff;
+}
+
 .cardSummary {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -155,6 +134,27 @@ a {
 .new-order-btn:hover {
   background-color: #593235 !important;
 } */
+.status {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.completed {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.inprogress {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.pending {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
 
 .edit-btn {
   background-color: transparent !important;
@@ -166,7 +166,7 @@ a {
   background-color: transparent !important;
 }
 .delete-btn:hover {
-  color: red;
+  color: rgb(139, 11, 11);
 }
 
 @layer base {

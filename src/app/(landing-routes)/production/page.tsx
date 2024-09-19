@@ -325,7 +325,7 @@ const ProductionPage: React.FC = () => {
           </select>
         </div>
 
-        <div className="cardSummary">
+        {/* <div className="cardSummary">
           <CustomCard
             title="Completed"
             data="15,000L"
@@ -336,7 +336,7 @@ const ProductionPage: React.FC = () => {
             data="15,000L"
             icon={<Warehouse color="white" />}
           />
-        </div>
+        </div> */}
 
         <div className={styles.card}>
           <Table variant="simple" className="dataTable">
@@ -427,14 +427,11 @@ const ProductionPage: React.FC = () => {
                   <Td>{entry.volumeCollected}</Td>
                   <Td>{entry.volumePaidFor}</Td>
                   <Td>
-                    <span
-                      className={`${styles.status} ${
-                        styles[entry.paymentStatus]
-                      }`}
-                    >
+                    <span className={"status " + `${[entry.paymentStatus]}`}>
                       {entry.paymentStatus}
                     </span>
                   </Td>
+
                   <Td>
                     <IconButton
                       aria-label="Edit entry"

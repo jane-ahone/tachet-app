@@ -8,11 +8,13 @@ interface CustomCardProps {
 const CustomCard: React.FC<CustomCardProps> = ({ title, data, icon }) => {
   return (
     <div className={styles.cardMain}>
-      <div>
+      <div className={styles.headingDiv}>
         <p className={styles.heading}>{title}</p>
-        <p className={styles.detail}>{data}</p>
       </div>
-      {icon ? <div className={styles.iconWrapper}>{icon}</div> : null}
+      <div className={styles.dataDetails}>
+        {icon ? <span className={styles.iconWrapper}>{icon}</span> : null}
+        <span className={styles.detail}>{data}</span>
+      </div>
     </div>
   );
 };

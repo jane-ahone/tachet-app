@@ -1,7 +1,4 @@
-.pageContainer {
-  min-height: 100vh;
-  background-color: #f8f9fa;
-}
+/* Can reduce repetition of these styles */
 
 .contentContainer {
   flex-grow: 1;

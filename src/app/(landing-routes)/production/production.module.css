@@ -1,6 +1,6 @@
 .container {
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: var(--background-off-white, #bcbcbc3d);
 }
 
 .content {
@@ -176,28 +176,6 @@
 
 .table tbody tr:hover {
   background-color: #f8f9fa;
-}
-
-.status {
-  padding: 0.25rem 0.5rem;
-  border-radius: 12px;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.completed {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.inprogress {
-  background-color: #fff8e1;
-  color: #f57f17;
-}
-
-.pending {
-  background-color: #e3f2fd;
-  color: #1565c0;
 }
 
 /* Input thingy */

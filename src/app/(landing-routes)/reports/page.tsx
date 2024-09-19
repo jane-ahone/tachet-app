@@ -156,7 +156,7 @@ const ReportsPage: React.FC = () => {
   );
 
   return (
-    <div className={styles.pageContainer}>
+    <div className="page-container-routes">
       {/* <Sidebar title="Reports" alignment="top" sideNavitems={sideItems} /> */}
       <div className={styles.contentContainer}>
         <div className={styles.reportSection}>

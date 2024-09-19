@@ -1,11 +1,16 @@
+/* Something has to change */
 .cardMain {
-  display: grid;
-  grid-template-columns: 1fr 0.7fr;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-evenly;
   border-radius: 0.9375rem;
-  background: #fff;
+  background: #fafafa;
   box-shadow: 0px 3.5px 5.5px 0px rgba(0, 0, 0, 0.02);
-  padding: 1rem;
-  max-width: 100%;
+  padding: 1.5rem 1rem;
+  width: 100%;
+  height: 100%;
+  /* max-width: 100%; */
 }
 .cardMain:hover {
   background-color: #68836e14;
@@ -13,28 +18,37 @@
 .cardMain:active {
   background-color: #32593b3e;
 }
+.headingDiv {
+  align-self: flex-start;
+}
 .heading {
-  color: var(--Gray-Gray-400, #a0aec0);
+  color: #4a4c4e;
   font-size: 0.85rem;
-  margin-bottom: 0.35rem;
-  font-weight: 600;
+  margin-bottom: 0.55rem;
+  font-weight: 500;
   line-height: 150%; /* 1.125rem */
 }
 .detail {
   color: var(--Gray-Gray-700, #2d3748);
   font-family: Helvetica;
-  font-size: 1.125rem;
+  font-size: 2.325rem;
   font-weight: 700;
   line-height: 140%; /* 1.575rem */
 }
-
-.iconWrapper {
-  background-color: var(--Default-Green); /* Choose your desired color */
-  border-radius: 50%;
-  width: 50px; /* Adjust size as needed */
-  height: 50px;
+.dataDetails {
+  width: 100%;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  column-gap: 1rem;
+}
+
+.iconWrapper {
+  background-color: white; /* Choose your desired color */
+  border: 1px solid #6465674a;
+  border-radius: 50%;
+  padding: 0.8rem;
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  justify-self: end;
 }

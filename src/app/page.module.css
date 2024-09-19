@@ -1,6 +1,6 @@
 .main {
   min-height: 100vh;
-  background: #f8f9fa;
+  background: var(--background-off-white, #bcbcbc3d);
 }
 .mainDetails {
   padding: 2rem;
@@ -8,8 +8,7 @@
 
 .cardSummary {
   display: grid;
-  grid-template-rows: repeat(2, auto);
-  grid-template-columns: repeat(2, 50%);
+  grid-template-columns: repeat(4, auto);
   padding: 0.5rem;
   gap: 1.5rem;
   margin-top: 1rem;
