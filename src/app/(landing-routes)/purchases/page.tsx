@@ -14,6 +14,7 @@ import {
 import EditModal from "@/components/EditModal/editModal";
 import { Order, Purchase, FieldConfig } from "@/lib/types/interface";
 import Sidebar from "@/components/layout/Sidebar/page";
+import { Table, Thead, Tr, Th, Tbody, Td, IconButton } from "@chakra-ui/react";
 
 const PurchaseRecordPage: React.FC = () => {
   const [purchases, setPurchases] = useState<Purchase[]>([]);
@@ -223,13 +224,6 @@ const PurchaseRecordPage: React.FC = () => {
               className={styles.searchInput}
             />
           </div>
-          <button
-            className={styles.addButton}
-            onClick={() => setIsAdding(true)}
-          >
-            <PlusCircle size={20} />
-            Record New Purchase
-          </button>
         </div>
 
         {isAdding && (
@@ -313,81 +307,141 @@ const PurchaseRecordPage: React.FC = () => {
         )}
 
         <div className={styles.purchaseList}>
-          <table className={styles.purchaseTable}>
-            <thead>
-              <tr>
-                <th onClick={() => handleSort("date")}>
+          <Table variant="simple" className="dataTable">
+            <Thead sx={{ backgroundColor: "#32593b" }}>
+              <Tr>
+                <Th color="white" onClick={() => handleSort("date")}>
                   Date{" "}
                   {sortConfig?.key === "date" &&
                     (sortConfig.direction === "ascending" ? (
-                      <ArrowUp size={14} />
+                      <ArrowUp
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.5rem",
+                        }}
+                      />
                     ) : (
-                      <ArrowDown size={14} />
+                      <ArrowDown
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.5rem",
+                        }}
+                      />
                     ))}
-                </th>
-                <th onClick={() => handleSort("itemType")}>
+                </Th>
+                <Th color="white" onClick={() => handleSort("itemType")}>
                   Item Type{" "}
                   {sortConfig?.key === "itemType" &&
                     (sortConfig.direction === "ascending" ? (
-                      <ArrowUp size={14} />
+                      <ArrowUp
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.5rem",
+                        }}
+                      />
                     ) : (
-                      <ArrowDown size={14} />
+                      <ArrowDown
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.5rem",
+                        }}
+                      />
                     ))}
-                </th>
-                <th onClick={() => handleSort("quantity")}>
+                </Th>
+                <Th color="white" onClick={() => handleSort("quantity")}>
                   Quantity{" "}
                   {sortConfig?.key === "quantity" &&
                     (sortConfig.direction === "ascending" ? (
-                      <ArrowUp size={14} />
+                      <ArrowUp
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.5rem",
+                        }}
+                      />
                     ) : (
-                      <ArrowDown size={14} />
+                      <ArrowDown
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.5rem",
+                        }}
+                      />
                     ))}
-                </th>
-                <th onClick={() => handleSort("price")}>
+                </Th>
+                <Th color="white" onClick={() => handleSort("price")}>
                   Total Price{" "}
                   {sortConfig?.key === "price" &&
                     (sortConfig.direction === "ascending" ? (
-                      <ArrowUp size={14} />
+                      <ArrowUp
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.5rem",
+                        }}
+                      />
                     ) : (
-                      <ArrowDown size={14} />
+                      <ArrowDown
+                        size={14}
+                        style={{
+                          display: "inline-block",
+                          marginLeft: "0.5rem",
+                        }}
+                      />
                     ))}
-                </th>
-                <th>Linked Order</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+                </Th>
+                <Th color="white">Linked Order</Th>
+                <Th color="white">Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
               {filteredPurchases.map((purchase) => (
-                <tr key={purchase.id}>
-                  <td>{purchase.date}</td>
-                  <td>{purchase.itemType}</td>
-                  <td>{purchase.quantity}</td>
-                  <td>${purchase.price.toFixed(2)}</td>
-                  <td>
+                <Tr key={purchase.id}>
+                  <Td>{purchase.date}</Td>
+                  <Td>{purchase.itemType}</Td>
+                  <Td>{purchase.quantity}</Td>
+                  <Td>${purchase.price.toFixed(2)}</Td>
+                  <Td>
                     {purchase.orderId
                       ? orders.find((order) => order.id === purchase.orderId)
                           ?.customerName || "Unknown"
                       : "N/A"}
-                  </td>
-                  <td>
-                    <div className={styles.customerActions}>
-                      <button className="edit-btn">
-                        <Edit
-                          size={18}
-                          onClick={() => {
-                            setUpdateModal(true);
-                          }}
-                        />
-                      </button>
-                      <button className="delete-btn" onClick={() => {}}>
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                  </Td>
+                  <Td>
+                    <IconButton
+                      aria-label="Edit purchase"
+                      icon={<Edit size={18} />}
+                      className="edit-btn"
+                      size="sm"
+                      mr={2}
+                      onClick={() => setUpdateModal(true)}
+                    />
+                    <IconButton
+                      aria-label="Delete purchase"
+                      icon={<Trash2 size={18} />}
+                      className="delete-btn"
+                      size="sm"
+                      onClick={() => {}}
+                    />
+                  </Td>
+                </Tr>
               ))}
-            </tbody>
-          </table>
+            </Tbody>
+          </Table>
+        </div>
+
+        <div className="new-tb-entry-btn-div">
+          <button
+            className="new-tb-entry-btn"
+            onClick={() => setIsAdding(true)}
+          >
+            <PlusCircle size={16} />
+            Record New Entry
+          </button>
         </div>
 
         {updateModal ? (

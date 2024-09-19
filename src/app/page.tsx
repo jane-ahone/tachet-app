@@ -57,44 +57,41 @@ export default function Home() {
     <main className={styles.main}>
       <Sidebar title="Tachet" alignment="top" />
       <div className={styles.mainDetails}>
-        <div className={styles.heading}></div>
+        <Link href="/reports">
+          <p>View all reports</p>
+        </Link>
+        <div className={styles.cardSummary}>
+          <Link href="/production">
+            <CustomCard
+              title="Total Palm Wine Collected"
+              data="15,000L"
+              icon={<Milk color="white" />}
+            />
+          </Link>
+          <Link href="/sales">
+            <CustomCard
+              title="Total Number of Sales"
+              data="19,071"
+              icon={<Truck color="white" />}
+            />
+          </Link>
+          <Link href="">
+            <CustomCard
+              title="Total Number of Purchases"
+              data="15,000"
+              icon={<Warehouse color="white" />}
+            />
+          </Link>
+          <Link href="/production/tapper">
+            <CustomCard
+              title="Total Number of Registered Tappers"
+              data="2,000"
+              icon={<Pickaxe color="white" />}
+            />
+          </Link>
+        </div>
         <div>
-          <div className={styles.cardSummary}>
-            <Link href="/production">
-              <CustomCard
-                title="Total Palm Wine Collected"
-                data="15,000L"
-                icon={<Milk color="white" />}
-              />
-            </Link>
-            <Link href="/sales">
-              <CustomCard
-                title="Total Number of Sales"
-                data="19,071"
-                icon={<Truck color="white" />}
-              />
-            </Link>
-            <Link href="">
-              <CustomCard
-                title="Total Number of Purchases"
-                data="15,000"
-                icon={<Warehouse color="white" />}
-              />
-            </Link>
-            <Link href="/production/tapper">
-              <CustomCard
-                title="Total Number of Registered Tappers"
-                data="2,000"
-                icon={<Pickaxe color="white" />}
-              />
-            </Link>
-          </div>
-          <div>
-            <Link href="/reports">
-              <p>View all reports</p>
-            </Link>
-            <ReportsPage />
-          </div>
+          <ReportsPage />
         </div>
       </div>
     </main>

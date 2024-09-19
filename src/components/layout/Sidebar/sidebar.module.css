@@ -1,7 +1,8 @@
 .sidebarMain {
   display: flex;
   align-items: center;
-  background-color: #32593b;
+  /* background-color: #32593b; */
+  background: linear-gradient(#32593b, #233527);
   padding: 1rem;
   gap: 1rem;
 }

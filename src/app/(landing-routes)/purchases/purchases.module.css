@@ -42,30 +42,6 @@
   outline: none;
 }
 
-.addButton {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  margin: 2rem;
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 1.5rem;
-  background-color: #7f8c8d;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  &:hover {
-    background-color: #606869;
-  }
-}
-
-.addButton svg {
-  margin-right: 0.5rem;
-}
-
 .addForm {
   background-color: #fff;
   border-radius: 8px;

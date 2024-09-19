@@ -28,6 +28,13 @@ import {
   Input,
   Select,
   Textarea,
+  IconButton,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import EditModal from "@/components/EditModal/editModal";
@@ -71,38 +78,6 @@ const ProductionPage: React.FC = () => {
     paymentStatus: "",
     notes: "",
   });
-
-  const fields: FieldConfig[] = [
-    { name: "orderDate", label: "Date", type: "date", required: true },
-    // {
-    //   // name: "customerId",
-    //   // label: "Customer",
-    //   // type: "select",
-    //   // options: customers.map((c) => ({
-    //   //   value: c.id.toString(),
-    //   //   label: c.customerName,
-    //   // })),
-    //   required: true,
-    // },
-    {
-      name: "orderQty",
-      label: "Order Quantity",
-      type: "number",
-      required: true,
-    },
-
-    {
-      name: "status",
-      label: "Production Status",
-      type: "select",
-      options: [
-        { value: "Pending", label: "Pending" },
-        { value: "In Progress", label: "In Progress" },
-        { value: "Completed", label: "Completed" },
-      ],
-      required: true,
-    },
-  ];
 
   const [formInitialData, setFormInitialData] = useState<Order>({
     id: 1,
@@ -158,6 +133,54 @@ const ProductionPage: React.FC = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [updateModal, setUpdateModal] = useState<boolean>(false);
+
+  const fields: FieldConfig[] = [
+    { name: "orderDate", label: "Date", type: "date", required: true },
+    {
+      name: "orders",
+      label: "Order",
+      type: "select",
+      options: orders.map((c) => ({
+        value: c.id.toString(),
+        label: c.customerName,
+      })),
+      required: true,
+    },
+    {
+      name: "tappers",
+      label: "Tapper",
+      type: "select",
+      options: tappers.map((c) => ({
+        value: c.tapper_id.toString(),
+        label: c.tapper_name,
+      })),
+      required: true,
+    },
+    {
+      name: "volume collected",
+      label: "Volume Collected",
+      type: "number",
+      required: true,
+    },
+    {
+      name: "volume paid for",
+      label: "Volume Paid For",
+      type: "number",
+      required: true,
+    },
+
+    {
+      name: "status",
+      label: "Payment Status",
+      type: "select",
+      options: [
+        { value: "Pending", label: "Pending" },
+        { value: "In Progress", label: "In Progress" },
+        { value: "Completed", label: "Completed" },
+      ],
+      required: true,
+    },
+  ];
 
   useEffect(() => {
     // Fetch previous entries, tappers, and orders from API
@@ -302,103 +325,108 @@ const ProductionPage: React.FC = () => {
           </select>
         </div>
 
-        <div className={styles.cardDiv}>
+        <div className="cardSummary">
           <CustomCard
-            title="Current Inventory"
+            title="Completed"
+            data="15,000L"
+            icon={<Warehouse color="white" />}
+          />
+          <CustomCard
+            title="Pending"
             data="15,000L"
             icon={<Warehouse color="white" />}
           />
         </div>
 
         <div className={styles.card}>
-          <table className={styles.table}>
-            <thead className={styles.thead}>
-              <tr>
-                <th onClick={() => handleSort("date")}>
+          <Table variant="simple" className="dataTable">
+            <Thead>
+              <Tr sx={{ backgroundColor: "#32593b" }}>
+                <Th color="white" onClick={() => handleSort("date")}>
                   Date
                   {sortConfig.key === "date" &&
                     (sortConfig.direction === "ascending" ? (
                       <ArrowUp
-                        size={14}
                         style={{ display: "inline-block", marginLeft: "1rem" }}
+                        size={14}
                       />
                     ) : (
                       <ArrowDown
-                        size={14}
                         style={{ display: "inline-block", marginLeft: "1rem" }}
+                        size={14}
                       />
                     ))}
-                </th>
-                <th>Order</th>
-                <th>Tapper</th>
-                <th onClick={() => handleSort("volumeCollected")}>
+                </Th>
+                <Th color="white">Order</Th>
+                <Th color="white">Tapper</Th>
+                <Th color="white" onClick={() => handleSort("volumeCollected")}>
                   Volume Collected (L)
                   {sortConfig.key === "volumeCollected" &&
                     (sortConfig.direction === "ascending" ? (
                       <ArrowUp
-                        size={14}
                         style={{ display: "inline-block", marginLeft: "1rem" }}
+                        size={14}
                       />
                     ) : (
                       <ArrowDown
-                        size={14}
                         style={{ display: "inline-block", marginLeft: "1rem" }}
+                        size={14}
                       />
                     ))}
-                </th>
-                <th onClick={() => handleSort("volumePaidFor")}>
+                </Th>
+                <Th color="white" onClick={() => handleSort("volumePaidFor")}>
                   Volume Paid For (L)
                   {sortConfig.key === "volumePaidFor" &&
                     (sortConfig.direction === "ascending" ? (
                       <ArrowUp
-                        size={14}
                         style={{ display: "inline-block", marginLeft: "1rem" }}
+                        size={14}
                       />
                     ) : (
                       <ArrowDown
-                        size={14}
                         style={{ display: "inline-block", marginLeft: "1rem" }}
+                        size={14}
                       />
                     ))}
-                </th>
-                <th onClick={() => handleSort("paymentStatus")}>
+                </Th>
+                <Th color="white" onClick={() => handleSort("paymentStatus")}>
                   Payment Status
                   {sortConfig.key === "paymentStatus" &&
                     (sortConfig.direction === "ascending" ? (
                       <ArrowUp
-                        size={14}
                         style={{ display: "inline-block", marginLeft: "1rem" }}
+                        size={14}
                       />
                     ) : (
                       <ArrowDown
-                        size={14}
                         style={{ display: "inline-block", marginLeft: "1rem" }}
+                        size={14}
                       />
                     ))}
-                </th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+                </Th>
+                <Th color="white">Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
               {filteredEntries.map((entry) => (
-                <tr key={entry.id}>
-                  <td>{entry.date}</td>
-                  <td>
+                <Tr key={entry.id}>
+                  <Td>{entry.date}</Td>
+                  <Td>
                     {
                       orders.find((o) => o.id.toString() === entry.orderId)
                         ?.customerName
                     }
-                  </td>
-                  <td>
+                  </Td>
+                  <Td>
                     {
                       tappers.find(
                         (t) => t.tapper_id.toString() === entry.tapperId
                       )?.tapper_name
                     }
-                  </td>
-                  <td>{entry.volumeCollected}</td>
-                  <td>{entry.volumePaidFor}</td>
-                  <td>
+                  </Td>
+                  <Td>{entry.volumeCollected}</Td>
+                  <Td>{entry.volumePaidFor}</Td>
+                  <Td>
                     <span
                       className={`${styles.status} ${
                         styles[entry.paymentStatus]
@@ -406,30 +434,28 @@ const ProductionPage: React.FC = () => {
                     >
                       {entry.paymentStatus}
                     </span>
-                  </td>
-                  <td>
-                    <div className={styles.actions}>
-                      <button className="edit-btn">
-                        <Edit
-                          size={18}
-                          onClick={() => {
-                            setUpdateModal(true);
-                          }}
-                        />
-                      </button>
-                      <button className="delete-btn" onClick={() => {}}>
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                  </Td>
+                  <Td>
+                    <IconButton
+                      aria-label="Edit entry"
+                      icon={<Edit size={18} />}
+                      className="edit-btn"
+                      size="sm"
+                      mr={2}
+                      onClick={() => setUpdateModal(true)}
+                    />
+                    <IconButton
+                      aria-label="Delete entry"
+                      icon={<Trash2 size={18} />}
+                      className="delete-btn"
+                      size="sm"
+                      onClick={() => {}}
+                    />
+                  </Td>
+                </Tr>
               ))}
-            </tbody>
-          </table>
-          <button className={styles.addButton} onClick={onOpen}>
-            <PlusCircle size={20} />
-            Add New Entry
-          </button>
+            </Tbody>
+          </Table>
         </div>
 
         <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -541,6 +567,12 @@ const ProductionPage: React.FC = () => {
             </ModalBody>
           </ModalContent>
         </Modal>
+        <div className="new-tb-entry-btn-div">
+          <button className="new-tb-entry-btn" onClick={onOpen}>
+            <PlusCircle size={16} />
+            Record New Entry
+          </button>
+        </div>
         {updateModal ? (
           <EditModal
             initialData={formInitialData}

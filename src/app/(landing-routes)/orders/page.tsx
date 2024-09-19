@@ -342,13 +342,13 @@ const OrderPage: React.FC = () => {
           </select>
         </div>
 
-        <div className={styles.cardSummary}>
+        <div className="cardSummary">
           <CustomCard title="Pending" data={`Orders: 1 Volume:200L`} />
           <CustomCard title="In Progress" data="Orders: 1 Volume:200L" />
           <CustomCard title="Completed" data="Orders: 1 Volume:200L" />
         </div>
 
-        <Table variant="simple" className={styles.table}>
+        <Table variant="simple" className="dataTable">
           <Thead>
             <Tr sx={{ backgroundColor: "#32593b" }}>
               <Th color="white" onClick={() => handleSort("orderDate")}>
@@ -501,16 +501,13 @@ const OrderPage: React.FC = () => {
           </ModalContent>
         </Modal>
 
-        <div className={styles.addNewBtn}>
-          <Button
-            leftIcon={<PlusCircle size={15} />}
-            iconSpacing={2}
-            className="new-order-btn"
-            size="md"
-            onClick={onOpen}
-          >
-            Create New Order
-          </Button>
+        {/* Can make this code reusable */}
+
+        <div className="new-tb-entry-btn-div">
+          <button className="new-tb-entry-btn" onClick={onOpen}>
+            <PlusCircle size={20} />
+            Record New Entry
+          </button>
         </div>
 
         {updateModal ? (
