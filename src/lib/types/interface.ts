@@ -1,9 +1,10 @@
 export interface Customer {
-  id: number;
-  customerName: string;
-  phoneNumber: string;
+  customer_id: number;
+  customer_name: string;
+  phone_number: string;
   email: string;
-  homeAddress: string;
+  home_address: string;
+  registrationDate?: string;
 }
 
 export interface Purchase {

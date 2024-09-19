@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import styles from "./production.module.css";
-import { useRouter } from "next/navigation";
 import Sidebar from "@/components/layout/Sidebar/page";
 import {
   LogOut,
@@ -51,7 +50,7 @@ const ProductionPage: React.FC = () => {
   const sideItems = [
     {
       route: "Tappers",
-      link: "/production/tappers",
+      link: "/production/tapper",
       icon: Pickaxe,
       id: "Tappers",
     },

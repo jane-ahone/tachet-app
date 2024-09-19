@@ -6,18 +6,17 @@ import { UserPlus, Edit, Trash2, LogOut, ShoppingBag } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar/page";
 import EditModal from "@/components/EditModal/editModal";
 import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
-
-interface Customer {
-  customer_id: number;
-  customer_name: string;
-  phone_number: string;
-  email: string;
-  home_address: string;
-  registrationDate: string;
-}
+import { Order, FieldConfig, Customer } from "@/lib/types/interface";
 
 const CustomerManagementPage: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [formInitialData, setFormInitialData] = useState<Customer>({
+    customer_id: 1,
+    customer_name: "John Doe",
+    email: "default@gmail.com",
+    phone_number: "123456",
+    home_address: "Malibu Street",
+  });
   const [newCustomer, setNewCustomer] = useState<Omit<Customer, "customer_id">>(
     {
       customer_name: "",
@@ -43,6 +42,33 @@ const CustomerManagementPage: React.FC = () => {
       link: "/logout",
       icon: LogOut,
       id: "logout",
+    },
+  ];
+
+  const fields: FieldConfig[] = [
+    {
+      name: "customer_name",
+      label: "Customer Name",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "phone_number",
+      label: "Phone Number",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "email",
+      label: "Email Address",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "home_address",
+      label: "Home Address",
+      type: "text",
+      required: true,
     },
   ];
 
@@ -253,6 +279,8 @@ const CustomerManagementPage: React.FC = () => {
       </div>
       {updateModal ? (
         <EditModal
+          initialData={formInitialData}
+          fields={fields}
           updateModal={updateModal}
           setUpdateModal={setUpdateModal}
           handleSubmit={handleSubmit}

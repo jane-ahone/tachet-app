@@ -48,6 +48,9 @@
   --Gray-Gray-200: #e2e8f0;
 
   --Default-Green: #32593b;
+  --Default-Green-Hover: #1c3422;
+
+  --Input-Text: #898887;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -102,19 +105,13 @@ a {
 }
 
 .new-order-btn {
-  position: absolute !important ;
-  bottom: 0 !important ;
-  right: 0 !important ;
   margin: 2rem !important ;
   padding: 1rem !important ;
-  background-color: #7f8c8d !important ;
+  background-color: #5932357e !important ;
   color: white !important ;
 }
-.new-order-btn {
-  margin: 2rem;
-  padding: 1rem;
-  background-color: #7f8c8d;
-  color: white;
+.new-order-btn:hover {
+  background-color: #593235 !important;
 }
 
 .edit-btn {

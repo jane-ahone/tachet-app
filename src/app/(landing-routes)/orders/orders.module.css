@@ -34,6 +34,8 @@
   border: 1px solid #e0e0e0;
   border-radius: 0.5rem;
   transition: all 0.3s ease;
+  color: var(--Input-Text);
+  font-size: 700;
 }
 .searchInput::placeholder {
   font-size: 0.8rem;
@@ -81,6 +83,16 @@
 }
 .CloseButton {
   align-self: flex-end;
+}
+.addNewBtn {
+  text-align: right;
+}
+.createNewBtn {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  padding: 0.2rem 0.7rem;
+  background-color: var(--Default-Green) !important;
 }
 
 .updateModal {

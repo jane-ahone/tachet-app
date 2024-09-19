@@ -45,6 +45,7 @@ import EditModal from "@/components/EditModal/editModal";
 import { Customer, Order, OrderData, FieldConfig } from "@/lib/types/interface";
 import CustomCard from "@/components/layout/Card/page";
 import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
+import CustomButton from "@/components/Button/button";
 
 const OrderPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -78,6 +79,8 @@ const OrderPage: React.FC = () => {
       id: "logout",
     },
   ];
+
+  const statusOptions = ["Pending", "In Progress", "Completed"];
 
   /*OrderData stores field values when adding information to the table
   Orders stores all the order information
@@ -114,8 +117,8 @@ const OrderPage: React.FC = () => {
       label: "Customer",
       type: "select",
       options: customers.map((c) => ({
-        value: c.id.toString(),
-        label: c.customerName,
+        value: c.customer_id.toString(),
+        label: c.customer_name,
       })),
       required: true,
     },
@@ -145,18 +148,11 @@ const OrderPage: React.FC = () => {
     // I will use a join so this set Customers will go
     setCustomers([
       {
-        id: 1,
-        customerName: "John Doe",
-        phoneNumber: "1234567890",
+        customer_id: 1,
+        customer_name: "John Doe",
+        phone_number: "1234567890",
         email: "john@example.com",
-        homeAddress: "123 Main St",
-      },
-      {
-        id: 2,
-        customerName: "Jane Smith",
-        phoneNumber: "0987654321",
-        email: "jane@example.com",
-        homeAddress: "456 Elm St",
+        home_address: "123 Main St",
       },
     ]);
 
@@ -305,11 +301,13 @@ const OrderPage: React.FC = () => {
   });
 
   const filteredOrders = sortedOrders.filter((order) => {
-    const customer = customers.find((c) => c.id === order.customerId);
+    const customer = customers.find((c) => c.customer_id === order.customerId);
     const matchesSearch =
       order.orderDate.includes(searchTerm) ||
       order.orderQty.toString().includes(searchTerm) ||
-      customer?.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer?.customer_name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       order.status.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
       filterStatus === "" ||
@@ -342,20 +340,10 @@ const OrderPage: React.FC = () => {
             <option value="in progress">In Progress</option>
             <option value="completed">Completed</option>
           </select>
-
-          <Button
-            leftIcon={<PlusCircle size={15} />}
-            iconSpacing={2}
-            className="new-order-btn"
-            size="md"
-            onClick={onOpen}
-          >
-            Create New Order
-          </Button>
         </div>
 
         <div className={styles.cardSummary}>
-          <CustomCard title="Pending" data="Orders: 1 Volume:200L" />
+          <CustomCard title="Pending" data={`Orders: 1 Volume:200L`} />
           <CustomCard title="In Progress" data="Orders: 1 Volume:200L" />
           <CustomCard title="Completed" data="Orders: 1 Volume:200L" />
         </div>
@@ -400,8 +388,8 @@ const OrderPage: React.FC = () => {
                 <Td>{order.orderDate}</Td>
                 <Td>
                   {
-                    customers.find((c) => c.id === order.customerId)
-                      ?.customerName
+                    customers.find((c) => c.customer_id === order.customerId)
+                      ?.customer_name
                   }
                 </Td>
                 <Td>{order.orderQty}</Td>
@@ -434,14 +422,23 @@ const OrderPage: React.FC = () => {
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader textAlign="center" color="#593b32" fontWeight={700}>
-              Create New Order
+            <ModalHeader textAlign="center" fontWeight={600}>
+              New Order
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <form onSubmit={handleSubmit}>
-                <FormControl isRequired>
-                  <FormLabel>Customer</FormLabel>
+                <FormControl isRequired mt={4}>
+                  <FormLabel color="var(--Gray-Gray-700)">Order Date</FormLabel>
+                  <Input
+                    type="date"
+                    name="orderDate"
+                    value={orderData.orderDate}
+                    onChange={handleInputChange}
+                  />
+                </FormControl>
+                <FormControl isRequired mt={4}>
+                  <FormLabel color="var(--Gray-Gray-700)">Customer</FormLabel>
                   <Select
                     name="customerId"
                     value={orderData.customerId}
@@ -449,15 +446,20 @@ const OrderPage: React.FC = () => {
                     placeholder="Select customer"
                   >
                     {customers.map((customer) => (
-                      <option key={customer.id} value={customer.id}>
-                        {customer.customerName}
+                      <option
+                        key={customer.customer_id}
+                        value={customer.customer_id}
+                      >
+                        {customer.customer_name}
                       </option>
                     ))}
                   </Select>
                 </FormControl>
 
                 <FormControl isRequired mt={4}>
-                  <FormLabel>Order Quantity</FormLabel>
+                  <FormLabel color="var(--Gray-Gray-700)">
+                    Order Quantity
+                  </FormLabel>
                   <NumberInput
                     min={1}
                     value={orderData.orderQty}
@@ -472,27 +474,44 @@ const OrderPage: React.FC = () => {
                 </FormControl>
 
                 <FormControl isRequired mt={4}>
-                  <FormLabel>Order Date</FormLabel>
-                  <Input
-                    type="date"
-                    name="orderDate"
-                    value={orderData.orderDate}
+                  <FormLabel color="var(--Gray-Gray-700)">
+                    Order Status
+                  </FormLabel>
+                  <Select
+                    name="status"
+                    value={orderData.status}
                     onChange={handleInputChange}
-                  />
+                    placeholder="Select Status"
+                  >
+                    {statusOptions.map((option, index) => (
+                      <option key={index} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </Select>
                 </FormControl>
 
-                <Button
-                  mt={6}
-                  color="white"
-                  backgroundColor="#7f8c8d"
-                  type="submit"
-                >
-                  Create Order
-                </Button>
+                {/* Change the button to the custom one I made */}
+
+                <CustomButton type="submit" className={styles.createNewBtn}>
+                  Create
+                </CustomButton>
               </form>
             </ModalBody>
           </ModalContent>
         </Modal>
+
+        <div className={styles.addNewBtn}>
+          <Button
+            leftIcon={<PlusCircle size={15} />}
+            iconSpacing={2}
+            className="new-order-btn"
+            size="md"
+            onClick={onOpen}
+          >
+            Create New Order
+          </Button>
+        </div>
 
         {updateModal ? (
           <EditModal

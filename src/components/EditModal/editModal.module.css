@@ -32,8 +32,12 @@
   gap: 2rem;
 }
 .submitButton {
-  background-color: var(--Default-Green);
+  background-color: var(--Default-Green) !important;
   padding: 0.5rem;
+}
+
+.submitButton:hover {
+  background-color: var(--Default-Green-Hover) !important;
 }
 
 @media (max-width: 768px) {
