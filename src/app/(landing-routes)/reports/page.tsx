@@ -61,12 +61,6 @@ const ReportsPage: React.FC = () => {
       icon: BarChart2,
       id: "dashboard",
     },
-    {
-      route: "Sign Out",
-      link: "/logout",
-      icon: LogOut,
-      id: "logout",
-    },
   ];
 
   useEffect(() => {

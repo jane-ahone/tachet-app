@@ -13,6 +13,7 @@ import {
   Trash2,
   Hammer,
   BadgeDollarSign,
+  FilePlus2,
 } from "lucide-react";
 import {
   Modal,
@@ -46,6 +47,8 @@ import { Customer, Order, OrderData, FieldConfig } from "@/lib/types/interface";
 import CustomCard from "@/components/layout/Card/page";
 import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
 import CustomButton from "@/components/Button/button";
+import ScrollToTopButton from "@/components/ScrolltoTop/page";
+import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
 
 const OrderPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -71,12 +74,6 @@ const OrderPage: React.FC = () => {
       link: "/customers",
       icon: Users,
       id: "customers",
-    },
-    {
-      route: "Sign Out",
-      link: "/logout",
-      icon: LogOut,
-      id: "logout",
     },
   ];
 
@@ -348,6 +345,10 @@ const OrderPage: React.FC = () => {
           <CustomCard title="completed" data="Orders: 1 Volume:200L" />
         </div> */}
 
+        {/* Can make this button reusable */}
+
+        <AddNewRecordBtn onOpen={onOpen} />
+
         <Table variant="simple" className="dataTable">
           <Thead>
             <Tr sx={{ backgroundColor: "#32593b" }}>
@@ -403,6 +404,7 @@ const OrderPage: React.FC = () => {
                   <IconButton
                     aria-label="Edit order"
                     icon={<Edit size={18} />}
+                    color="#333333"
                     className="edit-btn"
                     size="sm"
                     mr={2}
@@ -414,6 +416,7 @@ const OrderPage: React.FC = () => {
                   <IconButton
                     aria-label="Delete order"
                     icon={<Trash2 size={18} />}
+                    color="#333333"
                     className="delete-btn"
                     size="sm"
                     onClick={() => handleDelete(order.id)}
@@ -508,12 +511,7 @@ const OrderPage: React.FC = () => {
 
         {/* Can make this code reusable */}
 
-        <div className="new-tb-entry-btn-div">
-          <button className="new-tb-entry-btn" onClick={onOpen}>
-            <PlusCircle size={20} />
-            Record New Entry
-          </button>
-        </div>
+        <ScrollToTopButton />
 
         {updateModal ? (
           <EditModal

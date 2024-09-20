@@ -2,13 +2,34 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "./customer.module.css";
-import { UserPlus, Edit, Trash2, LogOut, ShoppingBag } from "lucide-react";
+import {
+  UserPlus,
+  Edit,
+  Trash2,
+  LogOut,
+  ShoppingBag,
+  Save,
+} from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar/page";
 import EditModal from "@/components/EditModal/editModal";
 import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
 import { Order, FieldConfig, Customer } from "@/lib/types/interface";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  useDisclosure,
+} from "@chakra-ui/react";
 
 const CustomerManagementPage: React.FC = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [formInitialData, setFormInitialData] = useState<Customer>({
     customer_id: 1,
@@ -36,12 +57,6 @@ const CustomerManagementPage: React.FC = () => {
       link: "/orders",
       icon: ShoppingBag,
       id: "orders",
-    },
-    {
-      route: "Sign Out",
-      link: "/logout",
-      icon: LogOut,
-      id: "logout",
     },
   ];
 
@@ -191,61 +206,70 @@ const CustomerManagementPage: React.FC = () => {
               className={styles.searchInput}
             />
           </div>
-          <button
-            className={styles.addButton}
-            onClick={() => setIsAdding(true)}
-          >
+          <button className={styles.addButton} onClick={onOpen}>
             <UserPlus size={20} />
-            Add New Customer
+            Add New Tapper
           </button>
         </div>
 
-        {isAdding && (
-          <div className={styles.addForm}>
-            <input
-              type="text"
-              name="name"
-              value={newCustomer.customer_name}
-              onChange={handleInputChange}
-              placeholder="Name"
-              className={styles.input}
-            />
-            <input
-              type="text"
-              name="phone_number"
-              value={newCustomer.phone_number}
-              onChange={handleInputChange}
-              placeholder="Contact Number"
-              className={styles.input}
-            />
-            <input
-              type="email"
-              name="email"
-              value={newCustomer.email}
-              onChange={handleInputChange}
-              placeholder="Email"
-              className={styles.input}
-            />
-            <input
-              type="text"
-              name="home_address"
-              value={newCustomer.home_address}
-              onChange={handleInputChange}
-              placeholder="Address"
-              className={styles.input}
-            />
+        {
+          <Modal isOpen={isOpen} onClose={onClose} size="xl">
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader textAlign="center">New Customer</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <form onSubmit={handleAddCustomer}>
+                  <FormControl isRequired>
+                    <FormLabel>Name</FormLabel>
+                    <Input
+                      type="text"
+                      name="tapper_name"
+                      value={newCustomer.customer_name}
+                      onChange={handleInputChange}
+                      placeholder="Name"
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>Phone Number</FormLabel>
+                    <Input
+                      type="tel"
+                      name="phone_number"
+                      value={newCustomer.phone_number}
+                      onChange={handleInputChange}
+                      placeholder="Phone Number"
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>Home Address</FormLabel>
+                    <Input
+                      type="text"
+                      name="home_address"
+                      value={newCustomer.home_address}
+                      onChange={handleInputChange}
+                      placeholder="Address"
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>Email Address</FormLabel>
+                    <Input
+                      type="email"
+                      name="email"
+                      value={newCustomer.email}
+                      onChange={handleInputChange}
+                      placeholder="Email"
+                    />
+                  </FormControl>
 
-            <button onClick={handleAddCustomer} className={styles.saveButton}>
-              Save
-            </button>
-            <button
-              onClick={() => setIsAdding(false)}
-              className={styles.cancelButton}
-            >
-              Cancel
-            </button>
-          </div>
-        )}
+                  <Button mt={6} colorScheme="green" type="submit">
+                    <Save size={18} style={{ marginRight: "0.5rem" }} />
+                    Save
+                  </Button>
+                </form>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        }
 
         <div className={styles.customerList}>
           {filteredCustomers.map((customer) => (

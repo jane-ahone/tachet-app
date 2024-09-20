@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import styles from "./production.module.css";
 import Sidebar from "@/components/layout/Sidebar/page";
 import {
-  LogOut,
   Pickaxe,
   ArrowDown,
   ArrowUp,
@@ -12,7 +11,6 @@ import {
   Save,
   Edit,
   Trash2,
-  Warehouse,
 } from "lucide-react";
 import {
   Modal,
@@ -46,6 +44,8 @@ import {
   Tapper,
   FieldConfig,
 } from "@/lib/types/interface";
+import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
+import ScrollToTopButton from "@/components/ScrolltoTop/page";
 
 interface ProductionEntry extends ProductionData {
   id: number;
@@ -60,12 +60,6 @@ const ProductionPage: React.FC = () => {
       link: "/production/tapper",
       icon: Pickaxe,
       id: "Tappers",
-    },
-    {
-      route: "Sign Out",
-      link: "/logout",
-      icon: LogOut,
-      id: "logout",
     },
   ];
 
@@ -283,7 +277,7 @@ const ProductionPage: React.FC = () => {
   });
 
   return (
-    <div className={styles.container}>
+    <div className="page-container-routes">
       <Sidebar title="Production" sideNavitems={sideItems} alignment="top" />
 
       <div className={styles.content}>
@@ -339,6 +333,7 @@ const ProductionPage: React.FC = () => {
         </div> */}
 
         <div className={styles.card}>
+          <AddNewRecordBtn onOpen={onOpen} />
           <Table variant="simple" className="dataTable">
             <Thead>
               <Tr sx={{ backgroundColor: "#32593b" }}>
@@ -556,7 +551,7 @@ const ProductionPage: React.FC = () => {
                   />
                 </FormControl>
 
-                <Button mt={6} colorScheme="blue" type="submit">
+                <Button mt={6} colorScheme="green" type="submit">
                   <Save size={18} style={{ marginRight: "0.5rem" }} />
                   Save Production Data
                 </Button>
@@ -564,12 +559,9 @@ const ProductionPage: React.FC = () => {
             </ModalBody>
           </ModalContent>
         </Modal>
-        <div className="new-tb-entry-btn-div">
-          <button className="new-tb-entry-btn" onClick={onOpen}>
-            <PlusCircle size={16} />
-            Record New Entry
-          </button>
-        </div>
+
+        <ScrollToTopButton />
+
         {updateModal ? (
           <EditModal
             initialData={formInitialData}

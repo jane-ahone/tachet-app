@@ -7,13 +7,28 @@ Improve the error handling for if the first api call fails
 
 import React, { useState, useEffect } from "react";
 import styles from "./tapper.module.css";
-import { UserPlus, Edit, Trash2, Search, LogOut, Hammer } from "lucide-react";
+import { UserPlus, Edit, Trash2, LogOut, Hammer, Save } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar/page";
 import EditModal from "@/components/EditModal/editModal";
 import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
 import { FieldConfig, Tapper, Order } from "@/lib/types/interface";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  useDisclosure,
+} from "@chakra-ui/react";
+import ScrollToTopButton from "@/components/ScrolltoTop/page";
 
 const TapperManagementPage: React.FC = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [tappers, setTappers] = useState<Tapper[]>([]);
   const [newTapper, setNewTapper] = useState<Omit<Tapper, "tapper_id">>({
     tapper_name: "",
@@ -30,10 +45,9 @@ const TapperManagementPage: React.FC = () => {
     orderDate: new Date().toISOString().split("T")[0],
     status: "Pending",
   });
-  const [isAdding, setIsAdding] = useState(false);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [updateModal, setUpdateModal] = useState<boolean>(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const sideItems = [
     {
@@ -42,42 +56,31 @@ const TapperManagementPage: React.FC = () => {
       icon: Hammer,
       id: "production",
     },
-    {
-      route: "Sign Out",
-      link: "/logout",
-      icon: LogOut,
-      id: "logout",
-    },
   ];
 
   const fields: FieldConfig[] = [
-    { name: "orderDate", label: "Date", type: "date", required: true },
-    // {
-    //   // name: "customerId",
-    //   // label: "Customer",
-    //   // type: "select",
-    //   // options: customers.map((c) => ({
-    //   //   value: c.id.toString(),
-    //   //   label: c.customerName,
-    //   // })),
-    //   required: true,
-    // },
     {
-      name: "orderQty",
-      label: "Order Quantity",
-      type: "number",
+      name: "tapper_name",
+      label: "Tapper Name",
+      type: "text",
       required: true,
     },
-
     {
-      name: "status",
-      label: "Production Status",
-      type: "select",
-      options: [
-        { value: "Pending", label: "Pending" },
-        { value: "In Progress", label: "In Progress" },
-        { value: "Completed", label: "Completed" },
-      ],
+      name: "phone_number",
+      label: "Phone Number",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "email",
+      label: "Email Address",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "home_address",
+      label: "Home Address",
+      type: "text",
       required: true,
     },
   ];
@@ -120,7 +123,7 @@ const TapperManagementPage: React.FC = () => {
 
   const handleAddTapper = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
+
     const tapper = { tapper_id: tappers.length + 1, ...newTapper };
     setTappers((prev) => [...prev, tapper]);
 
@@ -155,8 +158,6 @@ const TapperManagementPage: React.FC = () => {
       email: "",
       joiningDate: "",
     });
-
-    setIsAdding(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -204,73 +205,71 @@ const TapperManagementPage: React.FC = () => {
               className={styles.searchInput}
             />
           </div>
-          <button
-            className={styles.addButton}
-            onClick={() => setIsAdding(true)}
-          >
+
+          <button className={styles.addButton} onClick={onOpen}>
             <UserPlus size={20} />
             Add New Tapper
           </button>
         </div>
 
-        {isAdding && (
-          <form onSubmit={handleAddTapper} className={styles.addForm}>
-            <input
-              type="text"
-              name="tapper_name"
-              value={newTapper.tapper_name}
-              onChange={handleInputChange}
-              placeholder="Name"
-              className={styles.input}
-            />
-            <input
-              type="tel"
-              name="phone_number"
-              value={newTapper.phone_number}
-              onChange={handleInputChange}
-              placeholder="Contact Number"
-              className={styles.input}
-            />
-            <input
-              type="text"
-              name="home_address"
-              value={newTapper.home_address}
-              onChange={handleInputChange}
-              placeholder="Address"
-              className={styles.input}
-            />
-            <input
-              type="email"
-              name="email"
-              value={newTapper.email}
-              onChange={handleInputChange}
-              placeholder="Email"
-              className={styles.input}
-            />
-            <input
-              type="date"
-              name="joiningDate"
-              value={newTapper.joiningDate}
-              onChange={handleInputChange}
-              className={styles.input}
-            />
-            <button
-              type="submit"
-              className={styles.saveButton}
-              // disabled={isSubmitting}
-            >
-              {isSubmitting ? "Saving..." : "Save"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsAdding(false)}
-              className={styles.cancelButton}
-              // disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-          </form>
-        )}
+        {
+          <Modal isOpen={isOpen} onClose={onClose} size="xl">
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader textAlign="center">New Tapper</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <form onSubmit={handleAddTapper}>
+                  <FormControl isRequired>
+                    <FormLabel>Name</FormLabel>
+                    <Input
+                      type="text"
+                      name="tapper_name"
+                      value={newTapper.tapper_name}
+                      onChange={handleInputChange}
+                      placeholder="Name"
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>Phone Number</FormLabel>
+                    <Input
+                      type="tel"
+                      name="phone_number"
+                      value={newTapper.phone_number}
+                      onChange={handleInputChange}
+                      placeholder="Phone Number"
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>Home Address</FormLabel>
+                    <Input
+                      type="text"
+                      name="home_address"
+                      value={newTapper.home_address}
+                      onChange={handleInputChange}
+                      placeholder="Address"
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>Email Address</FormLabel>
+                    <Input
+                      type="email"
+                      name="email"
+                      value={newTapper.email}
+                      onChange={handleInputChange}
+                      placeholder="Email"
+                    />
+                  </FormControl>
+
+                  <Button mt={6} colorScheme="green" type="submit">
+                    <Save size={18} style={{ marginRight: "0.5rem" }} />
+                    Save
+                  </Button>
+                </form>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        }
 
         <div className={styles.list}>
           {filteredTappers.map((tapper) => (
@@ -303,6 +302,7 @@ const TapperManagementPage: React.FC = () => {
             </div>
           ))}
         </div>
+
         {updateModal ? (
           <EditModal
             initialData={formInitialData}

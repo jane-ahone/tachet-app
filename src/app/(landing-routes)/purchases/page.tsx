@@ -49,12 +49,6 @@ const PurchaseRecordPage: React.FC = () => {
       icon: ShoppingBag,
       id: "production",
     },
-    {
-      route: "Sign Out",
-      link: "/logout",
-      icon: LogOut,
-      id: "logout",
-    },
   ];
 
   const fields: FieldConfig[] = [

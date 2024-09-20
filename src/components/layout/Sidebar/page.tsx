@@ -6,12 +6,20 @@ import {
   LogOut,
   ListOrdered,
   DollarSign,
+  ChevronDownIcon,
 } from "lucide-react";
 import styles from "./sidebar.module.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FC, ForwardRefExoticComponent, RefAttributes } from "react";
-import { Avatar } from "@chakra-ui/react";
+import {
+  Avatar,
+  Button,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react";
 import clsx from "clsx";
 
 const sideItems = [
@@ -39,13 +47,6 @@ const sideItems = [
     icon: ShoppingBag,
     id: "purchases",
   },
-  // To be moved under avatar
-  {
-    route: "Sign Out",
-    link: "/logout",
-    icon: LogOut,
-    id: "logout",
-  },
 ];
 
 interface Iproperties {
@@ -71,7 +72,8 @@ const Sidebar: FC<Iproperties> = ({
   const currentPath = pathname?.split("/")[3];
   // console.log(pathname);
 
-  const showAvatar: boolean = title.toUpperCase() === "TACHET";
+  // const showAvatar: boolean = title.toUpperCase() === "TACHET";
+  const showAvatar: boolean = true;
 
   // Determine the alignment-specific class
   const alignmentClass = alignment === "left" ? styles.leftAlignment : "";
@@ -91,14 +93,22 @@ const Sidebar: FC<Iproperties> = ({
           </div>
         ))}
         {showAvatar && (
-          <Avatar
-            size="sm"
-            name="Jane Ahone"
-            backgroundColor="white"
-            color="#325953"
-            fontWeight={900}
-          />
+          <Menu isLazy>
+            <MenuButton>
+              <Avatar
+                size="sm"
+                name="Jane Ahone"
+                backgroundColor="white"
+                color="#325953"
+                fontWeight={900}
+              />
+            </MenuButton>
+            <MenuList>
+              <MenuItem>Sign Out</MenuItem>
+            </MenuList>
+          </Menu>
         )}
+
         {/* link avatar to profile management */}
       </section>
     </div>

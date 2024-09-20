@@ -3,8 +3,7 @@
   align-items: center;
   /* background-color: #32593b; */
   background: linear-gradient(#32593b, #233527);
-  padding: 1rem;
-  gap: 1rem;
+  padding: 1.5rem;
 }
 .title {
   margin-left: 1rem;

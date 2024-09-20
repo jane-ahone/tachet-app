@@ -48,6 +48,7 @@ a {
 }
 .page-container-routes {
   background-color: #fff;
+  min-height: 100vh;
 }
 
 .cardSummary {
@@ -65,16 +66,38 @@ a {
   overflow: hidden;
 }
 
+.addButton {
+  display: flex;
+  align-items: center;
+  background-color: #c7cdcd;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.addButton:hover {
+  background-color: #7f8c8d;
+}
+
+.addButton svg {
+  margin-right: 0.5rem;
+}
+
 .new-tb-entry-btn-div {
   float: right;
 }
 
 .new-tb-entry-btn {
-  margin: 2rem 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
-  padding: 0.5rem 1rem;
-  background-color: #5d6565dd;
+  padding: 0.5rem 0.5rem;
+  background-color: #3f770d;
   color: white;
   border: none;
   border-radius: 4px;
@@ -82,25 +105,14 @@ a {
   cursor: pointer;
   transition: all 0.3s ease;
   &:hover {
-    background-color: #606869;
+    background-color: #2c5608;
   }
 }
 
 .new-tb-entry-btn svg {
   margin-right: 0.5rem;
+}
 
-  /* To be deleted */
-}
-/* 
-.new-order-btn {
-  margin: 2rem !important ;
-  padding: 1rem !important ;
-  background-color: #5932357e !important ;
-  color: white !important ;
-}
-.new-order-btn:hover {
-  background-color: #593235 !important;
-} */
 .status {
   padding: 0.25rem 0.5rem;
   border-radius: 12px;

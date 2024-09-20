@@ -1,0 +1,25 @@
+/* ScrollToTopButton.module.css */
+.scrollToTop {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.scrollToTop button {
+  background-color: #32593b;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scrollToTop button:hover {
+  opacity: 0.8;
+}
