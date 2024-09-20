@@ -84,7 +84,7 @@ const Login = () => {
     const password = "123456789";
     const email = "john@example.com";
 
-    const response = await fetch("http://localhost:3000/api/Login", {
+    const response = await fetch("http://localhost:3000/api/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -163,13 +163,6 @@ const Login = () => {
           {submitResult && <p role="status">{submitResult}</p>}
         </form>
       </div>
-      <Image
-        src="/assets/loginImage.png"
-        alt="green image with spirals"
-        width="1870"
-        height="520"
-        layout="responsive"
-      />
     </div>
   );
 };

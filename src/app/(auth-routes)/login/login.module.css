@@ -1,7 +1,6 @@
 .loginMain {
+  background-color: var(--Default-Green);
   height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
 }
 .mainLeft {
   padding-top: 1rem;
