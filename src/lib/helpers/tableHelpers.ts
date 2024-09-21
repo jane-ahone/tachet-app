@@ -1,5 +1,3 @@
-import { Order } from "../types/interface";
-
 export const createHandleInputChange = <T extends Record<string, any>>(
   setter: React.Dispatch<React.SetStateAction<T>>,
   transform?: (name: string, value: string) => any

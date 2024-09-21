@@ -5,6 +5,7 @@ import { useState } from "react";
 import { z } from "zod";
 import Button from "@/components/Button/button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const fieldSchema = z.object({
   username: z
@@ -22,6 +23,7 @@ type User = z.infer<typeof fieldSchema>;
 type FieldName = keyof User;
 
 const SignUp = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState<Partial<User>>({});
   const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,7 +43,6 @@ const SignUp = () => {
 
     const result = fieldValidation.safeParse({ [fieldName]: value });
     if (!result.success) {
-      console.log("Validation failed:");
       let newErrors: Record<string, string> = {};
       newErrors[result.error?.issues[0].path[0]] =
         result.error?.issues[0].message;
@@ -63,7 +64,6 @@ const SignUp = () => {
     const result = fieldSchema.safeParse(formData);
 
     if (!result.success) {
-      console.log("Validation failed:");
       let newErrors: Record<string, string> = {};
 
       result.error.errors.map((error) => {
@@ -73,21 +73,18 @@ const SignUp = () => {
       });
       setErrors(newErrors);
     } else {
-      console.log("Validation succeeded:", result.data);
       //Sending form to backend
       try {
-        const response = await fetch("/api/contact", {
+        const response = await fetch("/api/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
 
         if (response.ok) {
-          setSubmitResult("Form submitted successfully!");
           setFormData({ username: "", email: "", password: "" });
+          router.push("/login");
         } else {
-          const error = await response.json();
-          setSubmitResult(`Submission failed: ${error.password}`);
         }
       } catch (error) {
         if (error instanceof z.ZodError) {
@@ -97,27 +94,15 @@ const SignUp = () => {
           });
           setErrors(newErrors);
         } else {
+          console.log(error);
           setSubmitResult("An unexpected error occurred");
         }
       }
     }
-  };
-  const handleInput = async () => {
-    const username = "JohnDoe";
-    const password = "123456789";
-    const email = "john@example.com";
 
-    const response = await fetch("http://localhost:3000/api/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password, email }),
-    });
-
-    const data = await response.json();
-    console.log(data);
+    setIsSubmitting(false);
   };
+
   return (
     <div className={styles.signupMain}>
       {/* <Image

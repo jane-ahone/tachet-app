@@ -42,51 +42,68 @@ async function hashPassword(plainTextPassword: string): Promise<{
 }
 
 export async function POST(request: NextRequest) {
-  // const { username, password, email } = await request.json();
+  const formData = await request.json();
+  const resultValidation = fieldSchema.safeParse(formData);
 
-  try {
-    const validatedData = fieldSchema.parse(request.body);
-
-    const { username, password, email } = validatedData;
-    //Valid email
-
-    //password hashing; Authentication
-    const { hashedPassword, salt, error } = await hashPassword(password);
-    if (error || !hashedPassword || !salt) {
-      return NextResponse.json(
-        { error: error || "Failed to hash password" },
-        { status: 500 }
-      );
-    }
-
-    //Session ID; Authorisation
-
-    //SQL query
-    const created_at = new Date().toISOString();
-    const queryString: string =
-      "INSERT INTO users(username,password,email,created_at,salt) VALUES($1,$2,$3,$4,$5) RETURNING *";
+  if (resultValidation.success) {
     try {
-      const result = await query(queryString, [
-        username,
-        hashedPassword,
-        email,
-        created_at,
-        salt,
-      ]);
+      const { username, password, email } = formData;
+      //Valid email
 
-      return NextResponse.json({ user: result.rows[0] }, { status: 201 });
+      //password hashing; Authentication
+      const { hashedPassword, salt, error } = await hashPassword(password);
+      if (error || !hashedPassword || !salt) {
+        return NextResponse.json(
+          { error: error || "Failed to hash password" },
+          { status: 500 }
+        );
+      }
+
+      //SQL query
+      const created_at = new Date().toISOString();
+      const queryString: string =
+        "INSERT INTO users(username,password,email,created_at,salt) VALUES($1,$2,$3,$4,$5) RETURNING *";
+      try {
+        const result = await query(queryString, [
+          username,
+          hashedPassword,
+          email,
+          created_at,
+          salt,
+        ]);
+
+        return NextResponse.json({ user: result.rows[0] }, { status: 201 });
+      } catch (error) {
+        console.log("Database query error:", error);
+        return NextResponse.json(
+          { error: "Internal Server Error" },
+          { status: 500 }
+        );
+      }
     } catch (error) {
-      console.log("Database query error:", error);
-      return NextResponse.json(
-        { error: "Internal Server Error" },
-        { status: 500 }
-      );
+      if (error instanceof z.ZodError) {
+        NextResponse.json({ errors: error.errors }, { status: 400 });
+      } else {
+        NextResponse.json(
+          { message: "Internal server error" },
+          { status: 500 }
+        );
+      }
     }
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      NextResponse.json({ status: 400, errors: error.errors });
-    } else {
-      NextResponse.json({ status: 500, message: "Internal server error" });
-    }
+  } else {
+    let newErrors: Record<string, string> = {};
+
+    resultValidation.error.errors.map((error) => {
+      const fieldName = error.path[0];
+      const errorMsg = error.message;
+      newErrors[fieldName] = errorMsg;
+    });
+    NextResponse.json(
+      {
+        message: "Bad Request",
+        errors: newErrors,
+      },
+      { status: 400 }
+    );
   }
 }

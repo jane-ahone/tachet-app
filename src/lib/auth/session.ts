@@ -1,11 +1,5 @@
 import { SessionOptions } from "iron-session";
-
-export interface SessionData {
-  userId?: number;
-  username?: string;
-  email?: string;
-  isLoggedIn: boolean;
-}
+import { SessionData } from "../types/interface";
 
 export const defaultSession: SessionData = {
   isLoggedIn: false,

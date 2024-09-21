@@ -1,9 +1,9 @@
 "use server";
 
-import { SessionData } from "./session";
 import { defaultSession, sessionOptions } from "./session";
 import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
+import { SessionData } from "../types/interface";
 
 // ADD THE GETSESSION ACTION
 export async function getSession() {

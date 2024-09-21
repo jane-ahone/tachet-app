@@ -96,7 +96,7 @@ const CustomerManagementPage: React.FC = () => {
           throw new Error("Failed to fetch tappers");
         }
         const data = await response.json();
-        console.log(data.tappers);
+
         setCustomers(data.tappers);
       } catch (error) {
         console.log(error);

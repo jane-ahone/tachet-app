@@ -58,3 +58,10 @@ export interface FieldConfig {
   options?: { value: string; label: string }[];
   required?: boolean;
 }
+
+export interface SessionData {
+  userId?: number;
+  username?: string;
+  email?: string;
+  isLoggedIn: boolean;
+}

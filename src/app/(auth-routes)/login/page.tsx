@@ -2,34 +2,61 @@
 
 import styles from "./login.module.css";
 import { useState } from "react";
-import { z, ZodError } from "zod";
+import { z } from "zod";
 import Image from "next/image";
 import Button from "@/components/Button/button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z.string().min(10, "Password must be at least 10 characters"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(100, "Password must be under 100 charcters"),
 });
 
+type User = z.infer<typeof schema>;
+type FieldName = keyof User;
+
 const Login = () => {
-  const [formData, setFormData] = useState({
+  const router = useRouter();
+  const [formData, setFormData] = useState<User>({
     email: "",
     password: "",
   });
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-  });
+  const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState("");
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const fieldName = name as FieldName;
+
+    // Update formData
+    setFormData((prev) => ({ ...prev, [fieldName]: value }));
+
+    // Form field validation
+    const fieldValidation = z.object({
+      [fieldName]: schema.shape[fieldName],
+    });
+
+    const result = fieldValidation.safeParse({ [fieldName]: value });
+    if (!result.success) {
+      let newErrors: Record<string, string> = {};
+      newErrors[result.error?.issues[0].path[0]] =
+        result.error?.issues[0].message;
+      setErrors((prevErrors) => ({ ...prevErrors, ...newErrors }));
+    } else {
+      setErrors((prevErrors) => {
+        const newErrors = { ...prevErrors };
+        delete newErrors[fieldName];
+        return newErrors;
+      });
+    }
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -37,64 +64,34 @@ const Login = () => {
     const result = schema.safeParse(formData);
 
     if (!result.success) {
-      console.log("Validation failed:");
-      console.log(result.error.errors); // Access the list of errors
-      for (let error in result.error.errors) {
-        // console.log(error.code);
-      }
+      let newErrors: Record<string, string> = {};
+
+      result.error.errors.map((error) => {
+        newErrors[error.path[0]] = error.message;
+      });
     } else {
-      console.log("Validation succeeded:", result.data);
+      // Send data to API route
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+
+        console.log(await response.json());
+        if (response.ok) {
+          setSubmitResult("Form submitted successfully!");
+          router.push("/");
+        }
+      } catch (error) {
+        setSubmitResult(`Submission failed: ${error}`);
+        setFormData({ email: "", password: "" });
+      } finally {
+        setIsSubmitting(false);
+      }
     }
-
-    setIsSubmitting(false);
-    // const inputValidation = schema.parse(formData);
-    // console.log(inputValidation);
-    // try {
-
-    //   // Send data to API route
-    //   const response = await fetch("/api/contact", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(formData),
-    //   });
-
-    //   if (response.ok) {
-    //     setSubmitResult("Form submitted successfully!");
-    //     setFormData({ username: "", email: "", password: "" });
-    //   } else {
-    //     const error = await response.json();
-    //     setSubmitResult(`Submission failed: ${error.password}`);
-    //   }
-    // } catch (error) {
-    //   if (error instanceof z.ZodError) {
-    //     const newErrors = {};
-    //     error.errors.forEach((err) => {
-    //       newErrors[err.path[0]] = err.password;
-    //     });
-    //     setErrors(newErrors);
-    //   } else {
-    //     setSubmitResult("An unexpected error occurred");
-    //   }
-    // } finally {
-    //   setIsSubmitting(false);
-    // }
   };
-  const handleInput = async () => {
-    const username = "JohnDoe";
-    const password = "123456789";
-    const email = "john@example.com";
 
-    const response = await fetch("http://localhost:3000/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password, email }),
-    });
-
-    const data = await response.json();
-    console.log(data);
-  };
   return (
     <div className={styles.loginMain}>
       <div className={styles.mainLeft}>
@@ -151,7 +148,11 @@ const Login = () => {
               </span>
             )}
           </div>
-          <Button disabled={isSubmitting} className={styles.button}>
+          <Button
+            type="submit"
+            disabled={Object.values(errors).length != 0 ? true : false}
+            className={styles.button}
+          >
             SIGN IN
           </Button>
           <p className={styles.routingMessage}>
