@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useState, useContext } from "react";
-import { Customer, Order, Tapper } from "@/lib/types/interface";
 
 interface SharedContextType {
   sharedData: Record<string, any> | undefined;

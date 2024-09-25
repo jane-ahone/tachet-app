@@ -10,6 +10,7 @@ import { Card } from "@chakra-ui/react";
 import { fetchSessionData } from "@/lib/helpers/authHelpers";
 import { SessionData } from "@/lib/types/interface";
 import { useSharedContext } from "./SharedContext";
+import ScrollToTopButton from "@/components/ScrolltoTop/page";
 
 export default function Home() {
   const [session, setSession] = useState<SessionData | undefined>(undefined); // Initialize session state
@@ -22,36 +23,8 @@ export default function Home() {
     userLoggedIn();
   }, []); // Empty dependency array to run only once on mount
 
-  const { sharedData, setSharedData } = useSharedContext();
-
-  //Fetch customers
-
   useEffect(() => {
-    (async () => {
-      try {
-        const response = await fetch("/api/customers");
-        if (!response.ok) {
-          throw new Error("Failed to fetch customers");
-        }
-        const data = await response.json();
-        console.log(data);
-        setSharedData({ ...sharedData, customers: data.customers });
-      } catch (error) {
-        console.error(error);
-        setSharedData({
-          ...sharedData,
-          customer: [
-            {
-              customer_id: 1,
-              customer_name: "John Doe",
-              phone_number: "1234567890",
-              email: "john@example.com",
-              home_address: "There's been an error",
-            },
-          ],
-        });
-      }
-    })();
+    //Fetch production summary
   }, []);
 
   return (
@@ -94,6 +67,7 @@ export default function Home() {
         <div>
           <ReportsPage />
         </div>
+        <ScrollToTopButton />
       </div>
     </main>
   );
