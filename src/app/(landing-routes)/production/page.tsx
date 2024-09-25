@@ -46,6 +46,7 @@ import {
 } from "@/lib/types/interface";
 import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
 import ScrollToTopButton from "@/components/ScrolltoTop/page";
+import { useSharedContext } from "@/app/SharedContext";
 
 interface ProductionEntry extends ProductionData {
   id: number;
@@ -53,6 +54,7 @@ interface ProductionEntry extends ProductionData {
 
 const ProductionPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { sharedData, setSharedData } = useSharedContext();
 
   const sideItems = [
     {
@@ -73,13 +75,15 @@ const ProductionPage: React.FC = () => {
     notes: "",
   });
 
-  const [formInitialData, setFormInitialData] = useState<Order>({
+  const [formInitialData, setFormInitialData] = useState<ProductionEntry>({
     id: 1,
-    customerId: 1,
-    customerName: "John Doe",
-    orderQty: 1,
-    orderDate: new Date().toISOString().split("T")[0],
-    status: "Pending",
+    date: "",
+    orderId: "",
+    tapperId: "",
+    volumeCollected: "",
+    volumePaidFor: "",
+    paymentStatus: "",
+    notes: "",
   });
 
   const [tappers, setTappers] = useState<Tapper[]>([]);
@@ -143,135 +147,212 @@ const ProductionPage: React.FC = () => {
   ];
 
   useEffect(() => {
-    // Fetch previous entries, tappers, and orders from API
-    // For now, we'll use dummy data
-
-    //Fetch orders
-    (async () => {
-      try {
-        const response = await fetch("/api/orderss");
-        if (!response.ok) {
-          throw new Error("Failed to fetch ordersss");
+    if (sharedData?.orders && sharedData?.orders.length > 0) {
+      setOrders(sharedData.orders);
+    } else {
+      // Fetch orders if not in shared context
+      (async () => {
+        try {
+          const response = await fetch("/api/orderss");
+          if (!response.ok) {
+            throw new Error("Failed to fetch orders");
+          }
+          const data = await response.json();
+          setOrders(data.ordersss);
+          setSharedData({ ...sharedData, orders: data.ordersss });
+        } catch (error) {
+          console.log(error);
+          setOrders([
+            {
+              id: 1,
+              customerId: 2,
+              customerName: "Customer A",
+              orderDate: "2024-09-01",
+              status: "Progress",
+              orderQty: 1,
+            },
+            {
+              id: 2,
+              customerId: 3,
+              customerName: "Customer B",
+              orderDate: "2024-09-02",
+              status: "Progress",
+              orderQty: 1,
+            },
+          ]);
         }
-        const data = await response.json();
-        console.log(data.ordersss);
-        setOrders(data.ordersss);
-      } catch (error) {
-        console.log(error);
-        setOrders([
-          {
-            id: 1,
-            customerId: 2,
-            customerName: "Customer A",
-            orderDate: "2024-09-01",
-            status: "Progress",
-            orderQty: 1,
-          },
-          {
-            id: 2,
-            customerId: 3,
-            customerName: "Customer B",
-            orderDate: "2024-09-02",
-            status: "Progress",
-            orderQty: 1,
-          },
-        ]);
-      }
-    })();
+      })();
+    }
 
-    //Fetch tappers
-    (async () => {
-      try {
-        const response = await fetch("/api/tappers");
-        if (!response.ok) {
-          throw new Error("Failed to fetch tappers");
+    if (sharedData?.tappers && sharedData?.tappers.length > 0) {
+      setTappers(sharedData.tappers);
+    } else {
+      // Fetch tappers if not in shared context
+      (async () => {
+        try {
+          const response = await fetch("/api/tappers");
+          if (!response.ok) {
+            throw new Error("Failed to fetch tappers");
+          }
+          const data = await response.json();
+          setTappers(data.tappers);
+          setSharedData({ ...sharedData, tappers: data.tappers });
+        } catch (error) {
+          console.log(error);
+          setTappers([
+            {
+              tapper_id: 1,
+              tapper_name: "John Doe",
+              phone_number: "123-456-7890",
+              email: "johndoe@example.com",
+              home_address: "123 Main St, Anytown, USA",
+              joiningDate: "2024-01-01",
+            },
+            {
+              tapper_id: 1,
+              tapper_name: "John Doe",
+              phone_number: "123-456-7890",
+              email: "johndoe@example.com",
+              home_address: "123 Main St, Anytown, USA",
+              joiningDate: "2024-01-01",
+            },
+          ]);
         }
-        const data = await response.json();
-        console.log(data.tappers);
-        setTappers(data.tappers);
-      } catch (error) {
-        console.log(error);
-        setTappers([
-          {
-            tapper_id: 1,
-            tapper_name: "John Doe",
-            phone_number: "123-456-7890",
-            email: "johndoe@example.com",
-            home_address: "123 Main St, Anytown, USA",
-            joiningDate: "2024-01-01",
-          },
-          {
-            tapper_id: 1,
-            tapper_name: "John Doe",
-            phone_number: "123-456-7890",
-            email: "johndoe@example.com",
-            home_address: "123 Main St, Anytown, USA",
-            joiningDate: "2024-01-01",
-          },
-        ]);
-      }
-    })();
+      })();
+    }
 
-    // Fetching production data
-    (async () => {
-      try {
-        const response = await fetch("/api/productions");
-        if (!response.ok) {
-          throw new Error("Failed to fetch production data");
+    if (sharedData?.production) {
+      setPreviousEntries(sharedData.production);
+    } else {
+      // Fetch production data if not in shared context
+      (async () => {
+        try {
+          const response = await fetch("/api/productions");
+          if (!response.ok) {
+            throw new Error("Failed to fetch production data");
+          }
+          const data = await response.json();
+          setPreviousEntries(data.production);
+          setSharedData({ ...sharedData, production: data.production });
+        } catch (error) {
+          console.log(error);
+          setPreviousEntries([
+            {
+              id: 1,
+              date: "2024-09-01",
+              orderId: "1",
+              tapperId: "1",
+              volumeCollected: "100",
+              volumePaidFor: "90",
+              paymentStatus: "completed",
+              notes: "First batch",
+            },
+            {
+              id: 2,
+              date: "2024-09-02",
+              orderId: "2",
+              tapperId: "2",
+              volumeCollected: "150",
+              volumePaidFor: "150",
+              paymentStatus: "pending",
+              notes: "Second batch",
+            },
+          ]);
         }
-        const data = await response.json();
-        setPreviousEntries(data.production);
-      } catch (error) {
-        console.log(error);
-        setPreviousEntries([
-          {
-            id: 1,
-            date: "2024-09-01",
-            orderId: "1",
-            tapperId: "1",
-            volumeCollected: "100",
-            volumePaidFor: "90",
-            paymentStatus: "completed",
-            notes: "First batch",
-          },
-          {
-            id: 2,
-            date: "2024-09-02",
-            orderId: "2",
-            tapperId: "2",
-            volumeCollected: "150",
-            volumePaidFor: "150",
-            paymentStatus: "pending",
-            notes: "Second batch",
-          },
-        ]);
-      }
-    })();
-  }, []);
+      })();
+    }
+  }, [sharedData, setSharedData]);
 
   const handleInputChange = createHandleInputChange(setProductionData);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleAddProd = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Submitted production data:", productionData);
-    // Here you would typically send this data to your API
-    // After successful submission:
-    const newEntry: ProductionEntry = {
-      ...productionData,
-      id: previousEntries.length + 1,
-    };
-    setPreviousEntries((prev) => [...prev, newEntry]);
-    onClose();
-    // Reset form
-    setProductionData({
-      date: "",
-      orderId: "",
-      tapperId: "",
-      volumeCollected: "",
-      volumePaidFor: "",
-      paymentStatus: "",
-      notes: "",
+
+    try {
+      const response = await fetch("/api/productions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productionData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add production data");
+      }
+
+      const data = await response.json();
+      console.log(`New production entry added: ${data}`);
+
+      const newEntry: ProductionEntry = {
+        ...productionData,
+        id: previousEntries.length + 1,
+      };
+
+      const updatedEntries = [...previousEntries, newEntry];
+      setPreviousEntries(updatedEntries);
+      setSharedData({ ...sharedData, production: updatedEntries });
+
+      onClose();
+      // Reset form
+      setProductionData({
+        date: "",
+        orderId: "",
+        tapperId: "",
+        volumeCollected: "",
+        volumePaidFor: "",
+        paymentStatus: "",
+        notes: "",
+      });
+
+      // Add a toast notification for success
+    } catch (error) {
+      console.log(`Error: ${error}`);
+      // Add a toast notification for error
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await fetch(`/api/productions/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete production entry");
+      }
+
+      const data = await response.json();
+      console.log(`Production entry successfully deleted: ${data}`);
+
+      const updatedEntries = previousEntries.filter((entry) => entry.id !== id);
+      setPreviousEntries(updatedEntries);
+      setSharedData({ ...sharedData, production: updatedEntries });
+
+      // Add a toast notification for success
+    } catch (error) {
+      console.log(`Error: ${error}`);
+      // Add a toast notification for error
+    }
+  };
+  const handleEditField = (id: number) => {
+    previousEntries.map((entry) => {
+      if (entry.id == id) {
+        setFormInitialData(entry);
+      }
     });
+    setUpdateModal(true);
+  };
+
+  const handleUpdate = async () => {
+    try {
+      setUpdateModal(false);
+      // Add a toast notification for success
+    } catch (error) {
+      console.log(`Error: ${error}`);
+      // Add a toast notification for error
+    }
   };
 
   const handleSort = (key: keyof ProductionEntry) => {
@@ -480,14 +561,16 @@ const ProductionPage: React.FC = () => {
                       className="edit-btn"
                       size="sm"
                       mr={2}
-                      onClick={() => setUpdateModal(true)}
+                      onClick={() => handleEditField(entry.id)}
                     />
                     <IconButton
                       aria-label="Delete entry"
                       icon={<Trash2 size={18} />}
                       className="delete-btn"
                       size="sm"
-                      onClick={() => {}}
+                      onClick={() => {
+                        handleDelete(entry.id);
+                      }}
                     />
                   </Td>
                 </Tr>
@@ -502,7 +585,7 @@ const ProductionPage: React.FC = () => {
             <ModalHeader textAlign="center">Production Data Input</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleAddProd}>
                 <FormControl isRequired>
                   <FormLabel>Date</FormLabel>
                   <Input
@@ -614,7 +697,7 @@ const ProductionPage: React.FC = () => {
             fields={fields}
             updateModal={updateModal}
             setUpdateModal={setUpdateModal}
-            handleSubmit={handleSubmit}
+            handleSubmit={handleUpdate}
           />
         ) : null}
       </div>

@@ -139,29 +139,27 @@ const OrderPage: React.FC = () => {
       required: true,
     },
   ];
-  const customerData: Customer[] = sharedData?.customers;
-  console.log("Customer data", customerData);
 
   useEffect(() => {
-    // Fetch customers and orders from API
-
-    if (!customerData) {
-      console.log("I am  not fileedddd");
+    if (sharedData?.customers.length > 0) {
+      setCustomers(sharedData?.customers);
+    } else {
+      // Fetch customers if not in shared context
       (async () => {
         try {
           const response = await fetch("/api/customerss");
           if (!response.ok) {
-            throw new Error("Failed to fetch tappers");
+            throw new Error("Failed to fetch customers");
           }
           const data = await response.json();
-          setSharedData({ ...sharedData, customers: data.customers }); //Assigning it to context
-          setCustomers(data.tappers);
+          setSharedData({ ...sharedData, customers: data.customers });
+          setCustomers(data.customers);
         } catch (error) {
           console.log(error);
           setCustomers([
             {
               customer_id: 1,
-              customer_name: "John Doe",
+              customer_name: "Customer A",
               phone_number: "1234567890",
               email: "there's been an error",
               home_address: "123 Palm St",
@@ -170,76 +168,45 @@ const OrderPage: React.FC = () => {
           ]);
         }
       })();
-    } else {
-      console.log("I am filled");
-      setCustomers(customerData);
     }
 
-    (async () => {
-      try {
-        const response = await fetch("/api/customerss");
-        if (!response.ok) {
-          throw new Error("Failed to fetch tappers");
+    if (sharedData?.orders.length > 0) {
+      setOrders(sharedData?.orders);
+    } else {
+      // Fetch orders if not in shared context
+      (async () => {
+        try {
+          const response = await fetch("/api/orderss");
+          if (!response.ok) {
+            throw new Error("Failed to fetch orders");
+          }
+          const data = await response.json();
+          setSharedData({ ...sharedData, orders: data.ordersss });
+          setOrders(data.ordersss);
+        } catch (error) {
+          console.log(error);
+          setOrders([
+            {
+              id: 1,
+              customerId: 1,
+              customerName: "Customer A",
+              orderDate: "2024-09-01",
+              status: "Progress",
+              orderQty: 1,
+            },
+            {
+              id: 2,
+              customerId: 3,
+              customerName: "Customer B",
+              orderDate: "2024-09-02",
+              status: "Progress",
+              orderQty: 1,
+            },
+          ]);
         }
-        const data = await response.json();
-
-        setCustomers(data.tappers);
-      } catch (error) {
-        console.log(error);
-        setCustomers([
-          {
-            customer_id: 1,
-            customer_name: "John Doe",
-            phone_number: "1234567890",
-            email: "there's been an error",
-            home_address: "123 Palm St",
-            registrationDate: "2023-01-15",
-          },
-        ]);
-      }
-    })();
-    // I will use a join so this set Customers will go
-
-    (async () => {
-      try {
-        const response = await fetch("/api/orderss");
-        if (!response.ok) {
-          throw new Error("Failed to fetch ordersss");
-        }
-        const data = await response.json();
-        console.log(data.ordersss);
-        setOrders(data.ordersss);
-      } catch (error) {
-        console.log(error);
-        setOrders([
-          {
-            id: 1,
-            customerId: 1,
-            customerName: "John Doe",
-            orderQty: 100,
-            orderDate: "2024-09-01",
-            status: "pending",
-          },
-          {
-            id: 2,
-            customerId: 2,
-            customerName: "John Doe",
-            orderQty: 150,
-            orderDate: "2024-09-02",
-            status: "completed",
-          },
-          {
-            id: 3,
-            customerId: 1,
-            customerName: "John Doe",
-            orderQty: 200,
-            orderDate: "2024-09-03",
-            status: "inprogress",
-          },
-        ]);
-      }
-    })();
-  }, []);
+      })();
+    }
+  }, [sharedData, setSharedData]);
 
   const handleInputChange = createHandleInputChange(setOrderData);
 
@@ -256,70 +223,95 @@ const OrderPage: React.FC = () => {
     });
     setUpdateModal(true);
   };
-  const handleDelete = (id: number) => {
-    const deleteOrderDB = async (id: number) => {
-      try {
-        const response = await fetch(`/api/orderss/${id}`, {
-          method: "DELETE",
-        });
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await fetch(`/api/orderss/${id}`, {
+        method: "DELETE",
+      });
 
-        if (!response.ok) {
-          throw new Error("Failed to delete orderss");
-        }
-
-        const data = await response.json();
-        console.log(`Order succesfully deleted: ${data}`);
-      } catch (error) {
-        console.log(`Error: ${error}`);
+      if (!response.ok) {
+        throw new Error("Failed to delete order");
       }
-    };
 
-    deleteOrderDB(id);
+      const data = await response.json();
+      console.log(`Order successfully deleted: ${data}`);
+
+      const updatedOrders = orders.filter((order) => order.id !== id);
+      setOrders(updatedOrders);
+      setSharedData({ ...sharedData, orders: updatedOrders });
+
+      toast({
+        title: "Order deleted.",
+        description: "The order has been successfully deleted.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.log(`Error: ${error}`);
+      toast({
+        title: "Error",
+        description: "Failed to delete order.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+    const updatedOrders = orders.filter((order) => order.id !== id);
+    setOrders(updatedOrders);
+    setSharedData({ ...sharedData, orders: updatedOrders });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddOrder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Submitted order data:", orderData);
-    // Here you would typically send this data to your backend
 
-    (async () => {
-      try {
-        const response = await fetch("/api/orderss", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(orderData),
-        });
+    try {
+      const response = await fetch("/api/orderss", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
 
-        if (!response.ok) {
-          throw new Error("Failed to add order");
-        }
-        const data = await response.json();
-        console.log(`New order added: ${data}`);
-      } catch (error) {
-        console.log(`Error: ${error}`);
+      if (!response.ok) {
+        throw new Error("Failed to add order");
       }
-    })();
+      const data = await response.json();
+      console.log(`New order added: ${data}`);
 
-    // After successful submission:
-    const newOrder: Order = {
-      id: orders.length + 1,
-      customerId: orderData.customerId,
-      customerName: "",
-      orderQty: orderData.orderQty,
-      orderDate: orderData.orderDate,
-      status: "pending",
-    };
-    setOrders((prev) => [...prev, newOrder]);
-    onClose();
-    toast({
-      title: "Order created.",
-      description: "We've created your order for you.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
+      const newOrder: Order = {
+        id: orders.length + 1,
+        customerId: orderData.customerId,
+        customerName: "",
+        orderQty: orderData.orderQty,
+        orderDate: orderData.orderDate,
+        status: "pending",
+      };
+
+      const updatedOrders = [...orders, newOrder];
+      setOrders(updatedOrders);
+      setSharedData({ ...sharedData, orders: updatedOrders });
+
+      onClose();
+      toast({
+        title: "Order created.",
+        description: "We've created your order for you.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.log(`Error: ${error}`);
+      toast({
+        title: "Error",
+        description: "Failed to create order.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   const handleSort = (key: keyof Order) => {
@@ -473,7 +465,7 @@ const OrderPage: React.FC = () => {
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleAddOrder}>
                 <FormControl isRequired mt={4}>
                   <FormLabel color="var(--Gray-Gray-700)">Order Date</FormLabel>
                   <Input
@@ -555,7 +547,7 @@ const OrderPage: React.FC = () => {
             fields={fields}
             updateModal={updateModal}
             setUpdateModal={setUpdateModal}
-            handleSubmit={handleSubmit}
+            handleSubmit={handleUpdate}
           />
         ) : null}
       </div>
