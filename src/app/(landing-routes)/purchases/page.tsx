@@ -11,7 +11,7 @@ import {
   Save,
 } from "lucide-react";
 import EditModal from "@/components/EditModal/editModal";
-import { Order, Purchase, FieldConfig } from "@/lib/types/interface";
+import { Order, Purchase, FieldConfig, Tapper } from "@/lib/types/interface";
 import Sidebar from "@/components/layout/Sidebar/page";
 import {
   Table,
@@ -32,8 +32,10 @@ import {
   ModalHeader,
   ModalOverlay,
   useDisclosure,
+  Select,
 } from "@chakra-ui/react";
 import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
+import { useSharedContext } from "@/app/SharedContext";
 
 const PurchaseRecordPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,6 +46,7 @@ const PurchaseRecordPage: React.FC = () => {
     itemType: "",
     quantity: 0,
     price: 0,
+    customItemType: "",
     orderId: undefined,
   });
   const [formInitialData, setFormInitialData] = useState<Order>({
@@ -79,12 +82,7 @@ const PurchaseRecordPage: React.FC = () => {
     {
       name: "itemType",
       label: "Item Type",
-      type: "select",
-      options: [
-        { value: "Bottles", label: "Bottles" },
-        { value: "Labels", label: "Labels" },
-        { value: "Completed", label: "Completed" },
-      ],
+      type: "text",
       required: true,
     },
     {
@@ -112,72 +110,87 @@ const PurchaseRecordPage: React.FC = () => {
     },
   ];
 
+  const { sharedData, setSharedData } = useSharedContext();
+
   useEffect(() => {
-    // Fetch purchases data from API
+    // Fetch purchases data
     (async () => {
-      try {
-        const response = await fetch("/api/purchase");
-        if (!response.ok) {
-          throw new Error("Failed to fetch purchases");
+      if (sharedData?.purchases) {
+        setPurchases(sharedData?.purchases);
+      } else {
+        try {
+          const response = await fetch("/api/purchase");
+          if (!response.ok) {
+            throw new Error("Failed to fetch purchases");
+          }
+          const data = await response.json();
+          console.log(data.purchase);
+          setPurchases(data.purchase);
+          setSharedData((prevData) => ({
+            ...prevData,
+            purchases: data.purchase,
+          }));
+        } catch (error) {
+          console.error(error);
+          setPurchases([
+            {
+              id: 1,
+              date: "2023-09-01",
+              itemType: "Bottles",
+              quantity: 1000,
+              price: 500,
+              orderId: 1,
+            },
+            {
+              id: 2,
+              date: "2023-09-15",
+              itemType: "Labels",
+              quantity: 5000,
+              price: 250,
+            },
+          ]);
         }
-        const data = await response.json();
-        console.log(data.purchase);
-        setOrders(data.purchase);
-      } catch (error) {
-        console.error(error);
-        setPurchases([
-          {
-            id: 1,
-            date: "2023-09-01",
-            itemType: "Bottles",
-            quantity: 1000,
-            price: 500,
-            orderId: 1,
-          },
-          {
-            id: 2,
-            date: "2023-09-15",
-            itemType: "Labels",
-            quantity: 5000,
-            price: 250,
-          },
-        ]);
       }
     })();
 
-    // Fetch orders data from API
+    // Fetch orders data
     (async () => {
-      try {
-        const response = await fetch("/api/orderss");
-        if (!response.ok) {
-          throw new Error("Failed to fetch ordersss");
+      if (sharedData?.orders.length > 0) {
+        setOrders(sharedData?.orders);
+      } else {
+        try {
+          const response = await fetch("/api/orderss");
+          if (!response.ok) {
+            throw new Error("Failed to fetch orders");
+          }
+          const data = await response.json();
+          console.log(data.orders);
+          setOrders(data.orders);
+          setSharedData((prevData) => ({ ...prevData, orders: data.orders }));
+        } catch (error) {
+          console.log(error);
+          setOrders([
+            {
+              id: 1,
+              customerId: 2,
+              customerName: "Customer A",
+              orderDate: "2024-09-01",
+              status: "Progress",
+              orderQty: 1,
+            },
+            {
+              id: 2,
+              customerId: 3,
+              customerName: "Customer B",
+              orderDate: "2024-09-02",
+              status: "Progress",
+              orderQty: 1,
+            },
+          ]);
         }
-        const data = await response.json();
-        console.log(data.ordersss);
-        setOrders(data.ordersss);
-      } catch (error) {
-        console.log(error);
-        setOrders([
-          {
-            id: 1,
-            customerId: 2,
-            customerName: "Customer A",
-            orderDate: "2024-09-01",
-            status: "Progress",
-            orderQty: 1,
-          },
-          {
-            id: 2,
-            customerId: 3,
-            customerName: "Customer B",
-            orderDate: "2024-09-02",
-            status: "Progress",
-            orderQty: 1,
-          },
-        ]);
       }
     })();
-  }, []);
+  }, [sharedData, setSharedData]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -196,10 +209,40 @@ const PurchaseRecordPage: React.FC = () => {
     }));
   };
 
-  const handleAddPurchase = () => {
+  const handleAddPurchase = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    //
+    (async () => {
+      try {
+        const response = await fetch("/api/purchasess", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newPurchase),
+        });
+
+        const data = await response.json();
+
+        // setSharedData((prevData) => ({
+        //   ...prevData,
+        //   purchases: [...prevData.purchases, data],
+        // }));
+        console.log(`New purchase added: ${data}`);
+      } catch (error) {
+        console.log(`Error: ${error}`);
+      }
+      //Move to try block when finished
+      const purchase = { id: purchases.length + 1, ...newPurchase };
+      setSharedData((prevData) => ({
+        ...prevData,
+        purchases: [...prevData.purchases, purchase],
+      })); //setting it in the useContext
+      //
+    })();
     // In a real application, you would send this data to your API
-    const purchase = { id: purchases.length + 1, ...newPurchase };
-    setPurchases((prev) => [...prev, purchase]);
+
     setNewPurchase({
       date: "",
       itemType: "",
@@ -211,6 +254,44 @@ const PurchaseRecordPage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
   };
+
+  const handleDeleteTapper = (id: number) => {
+    // In a real application, you would send a delete request to your API
+
+    // request call
+    (async (id: number) => {
+      try {
+        const response = await fetch(`/api/tapperss/${id}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete tapper");
+        }
+
+        const data = await response.json();
+        // setSharedData((prevData) => ({
+        //   ...prevData,
+        //   customers: prevData.customers
+        //     ? prevData.customers.filter(
+        //         (customer: Customer) => customer.customer_id !== id
+        //       )
+        //     : [],
+        // }));
+        console.log(`Tapper succesfully deleted: ${data}`);
+      } catch (error) {
+        console.log(`Error: ${error}`);
+      }
+    })(id);
+    //Move to try block
+    setSharedData((prevData) => ({
+      ...prevData,
+      purchases: prevData.purchases
+        ? prevData.purchases.filter((purchase: Purchase) => purchase.id !== id)
+        : [],
+    }));
+  };
+
   const handleSort = (key: keyof Purchase) => {
     let direction: "ascending" | "descending" = "ascending";
     if (
@@ -472,7 +553,11 @@ const PurchaseRecordPage: React.FC = () => {
               {filteredPurchases.map((purchase) => (
                 <Tr key={purchase.id}>
                   <Td>{purchase.date}</Td>
-                  <Td>{purchase.itemType}</Td>
+                  <Td>
+                    {purchase.itemType == "Other"
+                      ? purchase.customItemType
+                      : purchase.itemType}
+                  </Td>
                   <Td>{purchase.quantity}</Td>
                   <Td>${purchase.price.toFixed(2)}</Td>
                   <Td>
@@ -495,7 +580,9 @@ const PurchaseRecordPage: React.FC = () => {
                       icon={<Trash2 size={18} />}
                       className="delete-btn"
                       size="sm"
-                      onClick={() => {}}
+                      onClick={() => {
+                        handleDeleteTapper(purchase.id);
+                      }}
                     />
                   </Td>
                 </Tr>
@@ -523,7 +610,7 @@ const PurchaseRecordPage: React.FC = () => {
                   </FormControl>
                   <FormControl isRequired>
                     <FormLabel>Item Type</FormLabel>
-                    <select
+                    <Select
                       name="itemType"
                       value={newPurchase.itemType}
                       onChange={handleInputChange}
@@ -533,47 +620,59 @@ const PurchaseRecordPage: React.FC = () => {
                       <option value="Bottles">Bottles</option>
                       <option value="Labels">Labels</option>
                       <option value="Other">Other</option>
-                    </select>
+                    </Select>
+                    {newPurchase.itemType === "Other" && (
+                      <input
+                        type="text"
+                        name="customItemType"
+                        value={newPurchase.customItemType}
+                        onChange={handleInputChange}
+                        placeholder="Enter new category"
+                        className={styles.input}
+                      />
+                    )}
                   </FormControl>
                   <FormControl isRequired>
                     <FormLabel>Quantity</FormLabel>
                     <Input
                       type="number"
                       name="quantity"
+                      min={1}
+                      max={10000}
                       value={newPurchase.quantity}
                       onChange={handleInputChange}
                     />
                   </FormControl>
                   <FormControl isRequired>
-                    <FormLabel>Price</FormLabel>
+                    <FormLabel>Unit Price</FormLabel>
                     <Input
                       type="number"
                       name="price"
+                      min={1}
                       value={newPurchase.price}
                       onChange={handleInputChange}
                     />
                   </FormControl>
-
                   <FormControl isRequired>
-                    {newPurchase.itemType === "Bottles" && (
-                      <select
-                        name="orderId"
-                        value={newPurchase.orderId || ""}
-                        onChange={handleInputChange}
-                        className={styles.input}
-                      >
-                        <option value="">Select Order (Optional)</option>
-                        {orders.map((order) => (
-                          <option key={order.id} value={order.id}>
-                            {order.customerName} - {order.orderDate}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                  </FormControl>
-
-                  <FormControl>
-                    <FormLabel>Linked Order</FormLabel>
+                    {newPurchase.itemType === "Bottles" ||
+                      (newPurchase.itemType === "Other" && (
+                        <>
+                          <FormLabel>Linked Order</FormLabel>
+                          <Select
+                            name="orderId"
+                            value={newPurchase.orderId || ""}
+                            onChange={handleInputChange}
+                            className={styles.input}
+                          >
+                            <option value="">Select Order (Optional)</option>
+                            {orders.map((order) => (
+                              <option key={order.id} value={order.id}>
+                                {order.customerName} - {order.orderDate}
+                              </option>
+                            ))}
+                          </Select>
+                        </>
+                      ))}
                   </FormControl>
 
                   <Button mt={6} colorScheme="green" type="submit">

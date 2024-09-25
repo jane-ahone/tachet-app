@@ -13,6 +13,7 @@ export interface Purchase {
   itemType: string;
   quantity: number;
   price: number;
+  customItemType?: string;
   orderId?: number; // Optional because not all purchases (e.g., labels) are linked to orders
 }
 

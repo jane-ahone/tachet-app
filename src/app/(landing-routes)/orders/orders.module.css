@@ -3,12 +3,6 @@
   padding: 1.5rem 2rem;
 }
 
-.title {
-  font-size: 2.5rem;
-  color: #2c3e50;
-  margin-bottom: 1.5rem;
-}
-
 .actions {
   display: flex;
   justify-content: space-between;
