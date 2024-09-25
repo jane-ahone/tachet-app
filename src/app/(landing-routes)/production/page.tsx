@@ -82,43 +82,9 @@ const ProductionPage: React.FC = () => {
     status: "Pending",
   });
 
-  const [tappers, setTappers] = useState<Tapper[]>([
-    {
-      tapper_id: 1,
-      tapper_name: "John Doe",
-      phone_number: "123-456-7890",
-      email: "johndoe@example.com",
-      home_address: "123 Main St, Anytown, USA",
-      joiningDate: "2024-01-01",
-    },
-    {
-      tapper_id: 1,
-      tapper_name: "John Doe",
-      phone_number: "123-456-7890",
-      email: "johndoe@example.com",
-      home_address: "123 Main St, Anytown, USA",
-      joiningDate: "2024-01-01",
-    },
-  ]);
+  const [tappers, setTappers] = useState<Tapper[]>([]);
 
-  const [orders, setOrders] = useState<Order[]>([
-    {
-      id: 1,
-      customerId: 2,
-      customerName: "Customer A",
-      orderDate: "2024-09-01",
-      status: "Progress",
-      orderQty: 1,
-    },
-    {
-      id: 2,
-      customerId: 3,
-      customerName: "Customer B",
-      orderDate: "2024-09-02",
-      status: "Progress",
-      orderQty: 1,
-    },
-  ]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   const [previousEntries, setPreviousEntries] = useState<ProductionEntry[]>([]);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
@@ -179,28 +145,108 @@ const ProductionPage: React.FC = () => {
   useEffect(() => {
     // Fetch previous entries, tappers, and orders from API
     // For now, we'll use dummy data
-    setPreviousEntries([
-      {
-        id: 1,
-        date: "2024-09-01",
-        orderId: "1",
-        tapperId: "1",
-        volumeCollected: "100",
-        volumePaidFor: "90",
-        paymentStatus: "completed",
-        notes: "First batch",
-      },
-      {
-        id: 2,
-        date: "2024-09-02",
-        orderId: "2",
-        tapperId: "2",
-        volumeCollected: "150",
-        volumePaidFor: "150",
-        paymentStatus: "pending",
-        notes: "Second batch",
-      },
-    ]);
+
+    //Fetch orders
+    (async () => {
+      try {
+        const response = await fetch("/api/orderss");
+        if (!response.ok) {
+          throw new Error("Failed to fetch ordersss");
+        }
+        const data = await response.json();
+        console.log(data.ordersss);
+        setOrders(data.ordersss);
+      } catch (error) {
+        console.log(error);
+        setOrders([
+          {
+            id: 1,
+            customerId: 2,
+            customerName: "Customer A",
+            orderDate: "2024-09-01",
+            status: "Progress",
+            orderQty: 1,
+          },
+          {
+            id: 2,
+            customerId: 3,
+            customerName: "Customer B",
+            orderDate: "2024-09-02",
+            status: "Progress",
+            orderQty: 1,
+          },
+        ]);
+      }
+    })();
+
+    //Fetch tappers
+    (async () => {
+      try {
+        const response = await fetch("/api/tappers");
+        if (!response.ok) {
+          throw new Error("Failed to fetch tappers");
+        }
+        const data = await response.json();
+        console.log(data.tappers);
+        setTappers(data.tappers);
+      } catch (error) {
+        console.log(error);
+        setTappers([
+          {
+            tapper_id: 1,
+            tapper_name: "John Doe",
+            phone_number: "123-456-7890",
+            email: "johndoe@example.com",
+            home_address: "123 Main St, Anytown, USA",
+            joiningDate: "2024-01-01",
+          },
+          {
+            tapper_id: 1,
+            tapper_name: "John Doe",
+            phone_number: "123-456-7890",
+            email: "johndoe@example.com",
+            home_address: "123 Main St, Anytown, USA",
+            joiningDate: "2024-01-01",
+          },
+        ]);
+      }
+    })();
+
+    // Fetching production data
+    (async () => {
+      try {
+        const response = await fetch("/api/productions");
+        if (!response.ok) {
+          throw new Error("Failed to fetch production data");
+        }
+        const data = await response.json();
+        setPreviousEntries(data.production);
+      } catch (error) {
+        console.log(error);
+        setPreviousEntries([
+          {
+            id: 1,
+            date: "2024-09-01",
+            orderId: "1",
+            tapperId: "1",
+            volumeCollected: "100",
+            volumePaidFor: "90",
+            paymentStatus: "completed",
+            notes: "First batch",
+          },
+          {
+            id: 2,
+            date: "2024-09-02",
+            orderId: "2",
+            tapperId: "2",
+            volumeCollected: "150",
+            volumePaidFor: "150",
+            paymentStatus: "pending",
+            notes: "Second batch",
+          },
+        ]);
+      }
+    })();
   }, []);
 
   const handleInputChange = createHandleInputChange(setProductionData);
@@ -309,7 +355,7 @@ const ProductionPage: React.FC = () => {
             />
           </div>
           <select
-            className={styles.filterSelect}
+            className="filterSelect"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
           >

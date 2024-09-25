@@ -66,6 +66,90 @@ a {
   overflow: hidden;
 }
 
+/* Action buttons */
+
+.searchContainer {
+  position: relative;
+  flex-grow: 1;
+  max-width: 300px;
+}
+
+.searchInput {
+  width: 70%;
+  padding: 0.3rem 0.7rem 0.3rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  color: var(--Input-Text);
+  font-size: 700;
+}
+.searchInput::placeholder {
+  font-size: 0.8rem;
+  font-weight: 300;
+  opacity: 0.5;
+}
+
+.searchInput:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(52, 219, 102, 0.022);
+}
+
+.dateFilterContainer {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+  font-size: 0.7rem;
+}
+
+.dateFilterContainer:focus-within {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.calendarIcon {
+  color: #7f8c8d;
+  margin-right: 0.5rem;
+}
+
+.dateInput {
+  border: none;
+  font-size: 0.7rem;
+  padding: 0.25rem;
+  font-weight: 300;
+}
+
+.dateInput:focus {
+  outline: none;
+}
+
+.dateRangeSeparator {
+  margin: 0 0.5rem;
+  color: #7f8c8d;
+}
+
+.filterSelect {
+  padding: 0.5rem;
+  border: 1px solid #58575726;
+  background-color: white;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterSelect:focus {
+  outline: none;
+}
+
+.filterSelect option {
+  color: #7f8c8d;
+}
+
 .addButton {
   display: flex;
   align-items: center;

@@ -26,6 +26,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import ScrollToTopButton from "@/components/ScrolltoTop/page";
+import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
 
 const TapperManagementPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -87,7 +88,7 @@ const TapperManagementPage: React.FC = () => {
 
   useEffect(() => {
     // Fetch tappers data from API
-    const fetchTappers = async () => {
+    (async () => {
       try {
         const response = await fetch("/api/tappers");
         if (!response.ok) {
@@ -109,8 +110,7 @@ const TapperManagementPage: React.FC = () => {
           },
         ]);
       }
-    };
-    fetchTappers();
+    })();
   }, []);
 
   const handleInputChange = createHandleInputChange(setNewTapper);
@@ -206,10 +206,7 @@ const TapperManagementPage: React.FC = () => {
             />
           </div>
 
-          <button className={styles.addButton} onClick={onOpen}>
-            <UserPlus size={20} />
-            Add New Tapper
-          </button>
+          <AddNewRecordBtn onOpen={onOpen} />
         </div>
 
         {

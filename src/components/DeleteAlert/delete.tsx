@@ -1,51 +1,61 @@
-// import {
-//   useDisclosure,
-//   Button,
-//   AlertDialog,
-//   AlertDialogOverlay,
-//   AlertDialogContent,
-//   AlertDialogHeader,
-//   AlertDialogBody,
-//   AlertDialogFooter,
-// } from "@chakra-ui/react";
-// import React from "react";
+import React from "react";
+import {
+  useDisclosure,
+  Button,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
+} from "@chakra-ui/react";
 
-// function AlertDialogExample() {
-//   const { isOpen, onOpen, onClose } = useDisclosure();
-//   const cancelRef = React.useRef();
+interface Props {
+  openDialog: boolean;
+  //   deleteField: boolean;
+}
 
-//   return (
-//     <>
-//       <Button colorScheme="red" onClick={onOpen}>
-//         Delete Customer
-//       </Button>
+const AlertDialogExample: React.FC<Props> = ({
+  openDialog,
+  //   deleteField = false,
+}) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = React.useRef<HTMLButtonElement>(null);
 
-//       <AlertDialog
-//         isOpen={isOpen}
-//         leastDestructiveRef={cancelRef}
-//         onClose={onClose}
-//       >
-//         <AlertDialogOverlay>
-//           <AlertDialogContent>
-//             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-//               Delete Customer
-//             </AlertDialogHeader>
+  return (
+    <>
+      <Button colorScheme="red" onClick={onOpen}>
+        Delete Customer
+      </Button>
 
-//             <AlertDialogBody>
-//               Are you sure? You can&#39t undo this action afterwards.
-//             </AlertDialogBody>
+      <AlertDialog
+        isOpen={openDialog}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Customer
+            </AlertDialogHeader>
 
-//             <AlertDialogFooter>
-//               <Button ref={cancelRef} onClick={onClose}>
-//                 Cancel
-//               </Button>
-//               <Button colorScheme="red" onClick={onClose} ml={3}>
-//                 Delete
-//               </Button>
-//             </AlertDialogFooter>
-//           </AlertDialogContent>
-//         </AlertDialogOverlay>
-//       </AlertDialog>
-//     </>
-//   );
-// }
+            <AlertDialogBody>
+              Are you sure? You can&apos;t undo this action afterwards.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button colorScheme="red" onClick={onClose} ml={3}>
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </>
+  );
+};
+
+export default AlertDialogExample;

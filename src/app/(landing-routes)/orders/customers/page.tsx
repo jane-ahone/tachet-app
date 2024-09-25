@@ -2,14 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "./customer.module.css";
-import {
-  UserPlus,
-  Edit,
-  Trash2,
-  LogOut,
-  ShoppingBag,
-  Save,
-} from "lucide-react";
+import { UserPlus, Edit, Trash2, ShoppingBag, Save } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar/page";
 import EditModal from "@/components/EditModal/editModal";
 import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
@@ -27,9 +20,13 @@ import {
   Button,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useSharedContext } from "@/app/SharedContext";
+import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
 
 const CustomerManagementPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { sharedData, setSharedData } = useSharedContext();
+
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [formInitialData, setFormInitialData] = useState<Customer>({
     customer_id: 1,
@@ -88,15 +85,17 @@ const CustomerManagementPage: React.FC = () => {
   ];
 
   useEffect(() => {
+    // Use effect
+    // const customerData: Customer[] = sharedData?.customer;
+    // setCustomers(customerData);
     // Fetch tappers data from API
-    const fetchCustomers = async () => {
+    (async () => {
       try {
         const response = await fetch("/api/customerss");
         if (!response.ok) {
           throw new Error("Failed to fetch tappers");
         }
         const data = await response.json();
-
         setCustomers(data.tappers);
       } catch (error) {
         console.log(error);
@@ -111,8 +110,7 @@ const CustomerManagementPage: React.FC = () => {
           },
         ]);
       }
-    };
-    fetchCustomers();
+    })();
   }, []);
 
   const handleInputChange = createHandleInputChange(setNewCustomer);
@@ -137,7 +135,7 @@ const CustomerManagementPage: React.FC = () => {
         }
 
         const data = await response.json();
-        console.log(`New customerss added: ${data}`);
+        console.log(`New customer added: ${data}`);
       } catch (error) {
         console.log(`Error: ${error}`);
       }
@@ -168,7 +166,7 @@ const CustomerManagementPage: React.FC = () => {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to delete customerss");
+          throw new Error("Failed to delete customer");
         }
 
         const data = await response.json();
@@ -206,10 +204,7 @@ const CustomerManagementPage: React.FC = () => {
               className={styles.searchInput}
             />
           </div>
-          <button className={styles.addButton} onClick={onOpen}>
-            <UserPlus size={20} />
-            Add New Tapper
-          </button>
+          <AddNewRecordBtn onOpen={onOpen} />
         </div>
 
         {

@@ -92,24 +92,6 @@
   margin: 0 0.5rem;
   color: #7f8c8d;
 }
-.filterSelect {
-  padding: 0.5rem;
-  border: 1px solid #58575726;
-  background-color: white;
-  border-radius: 0.5rem;
-  font-size: 0.8rem;
-  color: #7f8c8d;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.filterSelect:focus {
-  outline: none;
-}
-
-.filterSelect option {
-  color: #7f8c8d;
-}
 
 .addButton {
   position: absolute;

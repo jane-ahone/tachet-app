@@ -1,6 +1,5 @@
 "use client";
 import styles from "./page.module.css";
-import { getSession } from "@/lib/auth/action";
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/layout/Sidebar/page";
 import CustomCard from "@/components/layout/Card/page";
@@ -10,6 +9,7 @@ import Link from "next/link";
 import { Card } from "@chakra-ui/react";
 import { fetchSessionData } from "@/lib/helpers/authHelpers";
 import { SessionData } from "@/lib/types/interface";
+import { useSharedContext } from "./SharedContext";
 
 export default function Home() {
   const [session, setSession] = useState<SessionData | undefined>(undefined); // Initialize session state
@@ -21,6 +21,38 @@ export default function Home() {
     };
     userLoggedIn();
   }, []); // Empty dependency array to run only once on mount
+
+  const { sharedData, setSharedData } = useSharedContext();
+
+  //Fetch customers
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await fetch("/api/customers");
+        if (!response.ok) {
+          throw new Error("Failed to fetch customers");
+        }
+        const data = await response.json();
+        console.log(data);
+        setSharedData({ ...sharedData, customers: data.customers });
+      } catch (error) {
+        console.error(error);
+        setSharedData({
+          ...sharedData,
+          customer: [
+            {
+              customer_id: 1,
+              customer_name: "John Doe",
+              phone_number: "1234567890",
+              email: "john@example.com",
+              home_address: "There's been an error",
+            },
+          ],
+        });
+      }
+    })();
+  }, []);
 
   return (
     <main className={styles.main}>
@@ -61,7 +93,6 @@ export default function Home() {
         </div>
         <div>
           <ReportsPage />
-          <Card>Hello</Card>
         </div>
       </div>
     </main>

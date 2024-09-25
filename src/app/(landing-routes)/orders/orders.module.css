@@ -17,32 +17,6 @@
   margin-bottom: 2rem;
 }
 
-.searchContainer {
-  position: relative;
-  flex-grow: 1;
-  max-width: 300px;
-}
-
-.searchInput {
-  width: 70%;
-  padding: 0.3rem 0.7rem 0.3rem 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 0.5rem;
-  transition: all 0.3s ease;
-  color: var(--Input-Text);
-  font-size: 700;
-}
-.searchInput::placeholder {
-  font-size: 0.8rem;
-  font-weight: 300;
-  opacity: 0.5;
-}
-
-.searchInput:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(52, 219, 102, 0.022);
-}
-
 .filterSelect {
   padding: 0.5rem;
   border: 1px solid #58575726;

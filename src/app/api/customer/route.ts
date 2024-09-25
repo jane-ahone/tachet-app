@@ -3,10 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
 
 export async function GET(req: NextRequest) {
-  // Read all tappers
+  // Read all customers
   try {
     const queryString: string = "SELECT * FROM customer";
     const result = await query(queryString);
+    console.log(result.rows);
     return NextResponse.json({ customers: result.rows }, { status: 201 });
   } catch (error) {
     console.log("Database query error:", error);
@@ -18,6 +19,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  console.log("I have been hit:Post");
   // Create a new tapper
   const { customer_name, phone_number, email, home_address } = await req.json();
 
@@ -42,7 +44,7 @@ export async function POST(req: NextRequest) {
       home_address,
     ]);
 
-    return NextResponse.json({ newTapper: result.rows[0] }, { status: 201 });
+    return NextResponse.json({ newCustomer: result.rows[0] }, { status: 201 });
   } catch (error) {
     console.log("Database query error:", error);
     return NextResponse.json(

@@ -1,12 +1,16 @@
 "use client";
 
+/*OrderData stores field values when adding information to the table
+  Orders stores all the order information
+  formInitialData stores the initial information to be updated
+  UpdateModal is used to toggle the visibility of the update modal
+  */
+
 import React, { useState, useEffect } from "react";
 import styles from "./orders.module.css";
 import Sidebar from "@/components/layout/Sidebar/page";
 import {
-  LogOut,
   Users,
-  PlusCircle,
   ArrowUp,
   ArrowDown,
   Edit,
@@ -49,10 +53,13 @@ import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
 import CustomButton from "@/components/Button/button";
 import ScrollToTopButton from "@/components/ScrolltoTop/page";
 import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
+import AlertDialogExample from "@/components/DeleteAlert/delete";
+import { useSharedContext } from "@/app/SharedContext";
 
 const OrderPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+  const { sharedData, setSharedData } = useSharedContext();
 
   //Navbar icons and route links
 
@@ -78,12 +85,6 @@ const OrderPage: React.FC = () => {
   ];
 
   const statusOptions = ["pending", "inprogress", "completed"];
-
-  /*OrderData stores field values when adding information to the table
-  Orders stores all the order information
-  formInitialData stores the initial information to be updated
-  UpdateModal is used to toggle the visibility of the update modal
-  */
 
   const [orderData, setOrderData] = useState<OrderData>({
     customerId: 1,
@@ -138,20 +139,66 @@ const OrderPage: React.FC = () => {
       required: true,
     },
   ];
+  const customerData: Customer[] = sharedData?.customers;
+  console.log("Customer data", customerData);
 
   useEffect(() => {
     // Fetch customers and orders from API
-    // For now, we'll use dummy data
+
+    if (!customerData) {
+      console.log("I am  not fileedddd");
+      (async () => {
+        try {
+          const response = await fetch("/api/customerss");
+          if (!response.ok) {
+            throw new Error("Failed to fetch tappers");
+          }
+          const data = await response.json();
+          setSharedData({ ...sharedData, customers: data.customers }); //Assigning it to context
+          setCustomers(data.tappers);
+        } catch (error) {
+          console.log(error);
+          setCustomers([
+            {
+              customer_id: 1,
+              customer_name: "John Doe",
+              phone_number: "1234567890",
+              email: "there's been an error",
+              home_address: "123 Palm St",
+              registrationDate: "2023-01-15",
+            },
+          ]);
+        }
+      })();
+    } else {
+      console.log("I am filled");
+      setCustomers(customerData);
+    }
+
+    (async () => {
+      try {
+        const response = await fetch("/api/customerss");
+        if (!response.ok) {
+          throw new Error("Failed to fetch tappers");
+        }
+        const data = await response.json();
+
+        setCustomers(data.tappers);
+      } catch (error) {
+        console.log(error);
+        setCustomers([
+          {
+            customer_id: 1,
+            customer_name: "John Doe",
+            phone_number: "1234567890",
+            email: "there's been an error",
+            home_address: "123 Palm St",
+            registrationDate: "2023-01-15",
+          },
+        ]);
+      }
+    })();
     // I will use a join so this set Customers will go
-    setCustomers([
-      {
-        customer_id: 1,
-        customer_name: "John Doe",
-        phone_number: "1234567890",
-        email: "john@example.com",
-        home_address: "123 Main St",
-      },
-    ]);
 
     (async () => {
       try {
@@ -209,10 +256,7 @@ const OrderPage: React.FC = () => {
     });
     setUpdateModal(true);
   };
-  const handleDelete = (id: any) => {
-    console.log("Delete order", id);
-    alert("Are you sure you want to delete this field?");
-
+  const handleDelete = (id: number) => {
     const deleteOrderDB = async (id: number) => {
       try {
         const response = await fetch(`/api/orderss/${id}`, {
@@ -251,7 +295,6 @@ const OrderPage: React.FC = () => {
         if (!response.ok) {
           throw new Error("Failed to add order");
         }
-
         const data = await response.json();
         console.log(`New order added: ${data}`);
       } catch (error) {
@@ -318,11 +361,11 @@ const OrderPage: React.FC = () => {
 
       <div className={styles.content}>
         <div className={styles.actions}>
-          <div className={styles.searchContainer}>
+          <div className="searchContainer">
             <input
               type="text"
               placeholder="Search orders..."
-              className={styles.searchInput}
+              className="searchInput"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -338,17 +381,13 @@ const OrderPage: React.FC = () => {
             <option value="completed">completed</option>
           </select>
         </div>
-
         {/* <div className="cardSummary">
           <CustomCard title="pending" data={`Orders: 1 Volume:200L`} />
           <CustomCard title="inprogress" data="Orders: 1 Volume:200L" />
           <CustomCard title="completed" data="Orders: 1 Volume:200L" />
         </div> */}
 
-        {/* Can make this button reusable */}
-
         <AddNewRecordBtn onOpen={onOpen} />
-
         <Table variant="simple" className="dataTable">
           <Thead>
             <Tr sx={{ backgroundColor: "#32593b" }}>
@@ -426,7 +465,6 @@ const OrderPage: React.FC = () => {
             ))}
           </Tbody>
         </Table>
-
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
@@ -508,11 +546,9 @@ const OrderPage: React.FC = () => {
             </ModalBody>
           </ModalContent>
         </Modal>
-
         {/* Can make this code reusable */}
 
         <ScrollToTopButton />
-
         {updateModal ? (
           <EditModal
             initialData={formInitialData}
