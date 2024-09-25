@@ -78,7 +78,7 @@ const OrderPage: React.FC = () => {
     },
     {
       route: "Customers",
-      link: "/customers",
+      link: "/orders/customers",
       icon: Users,
       id: "customers",
     },

@@ -25,7 +25,6 @@ import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
 
 const CustomerManagementPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { sharedData, setSharedData } = useSharedContext();
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [formInitialData, setFormInitialData] = useState<Customer>({
@@ -44,7 +43,8 @@ const CustomerManagementPage: React.FC = () => {
       registrationDate: "",
     }
   );
-  const [isAdding, setIsAdding] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [updateModal, setUpdateModal] = useState<boolean>(false);
 
@@ -83,43 +83,51 @@ const CustomerManagementPage: React.FC = () => {
       required: true,
     },
   ];
+  const { sharedData, setSharedData } = useSharedContext();
 
   useEffect(() => {
-    // Use effect
-    // const customerData: Customer[] = sharedData?.customer;
-    // setCustomers(customerData);
-    // Fetch tappers data from API
-    (async () => {
+    const fetchCustomers = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        const response = await fetch("/api/customerss");
+        const response = await fetch("/api/customers");
         if (!response.ok) {
-          throw new Error("Failed to fetch tappers");
+          throw new Error("Failed to fetch customers");
         }
         const data = await response.json();
-        setCustomers(data.tappers);
+        setCustomers(data.customers);
+        setSharedData({ ...sharedData, customers: data.customers });
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        setError("An error occurred while fetching customer data.");
         setCustomers([
           {
             customer_id: 1,
             customer_name: "John Doe",
             phone_number: "1234567890",
-            email: "there's been an error",
+            email: "error@example.com",
             home_address: "123 Palm St",
             registrationDate: "2023-01-15",
           },
         ]);
+      } finally {
+        setIsLoading(false);
       }
-    })();
-  }, []);
+    };
+
+    if (sharedData?.customers.length > 0) {
+      setCustomers(sharedData?.customers);
+    } else {
+      fetchCustomers();
+    }
+  }, [sharedData]);
 
   const handleInputChange = createHandleInputChange(setNewCustomer);
 
-  const handleAddCustomer = () => {
+  const handleAddCustomer = (e: React.FormEvent) => {
     // In a real application, you would send this data to your API
-    const customer = { customer_id: customers.length + 1, ...newCustomer };
-    setCustomers((prev) => [...prev, customer]);
-    //
+    e.preventDefault();
+
     (async () => {
       try {
         const response = await fetch("/api/customerss", {
@@ -130,15 +138,23 @@ const CustomerManagementPage: React.FC = () => {
           body: JSON.stringify(newCustomer),
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to add customerss");
-        }
-
         const data = await response.json();
+
+        // setSharedData((prevData) => ({
+        //   ...prevData,
+        //   customers: [...prevData.customers, data],
+        // }));
         console.log(`New customer added: ${data}`);
       } catch (error) {
         console.log(`Error: ${error}`);
       }
+      //Move to try block when finished
+      const customer = { customer_id: customers.length + 1, ...newCustomer };
+      setSharedData((prevData) => ({
+        ...prevData,
+        customers: [...prevData.customers, customer],
+      })); //setting it in the useContext
+      //
     })();
 
     //Resetting customer
@@ -149,17 +165,13 @@ const CustomerManagementPage: React.FC = () => {
       home_address: "",
       registrationDate: "",
     });
-    setIsAdding(false);
   };
 
   const handleDeleteCustomer = (id: number) => {
     // In a real application, you would send a delete request to your API
-    setCustomers((prev) =>
-      prev.filter((customer) => customer.customer_id !== id)
-    );
 
     // request call
-    const deleteCustomerDB = async (id: number) => {
+    (async (id: number) => {
       try {
         const response = await fetch(`/api/customerss/${id}`, {
           method: "DELETE",
@@ -170,21 +182,48 @@ const CustomerManagementPage: React.FC = () => {
         }
 
         const data = await response.json();
+        // setSharedData((prevData) => ({
+        //   ...prevData,
+        //   customers: prevData.customers
+        //     ? prevData.customers.filter(
+        //         (customer: Customer) => customer.customer_id !== id
+        //       )
+        //     : [],
+        // }));
         console.log(`Customer succesfully deleted: ${data}`);
       } catch (error) {
         console.log(`Error: ${error}`);
       }
-    };
-
-    deleteCustomerDB(id);
+    })(id);
+    //Move to try block
+    setSharedData((prevData) => ({
+      ...prevData,
+      customers: prevData.customers
+        ? prevData.customers.filter(
+            (customer: Customer) => customer.customer_id !== id
+          )
+        : [],
+    }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleEditField = (id: number) => {
+    customers.map((customer) => {
+      if (customer.customer_id == id) {
+        setFormInitialData(customer);
+      }
+    });
+    setUpdateModal(true);
+  };
+  const handleUpdateCustomer = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Submitted order data:");
     // Here you would typically send this data to your backend
     // After successful submission:
   };
+
+  console.log(formInitialData);
+
+  console.log("My customers", customers);
 
   const filteredCustomers = customers.filter((customer) =>
     customer.customer_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -195,13 +234,13 @@ const CustomerManagementPage: React.FC = () => {
       <Sidebar title="Customers" alignment="top" sideNavitems={sideItems} />
       <div className={styles.contentContainer}>
         <div className={styles.actionBar}>
-          <div className={styles.searchBar}>
+          <div className="searchContainer">
             <input
               type="text"
               placeholder="Search customers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={styles.searchInput}
+              className="searchInput"
             />
           </div>
           <AddNewRecordBtn onOpen={onOpen} />
@@ -219,7 +258,7 @@ const CustomerManagementPage: React.FC = () => {
                     <FormLabel>Name</FormLabel>
                     <Input
                       type="text"
-                      name="tapper_name"
+                      name="customer_name"
                       value={newCustomer.customer_name}
                       onChange={handleInputChange}
                       placeholder="Name"
@@ -281,7 +320,7 @@ const CustomerManagementPage: React.FC = () => {
                   <Edit
                     size={18}
                     onClick={() => {
-                      setUpdateModal(true);
+                      handleEditField(customer.customer_id);
                     }}
                   />
                 </button>
@@ -302,7 +341,7 @@ const CustomerManagementPage: React.FC = () => {
           fields={fields}
           updateModal={updateModal}
           setUpdateModal={setUpdateModal}
-          handleSubmit={handleSubmit}
+          handleSubmit={handleUpdateCustomer}
         />
       ) : null}
     </div>

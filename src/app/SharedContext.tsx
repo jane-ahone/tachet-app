@@ -15,7 +15,11 @@ interface SharedProvider {
 }
 
 export const SharedProvider: React.FC<SharedProvider> = ({ children }) => {
-  const [sharedData, setSharedData] = useState<Record<string, any>>({});
+  const [sharedData, setSharedData] = useState<Record<string, Array<any>>>({
+    customers: [],
+    tappers: [],
+    orders: [],
+  });
   return (
     <SharedContext.Provider value={{ sharedData, setSharedData }}>
       {children}

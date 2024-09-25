@@ -27,18 +27,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.searchInput {
-  border: none;
-  background: transparent;
-  margin-left: 0.5rem;
-  font-size: 1rem;
-  width: 200px;
-}
-
-.searchInput:focus {
-  outline: none;
-}
-
 .addForm {
   background-color: #fff;
   border-radius: 8px;

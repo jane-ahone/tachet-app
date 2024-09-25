@@ -31,7 +31,7 @@ export interface Tapper {
   phone_number: string;
   email: string;
   home_address: string;
-  joiningDate: string;
+  joiningDate?: string;
 }
 
 export interface ProductionData {

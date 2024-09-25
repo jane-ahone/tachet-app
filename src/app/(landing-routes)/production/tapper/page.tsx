@@ -7,7 +7,7 @@ Improve the error handling for if the first api call fails
 
 import React, { useState, useEffect } from "react";
 import styles from "./tapper.module.css";
-import { UserPlus, Edit, Trash2, LogOut, Hammer, Save } from "lucide-react";
+import { Edit, Trash2, Hammer, Save } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar/page";
 import EditModal from "@/components/EditModal/editModal";
 import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
@@ -27,6 +27,7 @@ import {
 } from "@chakra-ui/react";
 import ScrollToTopButton from "@/components/ScrolltoTop/page";
 import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
+import { useSharedContext } from "@/app/SharedContext";
 
 const TapperManagementPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -38,13 +39,12 @@ const TapperManagementPage: React.FC = () => {
     home_address: "",
     joiningDate: "",
   });
-  const [formInitialData, setFormInitialData] = useState<Order>({
-    id: 1,
-    customerId: 2,
-    customerName: "John Doe",
-    orderQty: 1,
-    orderDate: new Date().toISOString().split("T")[0],
-    status: "Pending",
+  const [formInitialData, setFormInitialData] = useState<Tapper>({
+    tapper_id: 1,
+    phone_number: "697624530",
+    tapper_name: "John Doe",
+    email: "jack@gmail.com",
+    home_address: "Pending",
   });
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -85,10 +85,11 @@ const TapperManagementPage: React.FC = () => {
       required: true,
     },
   ];
+  const { sharedData, setSharedData } = useSharedContext();
 
   useEffect(() => {
     // Fetch tappers data from API
-    (async () => {
+    const fetchTappers = async () => {
       try {
         const response = await fetch("/api/tappers");
         if (!response.ok) {
@@ -97,6 +98,7 @@ const TapperManagementPage: React.FC = () => {
         const data = await response.json();
         console.log(data.tappers);
         setTappers(data.tappers);
+        setSharedData({ ...sharedData, tappers: data.tappers });
       } catch (error) {
         console.log(error);
         setTappers([
@@ -110,25 +112,21 @@ const TapperManagementPage: React.FC = () => {
           },
         ]);
       }
-    })();
-  }, []);
+    };
+    if (sharedData?.tappers.length > 0) {
+      setTappers(sharedData?.tappers);
+    } else {
+      fetchTappers();
+    }
+  }, [sharedData, setSharedData]);
 
   const handleInputChange = createHandleInputChange(setNewTapper);
-  const handleUpdateTapper = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("UpdateTapperted order data:");
-    // Here you would typically send this data to your backend
-    // After successful submission:
-  };
 
   const handleAddTapper = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const tapper = { tapper_id: tappers.length + 1, ...newTapper };
-    setTappers((prev) => [...prev, tapper]);
-
     //sending data to API
-    const addTapperDB = async () => {
+    (async () => {
       try {
         const response = await fetch("/api/tapper", {
           method: "POST",
@@ -143,12 +141,21 @@ const TapperManagementPage: React.FC = () => {
         }
 
         const data = await response.json();
+        // setSharedData((prevData) => ({
+        //   ...prevData,
+        //   tappers: [...prevData.tappers, data],
+        // }));
         console.log(`New tapper added: ${data}`);
       } catch (error) {
         console.log(`Error: ${error}`);
       }
-    };
-    addTapperDB();
+      //Move to try block when finished
+      const tapper = { tapper_id: tappers.length + 1, ...newTapper };
+      setSharedData((prevData) => ({
+        ...prevData,
+        tappers: [...prevData.tappers, tapper],
+      }));
+    })();
 
     //reset tappers
     setNewTapper({
@@ -160,8 +167,20 @@ const TapperManagementPage: React.FC = () => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleEditField = (id: number) => {
+    tappers.map((tapper) => {
+      if (tapper.tapper_id == id) {
+        setFormInitialData(tapper);
+      }
+    });
+    setUpdateModal(true);
+  };
+
+  const handleUpdateTapper = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("UpdateTapperted order data:");
+    // Here you would typically send this data to your backend
+    // After successful submission:
   };
 
   const handleDeleteTapper = (id: number) => {
@@ -184,7 +203,12 @@ const TapperManagementPage: React.FC = () => {
     };
 
     deleteTapperDB(id);
-    setTappers((prev) => prev.filter((tapper) => tapper.tapper_id !== id));
+    setSharedData((prevData) => ({
+      ...prevData,
+      tappers: prevData.tappers
+        ? prevData.tappers.filter((tapper: Tapper) => tapper.tapper_id !== id)
+        : [],
+    }));
   };
 
   const filteredTappers = tappers.filter((tapper) =>
@@ -283,7 +307,7 @@ const TapperManagementPage: React.FC = () => {
                   <Edit
                     size={18}
                     onClick={() => {
-                      setUpdateModal(true);
+                      handleEditField(tapper.tapper_id);
                     }}
                   />
                 </button>
@@ -299,6 +323,7 @@ const TapperManagementPage: React.FC = () => {
             </div>
           ))}
         </div>
+        <ScrollToTopButton />
 
         {updateModal ? (
           <EditModal
