@@ -1,6 +1,8 @@
 .content {
   flex-grow: 1;
   padding: 1.5rem 2rem;
+  background-color: white;
+  margin: 2;
 }
 
 .actions {

@@ -41,7 +41,7 @@ export interface ProductionData {
   tapperId: string;
   volumeCollected: string;
   volumePaidFor: string;
-  paymentStatus: string;
+  tapperPaymentStatus: string;
   notes: string;
 }
 

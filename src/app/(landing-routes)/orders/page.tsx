@@ -191,7 +191,7 @@ const OrderPage: React.FC = () => {
               customerId: 1,
               customerName: "Customer A",
               orderDate: "2024-09-01",
-              status: "Progress",
+              status: "inprogress",
               orderQty: 1,
             },
             {
@@ -199,7 +199,7 @@ const OrderPage: React.FC = () => {
               customerId: 3,
               customerName: "Customer B",
               orderDate: "2024-09-02",
-              status: "Progress",
+              status: "inprogress",
               orderQty: 1,
             },
           ]);
@@ -363,9 +363,11 @@ const OrderPage: React.FC = () => {
             />
           </div>
           <select
-            className={styles.filterSelect}
+            className="filterSelect"
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
+            onChange={(e: {
+              target: { value: React.SetStateAction<string> };
+            }) => setFilterStatus(e.target.value)}
           >
             <option value="">All Statuses</option>
             <option value="pending">pending</option>

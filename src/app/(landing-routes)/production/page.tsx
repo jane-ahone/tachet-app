@@ -33,6 +33,12 @@ import {
   Th,
   Thead,
   Tr,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  TabIndicator,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import EditModal from "@/components/EditModal/editModal";
@@ -71,7 +77,7 @@ const ProductionPage: React.FC = () => {
     tapperId: "",
     volumeCollected: "",
     volumePaidFor: "",
-    paymentStatus: "",
+    tapperPaymentStatus: "",
     notes: "",
   });
 
@@ -82,7 +88,7 @@ const ProductionPage: React.FC = () => {
     tapperId: "",
     volumeCollected: "",
     volumePaidFor: "",
-    paymentStatus: "",
+    tapperPaymentStatus: "",
     notes: "",
   });
 
@@ -244,7 +250,7 @@ const ProductionPage: React.FC = () => {
               tapperId: "1",
               volumeCollected: "100",
               volumePaidFor: "90",
-              paymentStatus: "completed",
+              tapperPaymentStatus: "completed",
               notes: "First batch",
             },
             {
@@ -254,7 +260,7 @@ const ProductionPage: React.FC = () => {
               tapperId: "2",
               volumeCollected: "150",
               volumePaidFor: "150",
-              paymentStatus: "pending",
+              tapperPaymentStatus: "pending",
               notes: "Second batch",
             },
           ]);
@@ -302,7 +308,7 @@ const ProductionPage: React.FC = () => {
         tapperId: "",
         volumeCollected: "",
         volumePaidFor: "",
-        paymentStatus: "",
+        tapperPaymentStatus: "",
         notes: "",
       });
 
@@ -380,9 +386,9 @@ const ProductionPage: React.FC = () => {
   });
 
   const filteredEntries = sortedEntries.filter((entry) => {
-    const matchesStatus = entry.paymentStatus
-      .toLowerCase()
-      .includes(filterStatus.toLowerCase());
+    const matchesStatus = entry.tapperPaymentStatus.includes(
+      filterStatus.toLowerCase()
+    );
     const matchesSearch =
       entry.date.includes(searchTerm) ||
       tappers
@@ -395,7 +401,9 @@ const ProductionPage: React.FC = () => {
         .includes(searchTerm.toLowerCase()) ||
       entry.volumeCollected.includes(searchTerm) ||
       entry.volumePaidFor.includes(searchTerm) ||
-      entry.paymentStatus.toLowerCase().includes(searchTerm.toLowerCase());
+      entry.tapperPaymentStatus
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
     const matchesDateRange =
       (!startDate || entry.date >= startDate) &&
       (!endDate || entry.date <= endDate);
@@ -407,46 +415,72 @@ const ProductionPage: React.FC = () => {
     <div className="page-container-routes">
       <Sidebar title="Production" sideNavitems={sideItems} alignment="top" />
 
-      <div className={styles.content}>
-        <div className={styles.actions}>
-          <div className={styles.searchContainer}>
-            <input
-              type="text"
-              placeholder="Search entries..."
-              className={styles.searchInput}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className={styles.dateFilterContainer}>
-            <input
-              type="date"
-              className={styles.dateInput}
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              placeholder="Start Date"
-            />
-            <span className={styles.dateRangeSeparator}>to</span>
-            <input
-              type="date"
-              className={styles.dateInput}
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              placeholder="End Date"
-            />
-          </div>
-          <select
-            className="filterSelect"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-          >
-            <option value="">All Statuses</option>
-            <option value="completed">Completed</option>
-            <option value="pending">Pending</option>
-          </select>
-        </div>
+      <Tabs
+        size="sm"
+        position="relative"
+        variant="line"
+        align="center"
+        defaultIndex={0}
+        isFitted
+      >
+        <TabList
+          bg={"white"}
+          marginTop="3rem"
+          marginBottom="1rem"
+          marginX="1rem"
+        >
+          <Tab fontWeight={700} padding={4}>
+            {" "}
+            Collection
+          </Tab>
+          <Tab fontWeight={700} padding={4}>
+            {" "}
+            Bottling
+          </Tab>
+        </TabList>
 
-        {/* <div className="cardSummary">
+        <TabPanels>
+          <TabPanel>
+            <div className={styles.content}>
+              <div className="actions">
+                <div className="dateFilterContainer">
+                  <input
+                    type="date"
+                    className="dateInput"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    placeholder="Start Date"
+                  />
+                  <span className="dateRangeSeparator">to</span>
+                  <input
+                    type="date"
+                    className="dateInput"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    placeholder="End Date"
+                  />
+                </div>
+                <div className="searchContainer">
+                  <input
+                    type="text"
+                    placeholder="Search entries..."
+                    className="searchInput"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <select
+                  className="filterSelect"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                >
+                  <option value="">All Statuses</option>
+                  <option value="completed">Completed</option>
+                  <option value="pending">Pending</option>
+                </select>
+              </div>
+
+              {/* <div className="cardSummary">
           <CustomCard
             title="Completed"
             data="15,000L"
@@ -459,248 +493,300 @@ const ProductionPage: React.FC = () => {
           />
         </div> */}
 
-        <div className={styles.card}>
-          <AddNewRecordBtn onOpen={onOpen} />
-          <Table variant="simple" className="dataTable">
-            <Thead>
-              <Tr sx={{ backgroundColor: "#32593b" }}>
-                <Th color="white" onClick={() => handleSort("date")}>
-                  Date
-                  {sortConfig.key === "date" &&
-                    (sortConfig.direction === "ascending" ? (
-                      <ArrowUp
-                        style={{ display: "inline-block", marginLeft: "1rem" }}
-                        size={14}
-                      />
-                    ) : (
-                      <ArrowDown
-                        style={{ display: "inline-block", marginLeft: "1rem" }}
-                        size={14}
-                      />
+              <div className={styles.card}>
+                <AddNewRecordBtn onOpen={onOpen} />
+                <Table variant="simple" className="dataTable">
+                  <Thead>
+                    <Tr sx={{ backgroundColor: "#32593b" }}>
+                      <Th color="white" onClick={() => handleSort("date")}>
+                        Date
+                        {sortConfig.key === "date" &&
+                          (sortConfig.direction === "ascending" ? (
+                            <ArrowUp
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ) : (
+                            <ArrowDown
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ))}
+                      </Th>
+                      <Th color="white">Order</Th>
+                      <Th color="white">Tapper</Th>
+                      <Th
+                        color="white"
+                        onClick={() => handleSort("volumeCollected")}
+                      >
+                        Volume Collected (L)
+                        {sortConfig.key === "volumeCollected" &&
+                          (sortConfig.direction === "ascending" ? (
+                            <ArrowUp
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ) : (
+                            <ArrowDown
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ))}
+                      </Th>
+                      <Th
+                        color="white"
+                        onClick={() => handleSort("volumePaidFor")}
+                      >
+                        Volume Paid For (L)
+                        {sortConfig.key === "volumePaidFor" &&
+                          (sortConfig.direction === "ascending" ? (
+                            <ArrowUp
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ) : (
+                            <ArrowDown
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ))}
+                      </Th>
+                      <Th
+                        color="white"
+                        onClick={() => handleSort("tapperPaymentStatus")}
+                      >
+                        Tapper Payment Status
+                        {sortConfig.key === "tapperPaymentStatus" &&
+                          (sortConfig.direction === "ascending" ? (
+                            <ArrowUp
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ) : (
+                            <ArrowDown
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ))}
+                      </Th>
+                      <Th color="white">Actions</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {filteredEntries.map((entry) => (
+                      <Tr key={entry.id}>
+                        <Td padding="2rem">{entry.date}</Td>
+                        <Td>
+                          {
+                            orders.find(
+                              (o) => o.id.toString() === entry.orderId
+                            )?.customerName
+                          }
+                        </Td>
+                        <Td>
+                          {
+                            tappers.find(
+                              (t) => t.tapper_id.toString() === entry.tapperId
+                            )?.tapper_name
+                          }
+                        </Td>
+                        <Td>{entry.volumeCollected}</Td>
+                        <Td>{entry.volumePaidFor}</Td>
+                        <Td>
+                          <span
+                            className={
+                              "status " + `${[entry.tapperPaymentStatus]}`
+                            }
+                          >
+                            {entry.tapperPaymentStatus}
+                          </span>
+                        </Td>
+
+                        <Td>
+                          <IconButton
+                            aria-label="Edit entry"
+                            icon={<Edit size={18} />}
+                            className="edit-btn"
+                            size="sm"
+                            mr={2}
+                            onClick={() => handleEditField(entry.id)}
+                          />
+                          <IconButton
+                            aria-label="Delete entry"
+                            icon={<Trash2 size={18} />}
+                            className="delete-btn"
+                            size="sm"
+                            onClick={() => {
+                              handleDelete(entry.id);
+                            }}
+                          />
+                        </Td>
+                      </Tr>
                     ))}
-                </Th>
-                <Th color="white">Order</Th>
-                <Th color="white">Tapper</Th>
-                <Th color="white" onClick={() => handleSort("volumeCollected")}>
-                  Volume Collected (L)
-                  {sortConfig.key === "volumeCollected" &&
-                    (sortConfig.direction === "ascending" ? (
-                      <ArrowUp
-                        style={{ display: "inline-block", marginLeft: "1rem" }}
-                        size={14}
-                      />
-                    ) : (
-                      <ArrowDown
-                        style={{ display: "inline-block", marginLeft: "1rem" }}
-                        size={14}
-                      />
-                    ))}
-                </Th>
-                <Th color="white" onClick={() => handleSort("volumePaidFor")}>
-                  Volume Paid For (L)
-                  {sortConfig.key === "volumePaidFor" &&
-                    (sortConfig.direction === "ascending" ? (
-                      <ArrowUp
-                        style={{ display: "inline-block", marginLeft: "1rem" }}
-                        size={14}
-                      />
-                    ) : (
-                      <ArrowDown
-                        style={{ display: "inline-block", marginLeft: "1rem" }}
-                        size={14}
-                      />
-                    ))}
-                </Th>
-                <Th color="white" onClick={() => handleSort("paymentStatus")}>
-                  Payment Status
-                  {sortConfig.key === "paymentStatus" &&
-                    (sortConfig.direction === "ascending" ? (
-                      <ArrowUp
-                        style={{ display: "inline-block", marginLeft: "1rem" }}
-                        size={14}
-                      />
-                    ) : (
-                      <ArrowDown
-                        style={{ display: "inline-block", marginLeft: "1rem" }}
-                        size={14}
-                      />
-                    ))}
-                </Th>
-                <Th color="white">Actions</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {filteredEntries.map((entry) => (
-                <Tr key={entry.id}>
-                  <Td>{entry.date}</Td>
-                  <Td>
-                    {
-                      orders.find((o) => o.id.toString() === entry.orderId)
-                        ?.customerName
-                    }
-                  </Td>
-                  <Td>
-                    {
-                      tappers.find(
-                        (t) => t.tapper_id.toString() === entry.tapperId
-                      )?.tapper_name
-                    }
-                  </Td>
-                  <Td>{entry.volumeCollected}</Td>
-                  <Td>{entry.volumePaidFor}</Td>
-                  <Td>
-                    <span className={"status " + `${[entry.paymentStatus]}`}>
-                      {entry.paymentStatus}
-                    </span>
-                  </Td>
+                  </Tbody>
+                </Table>
+              </div>
 
-                  <Td>
-                    <IconButton
-                      aria-label="Edit entry"
-                      icon={<Edit size={18} />}
-                      className="edit-btn"
-                      size="sm"
-                      mr={2}
-                      onClick={() => handleEditField(entry.id)}
-                    />
-                    <IconButton
-                      aria-label="Delete entry"
-                      icon={<Trash2 size={18} />}
-                      className="delete-btn"
-                      size="sm"
-                      onClick={() => {
-                        handleDelete(entry.id);
-                      }}
-                    />
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </div>
+              <Modal isOpen={isOpen} onClose={onClose} size="xl">
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader textAlign="center">
+                    Production Data Input
+                  </ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                    <form onSubmit={handleAddProd}>
+                      <FormControl isRequired>
+                        <FormLabel>Date</FormLabel>
+                        <Input
+                          type="date"
+                          name="date"
+                          value={productionData.date}
+                          onChange={handleInputChange}
+                        />
+                      </FormControl>
 
-        <Modal isOpen={isOpen} onClose={onClose} size="xl">
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader textAlign="center">Production Data Input</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <form onSubmit={handleAddProd}>
-                <FormControl isRequired>
-                  <FormLabel>Date</FormLabel>
-                  <Input
-                    type="date"
-                    name="date"
-                    value={productionData.date}
-                    onChange={handleInputChange}
-                  />
-                </FormControl>
+                      <FormControl isRequired mt={4}>
+                        <FormLabel>Order</FormLabel>
+                        <Select
+                          name="orderId"
+                          value={productionData.orderId}
+                          onChange={handleInputChange}
+                          placeholder="Select Order"
+                        >
+                          {orders.map((order) => (
+                            <option key={order.id} value={order.id}>
+                              {order.customerName} - {order.orderDate}
+                            </option>
+                          ))}
+                        </Select>
+                        <Link href="/orders" className={styles.link}>
+                          Create New Order
+                        </Link>
+                      </FormControl>
 
-                <FormControl isRequired mt={4}>
-                  <FormLabel>Order</FormLabel>
-                  <Select
-                    name="orderId"
-                    value={productionData.orderId}
-                    onChange={handleInputChange}
-                    placeholder="Select Order"
-                  >
-                    {orders.map((order) => (
-                      <option key={order.id} value={order.id}>
-                        {order.customerName} - {order.orderDate}
-                      </option>
-                    ))}
-                  </Select>
-                  <Link href="/orders" className={styles.link}>
-                    Create New Order
-                  </Link>
-                </FormControl>
+                      <FormControl isRequired mt={4}>
+                        <FormLabel>Tapper</FormLabel>
+                        <Select
+                          name="tapperId"
+                          value={productionData.tapperId}
+                          onChange={handleInputChange}
+                          placeholder="Select Tapper"
+                        >
+                          {tappers.map((tapper) => (
+                            <option
+                              key={tapper.tapper_id}
+                              value={tapper.tapper_id}
+                            >
+                              {tapper.tapper_name}
+                            </option>
+                          ))}
+                        </Select>
+                        <Link
+                          href="/production/tappers"
+                          className={styles.link}
+                        >
+                          Add New Tapper
+                        </Link>
+                      </FormControl>
 
-                <FormControl isRequired mt={4}>
-                  <FormLabel>Tapper</FormLabel>
-                  <Select
-                    name="tapperId"
-                    value={productionData.tapperId}
-                    onChange={handleInputChange}
-                    placeholder="Select Tapper"
-                  >
-                    {tappers.map((tapper) => (
-                      <option key={tapper.tapper_id} value={tapper.tapper_id}>
-                        {tapper.tapper_name}
-                      </option>
-                    ))}
-                  </Select>
-                  <Link href="/production/tappers" className={styles.link}>
-                    Add New Tapper
-                  </Link>
-                </FormControl>
+                      <FormControl isRequired mt={4}>
+                        <FormLabel>Volume Collected (L)</FormLabel>
+                        <Input
+                          type="number"
+                          name="volumeCollected"
+                          value={productionData.volumeCollected}
+                          onChange={handleInputChange}
+                          min="0"
+                          step="0.1"
+                        />
+                      </FormControl>
 
-                <FormControl isRequired mt={4}>
-                  <FormLabel>Volume Collected (L)</FormLabel>
-                  <Input
-                    type="number"
-                    name="volumeCollected"
-                    value={productionData.volumeCollected}
-                    onChange={handleInputChange}
-                    min="0"
-                    step="0.1"
-                  />
-                </FormControl>
+                      <FormControl isRequired mt={4}>
+                        <FormLabel>Volume Paid For (L)</FormLabel>
+                        <Input
+                          type="number"
+                          name="volumePaidFor"
+                          value={productionData.volumePaidFor}
+                          onChange={handleInputChange}
+                          min="0"
+                          step="0.1"
+                        />
+                      </FormControl>
 
-                <FormControl isRequired mt={4}>
-                  <FormLabel>Volume Paid For (L)</FormLabel>
-                  <Input
-                    type="number"
-                    name="volumePaidFor"
-                    value={productionData.volumePaidFor}
-                    onChange={handleInputChange}
-                    min="0"
-                    step="0.1"
-                  />
-                </FormControl>
+                      <FormControl isRequired mt={4}>
+                        <FormLabel>Payment Status</FormLabel>
+                        <Select
+                          name="tapperPaymentStatus"
+                          value={productionData.tapperPaymentStatus}
+                          onChange={handleInputChange}
+                        >
+                          <option value="completed">Completed</option>
+                          <option value="pending">Pending</option>
+                        </Select>
+                      </FormControl>
 
-                <FormControl isRequired mt={4}>
-                  <FormLabel>Payment Status</FormLabel>
-                  <Select
-                    name="paymentStatus"
-                    value={productionData.paymentStatus}
-                    onChange={handleInputChange}
-                  >
-                    <option value="completed">Completed</option>
-                    <option value="pending">Pending</option>
-                  </Select>
-                </FormControl>
+                      <FormControl mt={4}>
+                        <FormLabel>Additional Notes</FormLabel>
+                        <Textarea
+                          name="notes"
+                          value={productionData.notes}
+                          onChange={handleInputChange}
+                          rows={4}
+                        />
+                      </FormControl>
 
-                <FormControl mt={4}>
-                  <FormLabel>Additional Notes</FormLabel>
-                  <Textarea
-                    name="notes"
-                    value={productionData.notes}
-                    onChange={handleInputChange}
-                    rows={4}
-                  />
-                </FormControl>
+                      <Button mt={6} colorScheme="green" type="submit">
+                        <Save size={18} style={{ marginRight: "0.5rem" }} />
+                        Save Production Data
+                      </Button>
+                    </form>
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
 
-                <Button mt={6} colorScheme="green" type="submit">
-                  <Save size={18} style={{ marginRight: "0.5rem" }} />
-                  Save Production Data
-                </Button>
-              </form>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
+              <ScrollToTopButton />
 
-        <ScrollToTopButton />
-
-        {updateModal ? (
-          <EditModal
-            initialData={formInitialData}
-            fields={fields}
-            updateModal={updateModal}
-            setUpdateModal={setUpdateModal}
-            handleSubmit={handleUpdate}
-          />
-        ) : null}
-      </div>
+              {updateModal ? (
+                <EditModal
+                  initialData={formInitialData}
+                  fields={fields}
+                  updateModal={updateModal}
+                  setUpdateModal={setUpdateModal}
+                  handleSubmit={handleUpdate}
+                />
+              ) : null}
+            </div>
+          </TabPanel>
+          <TabPanel>
+            <p>two!</p>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </div>
   );
 };
