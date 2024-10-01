@@ -5,7 +5,7 @@ import clsx from "clsx";
 interface ButtonProps {
   children: ReactNode;
   onClick?: () => void;
-  type?: "button" | "submit" | "reset";
+  type: "button" | "submit" | "reset";
   variant?: "primary" | "secondary" | "danger";
   disabled?: boolean;
   className?: string; // New prop for additional custom classes

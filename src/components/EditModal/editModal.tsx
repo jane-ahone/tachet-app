@@ -13,7 +13,7 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
 } from "@chakra-ui/react";
-import { FieldConfig } from "@/lib/types/interface";
+import { FieldConfig, Order } from "@/lib/types/interface";
 import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
 
 type HandleSubmit = (event: FormEvent<HTMLFormElement>) => void;
@@ -23,6 +23,8 @@ interface EditModalProps<T> {
   fields: FieldConfig[];
   handleSubmit: HandleSubmit;
   updateModal: boolean;
+  UpdateFormData: T;
+  setUpdateFormData: React.Dispatch<React.SetStateAction<T>>;
   setUpdateModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -30,15 +32,18 @@ const EditModal = <T extends Record<string, any>>({
   initialData,
   fields,
   handleSubmit,
-  updateModal,
+  UpdateFormData,
+  setUpdateFormData,
   setUpdateModal,
 }: EditModalProps<T>) => {
-  const [formData, setFormData] = useState<T>(initialData);
+  useEffect(() => {
+    setUpdateFormData(initialData);
+  }, [initialData, setUpdateFormData]);
 
-  const handleInputChange = createHandleInputChange(setFormData);
+  const handleInputChange = createHandleInputChange(setUpdateFormData);
 
   const handleNumberChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: parseInt(value) }));
+    setUpdateFormData((prev) => ({ ...prev, [name]: parseInt(value) }));
   };
 
   return (
@@ -58,7 +63,7 @@ const EditModal = <T extends Record<string, any>>({
                 {field.type == "select" ? (
                   <Select
                     name={field.name}
-                    value={formData[field.name]}
+                    value={UpdateFormData[field.name]}
                     onChange={handleInputChange}
                   >
                     {field.options?.map((option) => (
@@ -70,7 +75,7 @@ const EditModal = <T extends Record<string, any>>({
                 ) : field.type == "number" ? (
                   <NumberInput
                     min={1}
-                    value={formData[field.name]}
+                    value={UpdateFormData[field.name]}
                     onChange={(value) => handleNumberChange(field.name, value)}
                   >
                     <NumberInputField name={field.name} />
@@ -83,7 +88,7 @@ const EditModal = <T extends Record<string, any>>({
                   <Input
                     type={field.type}
                     name={field.name}
-                    value={formData[field.name]}
+                    value={UpdateFormData[field.name]}
                     onChange={handleInputChange}
                   />
                 )}
@@ -91,7 +96,9 @@ const EditModal = <T extends Record<string, any>>({
             ))}
           </section>
 
-          <Button className={styles.submitButton}>Submit</Button>
+          <Button type="submit" className={styles.submitButton}>
+            Submit
+          </Button>
         </form>
       </section>
     </div>

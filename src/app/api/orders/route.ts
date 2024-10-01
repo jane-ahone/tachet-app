@@ -1,13 +1,13 @@
-// pages/api/customers/index.js
+// pages/api/orders/index.js
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
 
 export async function GET(req: NextRequest) {
-  // Read all tappers
+  // Reading all orders
   try {
-    const queryString: string = "SELECT * FROM customer"; //Do a JOIN
+    const queryString: string = "SELECT * FROM orders";
     const result = await query(queryString);
-    return NextResponse.json({ customers: result.rows }, { status: 201 });
+    return NextResponse.json({ orders: result.rows }, { status: 201 });
   } catch (error) {
     console.log("Database query error:", error);
     return NextResponse.json(
@@ -18,15 +18,16 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  // Create a new tapper
-  const { customer_name, phone_number, email, home_address } = await req.json();
+  // Create a new order
+  const body = await req.json();
+
+  const { customer_id, order_qty, order_date, status } = body;
 
   // Validate input
-  if (!customer_name || !phone_number || !email || !home_address) {
+  if (!customer_id || !order_qty || !order_date || !status) {
     return NextResponse.json(
       {
-        error:
-          "Customer name,phone number, email and home address are required",
+        error: "Customer id,order_qty, order_date and status are required",
       },
       { status: 400 }
     );
@@ -34,15 +35,15 @@ export async function POST(req: NextRequest) {
 
   try {
     const queryString: string =
-      "INSERT INTO customer(customer_name,phone_number,email,home_address) VALUES($1,$2,$3,$4) RETURNING *";
+      "INSERT INTO orders(customer_id,order_qty,order_date,status) VALUES($1,$2,$3,$4) RETURNING *";
     const result = await query(queryString, [
-      customer_name,
-      phone_number,
-      email,
-      home_address,
+      customer_id,
+      order_qty,
+      order_date,
+      status,
     ]);
 
-    return NextResponse.json({ newTapper: result.rows[0] }, { status: 201 });
+    return NextResponse.json({ orders: result.rows[0] }, { status: 201 });
   } catch (error) {
     console.log("Database query error:", error);
     return NextResponse.json(

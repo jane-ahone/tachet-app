@@ -18,6 +18,7 @@ export const SharedProvider: React.FC<SharedProvider> = ({ children }) => {
     customers: [],
     tappers: [],
     orders: [],
+    purchases: [],
   });
   return (
     <SharedContext.Provider value={{ sharedData, setSharedData }}>

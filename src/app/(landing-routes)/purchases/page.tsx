@@ -35,10 +35,12 @@ import {
   Select,
 } from "@chakra-ui/react";
 import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
-import { useSharedContext } from "@/app/SharedContext";
+import { useSharedContext } from "@/app/sharedContext";
 
 const PurchaseRecordPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { sharedData, setSharedData } = useSharedContext();
+
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [newPurchase, setNewPurchase] = useState<Omit<Purchase, "id">>({
@@ -49,16 +51,26 @@ const PurchaseRecordPage: React.FC = () => {
     customItemType: "",
     orderId: undefined,
   });
-  const [formInitialData, setFormInitialData] = useState<Order>({
+  const [formInitialData, setFormInitialData] = useState<Purchase>({
     id: 1,
-    customerName: "John Doe",
-    customerId: 2,
-    orderQty: 1,
-    orderDate: new Date().toISOString().split("T")[0],
-    status: "Pending",
+    date: "",
+    itemType: "",
+    quantity: 0,
+    price: 0,
+    customItemType: "",
+    orderId: undefined,
   });
-  const [updateModal, setUpdateModal] = useState<boolean>(false);
+  const [updateFormData, setUpdateFormData] = useState<Purchase>({
+    id: 1,
+    date: "",
+    itemType: "",
+    quantity: 0,
+    price: 0,
+    customItemType: "",
+    orderId: undefined,
+  });
 
+  const [updateModal, setUpdateModal] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -110,12 +122,10 @@ const PurchaseRecordPage: React.FC = () => {
     },
   ];
 
-  const { sharedData, setSharedData } = useSharedContext();
-
   useEffect(() => {
     // Fetch purchases data
     (async () => {
-      if (sharedData?.purchases) {
+      if (sharedData?.purchases.length > 0) {
         setPurchases(sharedData?.purchases);
       } else {
         try {
@@ -124,14 +134,14 @@ const PurchaseRecordPage: React.FC = () => {
             throw new Error("Failed to fetch purchases");
           }
           const data = await response.json();
-          console.log(data.purchase);
-          setPurchases(data.purchase);
+
           setSharedData((prevData) => ({
             ...prevData,
             purchases: data.purchase,
           }));
         } catch (error) {
           console.error(error);
+
           setPurchases([
             {
               id: 1,
@@ -171,20 +181,12 @@ const PurchaseRecordPage: React.FC = () => {
           console.log(error);
           setOrders([
             {
-              id: 1,
-              customerId: 2,
+              order_id: 1,
+              customer_id: 2,
               customerName: "Customer A",
-              orderDate: "2024-09-01",
+              order_date: "2024-09-01",
               status: "Progress",
-              orderQty: 1,
-            },
-            {
-              id: 2,
-              customerId: 3,
-              customerName: "Customer B",
-              orderDate: "2024-09-02",
-              status: "Progress",
-              orderQty: 1,
+              order_qty: 1,
             },
           ]);
         }
@@ -322,32 +324,29 @@ const PurchaseRecordPage: React.FC = () => {
     return sortablePurchases;
   }, [purchases, sortConfig]);
 
-  const filteredPurchases = sortedPurchases.filter(
-    (purchase) =>
+  const filteredPurchases = sortedPurchases.filter((purchase) => {
+    const matchFilterStatus =
+      filterStatus === "" ||
+      purchase.itemType.toLowerCase() === filterStatus.toLowerCase();
+    const matchSearch =
       purchase.itemType.toLowerCase().includes(searchTerm.toLowerCase()) ||
       purchase.date.includes(searchTerm) ||
-      orders
-        .find((order) => order.id === purchase.orderId)
-        ?.customerName.toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      ((!startDate || purchase.date >= startDate) &&
-        (!endDate || purchase.date <= endDate))
-  );
+      startDate
+        ? purchase.date >= startDate
+        : null ||
+          (endDate ? purchase.date <= endDate : null) ||
+          orders
+            .find((order) => order.order_id === purchase.orderId)
+            ?.customerName.toLowerCase()
+            .includes(searchTerm.toLowerCase());
+    return matchFilterStatus && matchSearch;
+  });
 
   return (
     <div className="page-container-routes">
       <Sidebar title="Purchases" alignment="top" sideNavitems={sideItems} />
       <div className={styles.contentContainer}>
-        <div className={styles.actionBar}>
-          <div className="searchContainer">
-            <input
-              type="text"
-              placeholder="Search purchases..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="searchInput"
-            />
-          </div>
+        <div className="actions">
           <div className="dateFilterContainer">
             <input
               type="date"
@@ -365,8 +364,20 @@ const PurchaseRecordPage: React.FC = () => {
               placeholder="End Date"
             />
           </div>
+          <div className="searchContainer">
+            <input
+              type="text"
+              placeholder="Search purchases..."
+              name="searchBar"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="searchInput"
+            />
+          </div>
+
           <select
             className="filterSelect"
+            name="filterSelect"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
           >
@@ -375,86 +386,6 @@ const PurchaseRecordPage: React.FC = () => {
             <option value="labels">Labels</option>
           </select>
         </div>
-
-        {/* {isAdding && (
-          <div className={styles.addForm}>
-            <div className="dateField">
-              <label htmlFor="date">Date</label>
-              <input
-                type="date"
-                name="date"
-                value={newPurchase.date}
-                onChange={handleInputChange}
-                className={styles.input}
-                required
-              />
-            </div>
-            <div className="itemTypeField">
-              <label htmlFor="itemType">Select Item Type</label>
-              <select
-                name="itemType"
-                value={newPurchase.itemType}
-                onChange={handleInputChange}
-                className={styles.input}
-                required
-              >
-                <option value="">Item </option>
-                <option value="Bottles">Bottles</option>
-                <option value="Labels">Labels</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div className="quantityField">
-              <label htmlFor="quantity">Quantity</label>
-              <input
-                type="number"
-                name="quantity"
-                value={newPurchase.quantity}
-                onChange={handleInputChange}
-                placeholder="Quantity"
-                className={styles.input}
-                required
-              />
-            </div>
-            <div className="priceField">
-              <label htmlFor="price">Price</label>
-              <input
-                type="number"
-                name="price"
-                id="price"
-                value={newPurchase.price}
-                onChange={handleInputChange}
-                placeholder="Total Price"
-                className={styles.input}
-                required
-              />
-            </div>
-            {newPurchase.itemType === "Bottles" && (
-              <select
-                name="orderId"
-                value={newPurchase.orderId || ""}
-                onChange={handleInputChange}
-                className={styles.input}
-              >
-                <option value="">Select Order (Optional)</option>
-                {orders.map((order) => (
-                  <option key={order.id} value={order.id}>
-                    {order.customerName} - {order.orderDate}
-                  </option>
-                ))}
-              </select>
-            )}
-            <button onClick={handleAddPurchase} className={styles.saveButton}>
-              Save
-            </button>
-            <button
-              onClick={() => setIsAdding(false)}
-              className={styles.cancelButton}
-            >
-              Cancel
-            </button>
-          </div>
-        )} */}
 
         <div className={styles.purchaseList}>
           <AddNewRecordBtn onOpen={onOpen} />
@@ -562,8 +493,9 @@ const PurchaseRecordPage: React.FC = () => {
                   <Td>${purchase.price.toFixed(2)}</Td>
                   <Td>
                     {purchase.orderId
-                      ? orders.find((order) => order.id === purchase.orderId)
-                          ?.customerName || "Unknown"
+                      ? orders.find(
+                          (order) => order.order_id === purchase.orderId
+                        )?.customerName || "Unknown"
                       : "N/A"}
                   </Td>
                   <Td>
@@ -589,6 +521,7 @@ const PurchaseRecordPage: React.FC = () => {
               ))}
             </Tbody>
           </Table>
+          <p>Total</p>
         </div>
 
         {
@@ -666,8 +599,11 @@ const PurchaseRecordPage: React.FC = () => {
                           >
                             <option value="">Select Order (Optional)</option>
                             {orders.map((order) => (
-                              <option key={order.id} value={order.id}>
-                                {order.customerName} - {order.orderDate}
+                              <option
+                                key={order.order_id}
+                                value={order.order_id}
+                              >
+                                {order.customerName} - {order.order_date}
                               </option>
                             ))}
                           </Select>
@@ -687,6 +623,8 @@ const PurchaseRecordPage: React.FC = () => {
 
         {updateModal ? (
           <EditModal
+            UpdateFormData={updateFormData}
+            setUpdateFormData={setUpdateFormData}
             initialData={formInitialData}
             fields={fields}
             updateModal={updateModal}

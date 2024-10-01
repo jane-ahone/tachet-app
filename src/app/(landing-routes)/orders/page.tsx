@@ -1,9 +1,10 @@
 "use client";
 
-/*OrderData stores field values when adding information to the table
+/*formData stores field values when adding information to the table
   Orders stores all the order information
   formInitialData stores the initial information to be updated
   UpdateModal is used to toggle the visibility of the update modal
+   //Navbar icons and route links
   */
 
 import React, { useState, useEffect } from "react";
@@ -54,14 +55,12 @@ import CustomButton from "@/components/Button/button";
 import ScrollToTopButton from "@/components/ScrolltoTop/page";
 import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
 import AlertDialogExample from "@/components/DeleteAlert/delete";
-import { useSharedContext } from "@/app/SharedContext";
+import { useSharedContext } from "@/app/sharedContext";
 
 const OrderPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const { sharedData, setSharedData } = useSharedContext();
-
-  //Navbar icons and route links
 
   const navBarItems = [
     {
@@ -84,21 +83,29 @@ const OrderPage: React.FC = () => {
     },
   ];
 
-  const statusOptions = ["pending", "inprogress", "completed"];
+  const statusOptions = ["pending", "inprogress", "completed", "cancelled"];
 
-  const [orderData, setOrderData] = useState<OrderData>({
-    customerId: 1,
-    customerName: "",
-    orderQty: 1,
-    orderDate: new Date().toISOString().split("T")[0],
+  const [formData, setFormData] = useState<OrderData>({
+    customer_id: 1,
+    customer_name: "",
+    order_qty: 1,
+    order_date: new Date().toISOString().split("T")[0],
     status: "pending",
   });
   const [formInitialData, setFormInitialData] = useState<Order>({
-    id: 1,
+    order_id: 1,
     customerName: "",
-    customerId: 1,
-    orderQty: 1,
-    orderDate: new Date().toISOString().split("T")[0],
+    customer_id: 1,
+    order_qty: 1,
+    order_date: new Date().toISOString().split("T")[0],
+    status: "pending",
+  });
+  const [updateFormData, setUpdateFormData] = useState<Order>({
+    order_id: 1,
+    customerName: "",
+    customer_id: 1,
+    order_qty: 1,
+    order_date: new Date().toISOString().split("T")[0],
     status: "pending",
   });
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -106,12 +113,14 @@ const OrderPage: React.FC = () => {
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [updateModal, setUpdateModal] = useState<boolean>(false);
 
   const fields: FieldConfig[] = [
-    { name: "orderDate", label: "Date", type: "date", required: true },
+    { name: "order_date", label: "Date", type: "date", required: true },
     {
-      name: "customerId",
+      name: "customer_id",
       label: "Customer",
       type: "select",
       options: customers.map((c) => ({
@@ -121,7 +130,7 @@ const OrderPage: React.FC = () => {
       required: true,
     },
     {
-      name: "orderQty",
+      name: "order_qty",
       label: "Order Quantity",
       type: "number",
       required: true,
@@ -145,13 +154,16 @@ const OrderPage: React.FC = () => {
       setCustomers(sharedData?.customers);
     } else {
       // Fetch customers if not in shared context
+
       (async () => {
         try {
-          const response = await fetch("/api/customerss");
-          if (!response.ok) {
-            throw new Error("Failed to fetch customers");
-          }
+          const response = await fetch("/api/customer");
+
           const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || "Failed to fetch customers");
+          }
+
           setSharedData({ ...sharedData, customers: data.customers });
           setCustomers(data.customers);
         } catch (error) {
@@ -163,7 +175,6 @@ const OrderPage: React.FC = () => {
               phone_number: "1234567890",
               email: "there's been an error",
               home_address: "123 Palm St",
-              registrationDate: "2023-01-15",
             },
           ]);
         }
@@ -176,31 +187,33 @@ const OrderPage: React.FC = () => {
       // Fetch orders if not in shared context
       (async () => {
         try {
-          const response = await fetch("/api/orderss");
-          if (!response.ok) {
-            throw new Error("Failed to fetch orders");
-          }
+          const response = await fetch("/api/orders");
+
           const data = await response.json();
-          setSharedData({ ...sharedData, orders: data.ordersss });
-          setOrders(data.ordersss);
+          if (!response.ok) {
+            throw new Error(data.error || "Failed to fetch customers");
+          }
+
+          setSharedData({ ...sharedData, orders: data.orders });
+          setOrders(data.orders);
         } catch (error) {
           console.log(error);
           setOrders([
             {
-              id: 1,
-              customerId: 1,
+              order_id: 1,
+              customer_id: 1,
               customerName: "Customer A",
-              orderDate: "2024-09-01",
+              order_date: "2024-09-01",
               status: "inprogress",
-              orderQty: 1,
+              order_qty: 1,
             },
             {
-              id: 2,
-              customerId: 3,
+              order_id: 2,
+              customer_id: 3,
               customerName: "Customer B",
-              orderDate: "2024-09-02",
+              order_date: "2024-09-02",
               status: "inprogress",
-              orderQty: 1,
+              order_qty: 1,
             },
           ]);
         }
@@ -208,36 +221,77 @@ const OrderPage: React.FC = () => {
     }
   }, [sharedData, setSharedData]);
 
-  const handleInputChange = createHandleInputChange(setOrderData);
+  const handleInputChange = createHandleInputChange(setFormData);
 
   const handleOrderQtyChange = (value: string) => {
-    setOrderData((prev) => ({ ...prev, orderQty: parseInt(value) }));
+    setFormData((prev) => ({ ...prev, order_qty: parseInt(value) }));
   };
 
-  const handleUpdate = (id: any) => {
-    console.log("Edit order", id);
+  const handleEditField = (id: number) => {
     orders.map((order) => {
-      if (order.id == id) {
+      if (order.order_id == id) {
         setFormInitialData(order);
+        setUpdateModal(true);
       }
     });
-    setUpdateModal(true);
   };
+
+  const handleUpdateOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const { order_id } = formInitialData;
+
+    try {
+      const response = await fetch(`/api/orders/${order_id}`, {
+        method: "PUT",
+        body: JSON.stringify(updateFormData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "An error occured");
+      }
+
+      const updatedOrders = orders.filter(
+        (order) => order.order_id !== order_id
+      );
+      setSharedData({ ...sharedData, orders: updatedOrders });
+
+      toast({
+        title: "Order updated.",
+        description: "The order has been successfully updated.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.log(`Error: ${error}`);
+      toast({
+        title: "Error",
+        description: "Failed to uodate order.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setUpdateModal(false);
+    }
+  };
+
   const handleDelete = async (id: number) => {
     try {
-      const response = await fetch(`/api/orderss/${id}`, {
+      const response = await fetch(`/api/orders/${id}`, {
         method: "DELETE",
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to delete order");
+        throw new Error(data.error || "An error occured");
       }
 
-      const data = await response.json();
-      console.log(`Order successfully deleted: ${data}`);
-
-      const updatedOrders = orders.filter((order) => order.id !== id);
-      setOrders(updatedOrders);
+      const updatedOrders = orders.filter((order) => order.order_id !== id);
       setSharedData({ ...sharedData, orders: updatedOrders });
 
       toast({
@@ -257,42 +311,30 @@ const OrderPage: React.FC = () => {
         isClosable: true,
       });
     }
-    const updatedOrders = orders.filter((order) => order.id !== id);
-    setOrders(updatedOrders);
-    setSharedData({ ...sharedData, orders: updatedOrders });
   };
 
   const handleAddOrder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Submitted order data:", orderData);
+    console.log("Submitted order data:", formData);
 
     try {
-      const response = await fetch("/api/orderss", {
+      const response = await fetch("/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(orderData),
+        body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to add order");
-      }
       const data = await response.json();
-      console.log(`New order added: ${data}`);
+      if (!response.ok) {
+        throw new Error(data.error || "An error occurred");
+      }
 
-      const newOrder: Order = {
-        id: orders.length + 1,
-        customerId: orderData.customerId,
-        customerName: "",
-        orderQty: orderData.orderQty,
-        orderDate: orderData.orderDate,
-        status: "pending",
-      };
-
-      const updatedOrders = [...orders, newOrder];
-      setOrders(updatedOrders);
-      setSharedData({ ...sharedData, orders: updatedOrders });
+      setSharedData((prevSharedData) => ({
+        ...prevSharedData,
+        orders: [...prevSharedData.orders, data.orders],
+      }));
 
       onClose();
       toast({
@@ -304,6 +346,7 @@ const OrderPage: React.FC = () => {
       });
     } catch (error) {
       console.log(`Error: ${error}`);
+      onClose();
       toast({
         title: "Error",
         description: "Failed to create order.",
@@ -333,17 +376,22 @@ const OrderPage: React.FC = () => {
   });
 
   const filteredOrders = sortedOrders.filter((order) => {
-    const customer = customers.find((c) => c.customer_id === order.customerId);
+    const customer = customers.find((c) => c.customer_id === order.customer_id);
     const matchesSearch =
-      order.orderDate.includes(searchTerm) ||
-      order.orderQty.toString().includes(searchTerm) ||
-      customer?.customer_name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      order.status.toLowerCase().includes(searchTerm.toLowerCase());
+      (searchTerm
+        ? order.order_date.includes(searchTerm) ||
+          order.order_qty.toString().includes(searchTerm) ||
+          customer?.customer_name
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          order.status.toLowerCase().includes(searchTerm.toLowerCase())
+        : true) &&
+      (startDate ? order.order_date >= startDate : true) &&
+      (endDate ? order.order_date <= endDate : true);
     const matchesStatus =
       filterStatus === "" ||
       order.status.toLowerCase() === filterStatus.toLowerCase();
+
     return matchesSearch && matchesStatus;
   });
 
@@ -352,7 +400,24 @@ const OrderPage: React.FC = () => {
       <Sidebar title="Orders" sideNavitems={navBarItems} alignment="top" />
 
       <div className={styles.content}>
-        <div className={styles.actions}>
+        <div className="actions">
+          <div className="dateFilterContainer">
+            <input
+              type="date"
+              className="dateInput"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              placeholder="Start Date"
+            />
+            <span className="dateRangeSeparator">to</span>
+            <input
+              type="date"
+              className="dateInput"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              placeholder="End Date"
+            />
+          </div>
           <div className="searchContainer">
             <input
               type="text"
@@ -370,9 +435,12 @@ const OrderPage: React.FC = () => {
             }) => setFilterStatus(e.target.value)}
           >
             <option value="">All Statuses</option>
-            <option value="pending">pending</option>
-            <option value="inprogress">inprogress</option>
-            <option value="completed">completed</option>
+            {statusOptions.map((option, index) => (
+              <option key={index} value={option}>
+                {" "}
+                {option}{" "}
+              </option>
+            ))}
           </select>
         </div>
         {/* <div className="cardSummary">
@@ -385,7 +453,7 @@ const OrderPage: React.FC = () => {
         <Table variant="simple" className="dataTable">
           <Thead>
             <Tr sx={{ backgroundColor: "#32593b" }}>
-              <Th color="white" onClick={() => handleSort("orderDate")}>
+              <Th color="white" onClick={() => handleSort("order_date")}>
                 Date
                 {sortConfig.key === "orderDate" &&
                   (sortConfig.direction === "ascending" ? (
@@ -395,9 +463,9 @@ const OrderPage: React.FC = () => {
                   ))}
               </Th>
               <Th color="white">Customer</Th>
-              <Th color="white" onClick={() => handleSort("orderQty")}>
+              <Th color="white" onClick={() => handleSort("order_qty")}>
                 Quantity
-                {sortConfig.key === "orderQty" &&
+                {sortConfig.key === "order_qty" &&
                   (sortConfig.direction === "ascending" ? (
                     <ArrowUp style={{ display: "inline-block" }} size={14} />
                   ) : (
@@ -418,15 +486,15 @@ const OrderPage: React.FC = () => {
           </Thead>
           <Tbody>
             {filteredOrders.map((order) => (
-              <Tr key={order.id}>
-                <Td>{order.orderDate}</Td>
+              <Tr key={order.order_id}>
+                <Td>{order.order_date.split("T")[0]}</Td>
                 <Td>
                   {
-                    customers.find((c) => c.customer_id === order.customerId)
+                    customers.find((c) => c.customer_id === order.customer_id)
                       ?.customer_name
                   }
                 </Td>
-                <Td>{order.orderQty}</Td>
+                <Td>{order.order_qty}</Td>
 
                 <Td>
                   <span className={"status " + `${[order.status]}`}>
@@ -442,7 +510,7 @@ const OrderPage: React.FC = () => {
                     size="sm"
                     mr={2}
                     onClick={() => {
-                      handleUpdate(order.id);
+                      handleEditField(order.order_id);
                     }}
                   />
 
@@ -452,7 +520,7 @@ const OrderPage: React.FC = () => {
                     color="#333333"
                     className="delete-btn"
                     size="sm"
-                    onClick={() => handleDelete(order.id)}
+                    onClick={() => handleDelete(order.order_id)}
                   />
                 </Td>
               </Tr>
@@ -472,16 +540,16 @@ const OrderPage: React.FC = () => {
                   <FormLabel color="var(--Gray-Gray-700)">Order Date</FormLabel>
                   <Input
                     type="date"
-                    name="orderDate"
-                    value={orderData.orderDate}
+                    name="order_date"
+                    value={formData.order_date}
                     onChange={handleInputChange}
                   />
                 </FormControl>
                 <FormControl isRequired mt={4}>
                   <FormLabel color="var(--Gray-Gray-700)">Customer</FormLabel>
                   <Select
-                    name="customerId"
-                    value={orderData.customerId}
+                    name="customer_id"
+                    value={formData.customer_id}
                     onChange={handleInputChange}
                     placeholder="Select customer"
                   >
@@ -502,10 +570,10 @@ const OrderPage: React.FC = () => {
                   </FormLabel>
                   <NumberInput
                     min={1}
-                    value={orderData.orderQty}
+                    value={formData.order_qty}
                     onChange={handleOrderQtyChange}
                   >
-                    <NumberInputField name="orderQty" />
+                    <NumberInputField name="order_qty" />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
                       <NumberDecrementStepper />
@@ -519,7 +587,7 @@ const OrderPage: React.FC = () => {
                   </FormLabel>
                   <Select
                     name="status"
-                    value={orderData.status}
+                    value={formData.status}
                     onChange={handleInputChange}
                     placeholder="Select Status"
                   >
@@ -547,9 +615,11 @@ const OrderPage: React.FC = () => {
           <EditModal
             initialData={formInitialData}
             fields={fields}
+            setUpdateFormData={setUpdateFormData}
+            UpdateFormData={updateFormData}
             updateModal={updateModal}
             setUpdateModal={setUpdateModal}
-            handleSubmit={handleUpdate}
+            handleSubmit={handleUpdateOrder}
           />
         ) : null}
       </div>

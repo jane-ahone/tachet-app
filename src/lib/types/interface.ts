@@ -4,7 +4,6 @@ export interface Customer {
   phone_number: string;
   email: string;
   home_address: string;
-  registrationDate?: string;
 }
 
 export interface Purchase {
@@ -18,11 +17,11 @@ export interface Purchase {
 }
 
 export interface Order {
-  id: number;
-  customerId: number;
-  customerName: string;
-  orderQty: number;
-  orderDate: string;
+  order_id: number;
+  customer_id: number;
+  customer_name: string;
+  order_qty: number;
+  order_date: string;
   status: string;
 }
 
@@ -36,20 +35,18 @@ export interface Tapper {
 }
 
 export interface ProductionData {
-  date: string;
-  orderId: string;
-  tapperId: string;
-  volumeCollected: string;
-  volumePaidFor: string;
-  tapperPaymentStatus: string;
-  notes: string;
+  date_received: string;
+  order_id: number;
+  tapper_id: number;
+  volume_purchased: string;
+  tapper_payment_status: string;
 }
 
 export interface OrderData {
-  customerId: number;
-  customerName: string;
-  orderQty: number;
-  orderDate: string;
+  customer_id: number;
+  customer_name: string;
+  order_qty: number;
+  order_date: string;
   status: string;
 }
 export interface FieldConfig {

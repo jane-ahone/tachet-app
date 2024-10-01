@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   console.log("I have been hit:Post");
-  // Create a new tapper
+  // Create a new customer
   const { customer_name, phone_number, email, home_address } = await req.json();
 
   // Validate input
@@ -44,11 +44,11 @@ export async function POST(req: NextRequest) {
       home_address,
     ]);
 
-    return NextResponse.json({ newCustomer: result.rows[0] }, { status: 201 });
+    return NextResponse.json({ customers: result.rows[0] }, { status: 201 });
   } catch (error) {
     console.log("Database query error:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: `Internal Server Error ${error}` },
       { status: 500 }
     );
   }

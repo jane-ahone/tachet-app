@@ -9,7 +9,7 @@ import Link from "next/link";
 import { Card } from "@chakra-ui/react";
 import { fetchSessionData } from "@/lib/helpers/authHelpers";
 import { SessionData } from "@/lib/types/interface";
-import { useSharedContext } from "./SharedContext";
+import { useSharedContext } from "./sharedContext";
 import ScrollToTopButton from "@/components/ScrolltoTop/page";
 
 export default function Home() {

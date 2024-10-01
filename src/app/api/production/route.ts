@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db/db";
 
 export async function GET(req: NextRequest) {
-  // Read all tappers
+  // Read all data
   try {
-    const queryString: string = "SELECT * FROM palwine"; //Do a JOIN
+    const queryString: string = "SELECT * FROM palmwine"; //Do a JOIN
     const result = await query(queryString);
     return NextResponse.json({ production: result.rows }, { status: 201 });
   } catch (error) {

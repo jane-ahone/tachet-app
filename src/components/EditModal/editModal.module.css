@@ -3,23 +3,22 @@
 }
 
 .updateModal {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   right: 0;
   bottom: 0;
-  height: 100vh;
   display: flex;
+  align-items: flex-end;
   justify-content: center;
-
   background-color: #0d0e0f88;
 }
 .form {
   background-color: #f8f9fa;
-  position: absolute;
+  max-height: 30vh;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   bottom: 1rem;
   width: 95%;
   margin: 1rem;
@@ -40,5 +39,9 @@
   background-color: var(--Default-Green-Hover) !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
+  .formFields {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }

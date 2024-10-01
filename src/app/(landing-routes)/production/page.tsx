@@ -25,7 +25,6 @@ import {
   FormLabel,
   Input,
   Select,
-  Textarea,
   IconButton,
   Table,
   Tbody,
@@ -38,7 +37,7 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  TabIndicator,
+  useToast,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import EditModal from "@/components/EditModal/editModal";
@@ -46,21 +45,47 @@ import CustomCard from "@/components/layout/Card/page";
 import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
 import {
   Order,
-  ProductionData,
   Tapper,
   FieldConfig,
+  ProductionData,
 } from "@/lib/types/interface";
 import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
 import ScrollToTopButton from "@/components/ScrolltoTop/page";
-import { useSharedContext } from "@/app/SharedContext";
+import { useSharedContext } from "@/app/sharedContext";
 
 interface ProductionEntry extends ProductionData {
-  id: number;
+  palmwine_id: number;
 }
 
 const ProductionPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
   const { sharedData, setSharedData } = useSharedContext();
+
+  const [formData, setFormData] = useState<ProductionData>({
+    date_received: "",
+    order_id: 1,
+    tapper_id: 1,
+    volume_purchased: "",
+    tapper_payment_status: "",
+  });
+  const [formInitialData, setFormInitialData] = useState<ProductionEntry>({
+    palmwine_id: 1,
+    date_received: "",
+    order_id: 1,
+    tapper_id: 1,
+    volume_purchased: "",
+    tapper_payment_status: "",
+  });
+  const [tappers, setTappers] = useState<Tapper[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [productionsData, setProductionsData] = useState<ProductionEntry[]>([]);
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [updateModal, setUpdateModal] = useState<boolean>(false);
 
   const sideItems = [
     {
@@ -71,39 +96,6 @@ const ProductionPage: React.FC = () => {
     },
   ];
 
-  const [productionData, setProductionData] = useState<ProductionData>({
-    date: "",
-    orderId: "",
-    tapperId: "",
-    volumeCollected: "",
-    volumePaidFor: "",
-    tapperPaymentStatus: "",
-    notes: "",
-  });
-
-  const [formInitialData, setFormInitialData] = useState<ProductionEntry>({
-    id: 1,
-    date: "",
-    orderId: "",
-    tapperId: "",
-    volumeCollected: "",
-    volumePaidFor: "",
-    tapperPaymentStatus: "",
-    notes: "",
-  });
-
-  const [tappers, setTappers] = useState<Tapper[]>([]);
-
-  const [orders, setOrders] = useState<Order[]>([]);
-
-  const [previousEntries, setPreviousEntries] = useState<ProductionEntry[]>([]);
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [updateModal, setUpdateModal] = useState<boolean>(false);
-
   const fields: FieldConfig[] = [
     { name: "orderDate", label: "Date", type: "date", required: true },
     {
@@ -111,8 +103,8 @@ const ProductionPage: React.FC = () => {
       label: "Order",
       type: "select",
       options: orders.map((c) => ({
-        value: c.id.toString(),
-        label: c.customerName,
+        value: c.order_id.toString(),
+        label: c.customer_name,
       })),
       required: true,
     },
@@ -153,50 +145,39 @@ const ProductionPage: React.FC = () => {
   ];
 
   useEffect(() => {
+    //Fetch orders
     if (sharedData?.orders && sharedData?.orders.length > 0) {
       setOrders(sharedData.orders);
     } else {
-      // Fetch orders if not in shared context
       (async () => {
         try {
-          const response = await fetch("/api/orderss");
+          const response = await fetch("/api/orderCustomer");
           if (!response.ok) {
             throw new Error("Failed to fetch orders");
           }
           const data = await response.json();
-          setOrders(data.ordersss);
-          setSharedData({ ...sharedData, orders: data.ordersss });
+
+          setOrders(data.orders);
+          setSharedData({ ...sharedData, orders: data.orders });
         } catch (error) {
           console.log(error);
-          setOrders([
-            {
-              id: 1,
-              customerId: 2,
-              customerName: "Customer A",
-              orderDate: "2024-09-01",
-              status: "Progress",
-              orderQty: 1,
-            },
-            {
-              id: 2,
-              customerId: 3,
-              customerName: "Customer B",
-              orderDate: "2024-09-02",
-              status: "Progress",
-              orderQty: 1,
-            },
-          ]);
+          toast({
+            title: "Error",
+            description: "Failed to fetch orders.",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
         }
       })();
     }
-
+    //Fetch tappers
     if (sharedData?.tappers && sharedData?.tappers.length > 0) {
       setTappers(sharedData.tappers);
     } else {
-      // Fetch tappers if not in shared context
       (async () => {
         try {
-          const response = await fetch("/api/tappers");
+          const response = await fetch("/api/tapper");
           if (!response.ok) {
             throw new Error("Failed to fetch tappers");
           }
@@ -205,83 +186,58 @@ const ProductionPage: React.FC = () => {
           setSharedData({ ...sharedData, tappers: data.tappers });
         } catch (error) {
           console.log(error);
-          setTappers([
-            {
-              tapper_id: 1,
-              tapper_name: "John Doe",
-              phone_number: "123-456-7890",
-              email: "johndoe@example.com",
-              home_address: "123 Main St, Anytown, USA",
-              joiningDate: "2024-01-01",
-            },
-            {
-              tapper_id: 1,
-              tapper_name: "John Doe",
-              phone_number: "123-456-7890",
-              email: "johndoe@example.com",
-              home_address: "123 Main St, Anytown, USA",
-              joiningDate: "2024-01-01",
-            },
-          ]);
+          toast({
+            title: "Error",
+            description: "Failed to fetch tappers.",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
         }
       })();
     }
 
+    // Fetch production data
+
     if (sharedData?.production) {
-      setPreviousEntries(sharedData.production);
+      setProductionsData(sharedData.production);
     } else {
-      // Fetch production data if not in shared context
       (async () => {
         try {
-          const response = await fetch("/api/productions");
+          const response = await fetch("/api/production");
           if (!response.ok) {
             throw new Error("Failed to fetch production data");
           }
           const data = await response.json();
-          setPreviousEntries(data.production);
+
+          setProductionsData(data.production);
           setSharedData({ ...sharedData, production: data.production });
         } catch (error) {
           console.log(error);
-          setPreviousEntries([
-            {
-              id: 1,
-              date: "2024-09-01",
-              orderId: "1",
-              tapperId: "1",
-              volumeCollected: "100",
-              volumePaidFor: "90",
-              tapperPaymentStatus: "completed",
-              notes: "First batch",
-            },
-            {
-              id: 2,
-              date: "2024-09-02",
-              orderId: "2",
-              tapperId: "2",
-              volumeCollected: "150",
-              volumePaidFor: "150",
-              tapperPaymentStatus: "pending",
-              notes: "Second batch",
-            },
-          ]);
+          toast({
+            title: "Error",
+            description: "Failed to fetch production data.",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
         }
       })();
     }
-  }, [sharedData, setSharedData]);
+  }, [sharedData, setSharedData, toast]);
 
-  const handleInputChange = createHandleInputChange(setProductionData);
+  const handleInputChange = createHandleInputChange(setFormData);
 
   const handleAddProd = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitted production data:", productionData);
 
     try {
-      const response = await fetch("/api/productions", {
+      const response = await fetch("/api/production", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(productionData),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
@@ -292,30 +248,41 @@ const ProductionPage: React.FC = () => {
       console.log(`New production entry added: ${data}`);
 
       const newEntry: ProductionEntry = {
-        ...productionData,
-        id: previousEntries.length + 1,
+        ...formData,
+        palmwine_id: productionsData.length + 1,
       };
 
-      const updatedEntries = [...previousEntries, newEntry];
-      setPreviousEntries(updatedEntries);
+      const updatedEntries = [...productionsData, newEntry];
+      setProductionsData(updatedEntries);
       setSharedData({ ...sharedData, production: updatedEntries });
 
       onClose();
       // Reset form
-      setProductionData({
-        date: "",
-        orderId: "",
-        tapperId: "",
-        volumeCollected: "",
-        volumePaidFor: "",
-        tapperPaymentStatus: "",
-        notes: "",
+      setFormData({
+        date_received: "",
+        order_id: 1,
+        tapper_id: 1,
+        volume_purchased: "",
+
+        tapper_payment_status: "",
       });
 
-      // Add a toast notification for success
+      toast({
+        title: "Entry added.",
+        description: "The Entry has been successfully added.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (error) {
       console.log(`Error: ${error}`);
-      // Add a toast notification for error
+      toast({
+        title: "Error",
+        description: "Failed to add entry.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -332,19 +299,33 @@ const ProductionPage: React.FC = () => {
       const data = await response.json();
       console.log(`Production entry successfully deleted: ${data}`);
 
-      const updatedEntries = previousEntries.filter((entry) => entry.id !== id);
-      setPreviousEntries(updatedEntries);
+      const updatedEntries = productionsData.filter(
+        (entry) => entry.palmwine_id !== id
+      );
+      setProductionsData(updatedEntries);
       setSharedData({ ...sharedData, production: updatedEntries });
 
-      // Add a toast notification for success
+      toast({
+        title: "Entry deleted.",
+        description: "The entry has been successfully deleted.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (error) {
       console.log(`Error: ${error}`);
-      // Add a toast notification for error
+      toast({
+        title: "Error",
+        description: "Failed to delete entry.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
   const handleEditField = (id: number) => {
-    previousEntries.map((entry) => {
-      if (entry.id == id) {
+    productionsData.map((entry) => {
+      if (entry.palmwine_id == id) {
         setFormInitialData(entry);
       }
     });
@@ -361,6 +342,8 @@ const ProductionPage: React.FC = () => {
     }
   };
 
+  console.log("My orders", orders);
+
   const handleSort = (key: keyof ProductionEntry) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -369,7 +352,7 @@ const ProductionPage: React.FC = () => {
     setSortConfig({ key, direction });
   };
 
-  const sortedEntries = [...previousEntries].sort((a, b) => {
+  const sortedEntries = [...productionsData].sort((a, b) => {
     if (
       a[sortConfig.key as keyof ProductionEntry] <
       b[sortConfig.key as keyof ProductionEntry]
@@ -386,27 +369,26 @@ const ProductionPage: React.FC = () => {
   });
 
   const filteredEntries = sortedEntries.filter((entry) => {
-    const matchesStatus = entry.tapperPaymentStatus.includes(
+    const matchesStatus = entry.tapper_payment_status.includes(
       filterStatus.toLowerCase()
     );
     const matchesSearch =
-      entry.date.includes(searchTerm) ||
+      entry.date_received.includes(searchTerm) ||
       tappers
-        .find((t) => t.tapper_id.toString() === entry.tapperId)
+        .find((t) => t.tapper_id === entry.tapper_id)
         ?.tapper_name.toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
       orders
-        .find((o) => o.id.toString() === entry.orderId)
-        ?.customerName.toLowerCase()
+        .find((o) => o.customer_id === entry.order_id)
+        ?.customer_name.toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      entry.volumeCollected.includes(searchTerm) ||
-      entry.volumePaidFor.includes(searchTerm) ||
-      entry.tapperPaymentStatus
+      entry.volume_purchased.includes(searchTerm) ||
+      entry.tapper_payment_status
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
     const matchesDateRange =
-      (!startDate || entry.date >= startDate) &&
-      (!endDate || entry.date <= endDate);
+      (!startDate || entry.date_received >= startDate) &&
+      (!endDate || entry.date_received <= endDate);
 
     return matchesStatus && matchesSearch && matchesDateRange;
   });
@@ -423,12 +405,7 @@ const ProductionPage: React.FC = () => {
         defaultIndex={0}
         isFitted
       >
-        <TabList
-          bg={"white"}
-          marginTop="3rem"
-          marginBottom="1rem"
-          marginX="1rem"
-        >
+        <TabList bg={"white"} marginY="0.5rem" marginX="1rem">
           <Tab fontWeight={700} padding={4}>
             {" "}
             Collection
@@ -480,27 +457,18 @@ const ProductionPage: React.FC = () => {
                 </select>
               </div>
 
-              {/* <div className="cardSummary">
-          <CustomCard
-            title="Completed"
-            data="15,000L"
-            icon={<Warehouse color="white" />}
-          />
-          <CustomCard
-            title="Pending"
-            data="15,000L"
-            icon={<Warehouse color="white" />}
-          />
-        </div> */}
-
               <div className={styles.card}>
                 <AddNewRecordBtn onOpen={onOpen} />
                 <Table variant="simple" className="dataTable">
                   <Thead>
                     <Tr sx={{ backgroundColor: "#32593b" }}>
-                      <Th color="white" onClick={() => handleSort("date")}>
+                      <Th color="white">Order</Th>
+                      <Th
+                        color="white"
+                        onClick={() => handleSort("date_received")}
+                      >
                         Date
-                        {sortConfig.key === "date" &&
+                        {sortConfig.key === "date_received" &&
                           (sortConfig.direction === "ascending" ? (
                             <ArrowUp
                               style={{
@@ -519,14 +487,13 @@ const ProductionPage: React.FC = () => {
                             />
                           ))}
                       </Th>
-                      <Th color="white">Order</Th>
                       <Th color="white">Tapper</Th>
                       <Th
                         color="white"
-                        onClick={() => handleSort("volumeCollected")}
+                        onClick={() => handleSort("volume_purchased")}
                       >
                         Volume Collected (L)
-                        {sortConfig.key === "volumeCollected" &&
+                        {sortConfig.key === "volume_purchased" &&
                           (sortConfig.direction === "ascending" ? (
                             <ArrowUp
                               style={{
@@ -545,36 +512,13 @@ const ProductionPage: React.FC = () => {
                             />
                           ))}
                       </Th>
+
                       <Th
                         color="white"
-                        onClick={() => handleSort("volumePaidFor")}
-                      >
-                        Volume Paid For (L)
-                        {sortConfig.key === "volumePaidFor" &&
-                          (sortConfig.direction === "ascending" ? (
-                            <ArrowUp
-                              style={{
-                                display: "inline-block",
-                                marginLeft: "1rem",
-                              }}
-                              size={14}
-                            />
-                          ) : (
-                            <ArrowDown
-                              style={{
-                                display: "inline-block",
-                                marginLeft: "1rem",
-                              }}
-                              size={14}
-                            />
-                          ))}
-                      </Th>
-                      <Th
-                        color="white"
-                        onClick={() => handleSort("tapperPaymentStatus")}
+                        onClick={() => handleSort("tapper_payment_status")}
                       >
                         Tapper Payment Status
-                        {sortConfig.key === "tapperPaymentStatus" &&
+                        {sortConfig.key === "tapper_payment_status" &&
                           (sortConfig.direction === "ascending" ? (
                             <ArrowUp
                               style={{
@@ -598,31 +542,42 @@ const ProductionPage: React.FC = () => {
                   </Thead>
                   <Tbody>
                     {filteredEntries.map((entry) => (
-                      <Tr key={entry.id}>
-                        <Td padding="2rem">{entry.date}</Td>
+                      <Tr key={entry.palmwine_id}>
+                        <Td>
+                          <p>
+                            {
+                              orders.find((o) => o.order_id === entry.order_id)
+                                ?.customer_name
+                            }
+                          </p>
+
+                          <p>
+                            {
+                              orders
+                                .find((o) => o.order_id === entry.order_id)
+                                ?.order_date.split("T")[0]
+                            }
+                          </p>
+                        </Td>
+                        <Td padding="2rem">
+                          {entry.date_received.split("T")[0]}
+                        </Td>
+
                         <Td>
                           {
-                            orders.find(
-                              (o) => o.id.toString() === entry.orderId
-                            )?.customerName
+                            tappers.find((t) => t.tapper_id === entry.tapper_id)
+                              ?.tapper_name
                           }
                         </Td>
-                        <Td>
-                          {
-                            tappers.find(
-                              (t) => t.tapper_id.toString() === entry.tapperId
-                            )?.tapper_name
-                          }
-                        </Td>
-                        <Td>{entry.volumeCollected}</Td>
-                        <Td>{entry.volumePaidFor}</Td>
+                        <Td textAlign="center">{entry.volume_purchased}</Td>
+
                         <Td>
                           <span
                             className={
-                              "status " + `${[entry.tapperPaymentStatus]}`
+                              "status " + `${[entry.tapper_payment_status]}`
                             }
                           >
-                            {entry.tapperPaymentStatus}
+                            {entry.tapper_payment_status}
                           </span>
                         </Td>
 
@@ -633,7 +588,7 @@ const ProductionPage: React.FC = () => {
                             className="edit-btn"
                             size="sm"
                             mr={2}
-                            onClick={() => handleEditField(entry.id)}
+                            onClick={() => handleEditField(entry.palmwine_id)}
                           />
                           <IconButton
                             aria-label="Delete entry"
@@ -641,7 +596,7 @@ const ProductionPage: React.FC = () => {
                             className="delete-btn"
                             size="sm"
                             onClick={() => {
-                              handleDelete(entry.id);
+                              handleDelete(entry.palmwine_id);
                             }}
                           />
                         </Td>
@@ -665,7 +620,7 @@ const ProductionPage: React.FC = () => {
                         <Input
                           type="date"
                           name="date"
-                          value={productionData.date}
+                          value={formData.date_received}
                           onChange={handleInputChange}
                         />
                       </FormControl>
@@ -674,13 +629,16 @@ const ProductionPage: React.FC = () => {
                         <FormLabel>Order</FormLabel>
                         <Select
                           name="orderId"
-                          value={productionData.orderId}
+                          value={formData.order_id}
                           onChange={handleInputChange}
                           placeholder="Select Order"
                         >
                           {orders.map((order) => (
-                            <option key={order.id} value={order.id}>
-                              {order.customerName} - {order.orderDate}
+                            <option
+                              key={order.customer_id}
+                              value={order.customer_id}
+                            >
+                              {order.customer_name} - {order.order_date}
                             </option>
                           ))}
                         </Select>
@@ -693,7 +651,7 @@ const ProductionPage: React.FC = () => {
                         <FormLabel>Tapper</FormLabel>
                         <Select
                           name="tapperId"
-                          value={productionData.tapperId}
+                          value={formData.tapper_id}
                           onChange={handleInputChange}
                           placeholder="Select Tapper"
                         >
@@ -719,19 +677,7 @@ const ProductionPage: React.FC = () => {
                         <Input
                           type="number"
                           name="volumeCollected"
-                          value={productionData.volumeCollected}
-                          onChange={handleInputChange}
-                          min="0"
-                          step="0.1"
-                        />
-                      </FormControl>
-
-                      <FormControl isRequired mt={4}>
-                        <FormLabel>Volume Paid For (L)</FormLabel>
-                        <Input
-                          type="number"
-                          name="volumePaidFor"
-                          value={productionData.volumePaidFor}
+                          value={formData.volume_purchased}
                           onChange={handleInputChange}
                           min="0"
                           step="0.1"
@@ -742,22 +688,12 @@ const ProductionPage: React.FC = () => {
                         <FormLabel>Payment Status</FormLabel>
                         <Select
                           name="tapperPaymentStatus"
-                          value={productionData.tapperPaymentStatus}
+                          value={formData.tapper_payment_status}
                           onChange={handleInputChange}
                         >
                           <option value="completed">Completed</option>
                           <option value="pending">Pending</option>
                         </Select>
-                      </FormControl>
-
-                      <FormControl mt={4}>
-                        <FormLabel>Additional Notes</FormLabel>
-                        <Textarea
-                          name="notes"
-                          value={productionData.notes}
-                          onChange={handleInputChange}
-                          rows={4}
-                        />
                       </FormControl>
 
                       <Button mt={6} colorScheme="green" type="submit">
@@ -783,7 +719,299 @@ const ProductionPage: React.FC = () => {
             </div>
           </TabPanel>
           <TabPanel>
-            <p>two!</p>
+            <div className={styles.content}>
+              <div className="actions">
+                <div className="dateFilterContainer">
+                  <input
+                    type="date"
+                    className="dateInput"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    placeholder="Start Date"
+                  />
+                  <span className="dateRangeSeparator">to</span>
+                  <input
+                    type="date"
+                    className="dateInput"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    placeholder="End Date"
+                  />
+                </div>
+                <div className="searchContainer">
+                  <input
+                    type="text"
+                    placeholder="Search entries..."
+                    className="searchInput"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <select
+                  className="filterSelect"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                >
+                  <option value="">All Statuses</option>
+                  <option value="completed">Completed</option>
+                  <option value="pending">Pending</option>
+                </select>
+              </div>
+
+              <div className={styles.card}>
+                <AddNewRecordBtn onOpen={onOpen} />
+                <Table variant="simple" className="dataTable">
+                  <Thead>
+                    <Tr sx={{ backgroundColor: "#32593b" }}>
+                      <Th color="white">Order</Th>
+                      <Th
+                        color="white"
+                        onClick={() => handleSort("date_received")}
+                      >
+                        Date
+                        {sortConfig.key === "date_received" &&
+                          (sortConfig.direction === "ascending" ? (
+                            <ArrowUp
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ) : (
+                            <ArrowDown
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ))}
+                      </Th>
+
+                      <Th color="white">TVC( L )</Th>
+                      <Th
+                        color="white"
+                        onClick={() => handleSort("volume_purchased")}
+                      >
+                        {" "}
+                        TVP( L )
+                        {sortConfig.key === "volume_purchased" &&
+                          (sortConfig.direction === "ascending" ? (
+                            <ArrowUp
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ) : (
+                            <ArrowDown
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ))}
+                      </Th>
+
+                      <Th
+                        color="white"
+                        onClick={() => handleSort("tapper_payment_status")}
+                      >
+                        NVP( L )
+                        {sortConfig.key === "tapper_payment_status" &&
+                          (sortConfig.direction === "ascending" ? (
+                            <ArrowUp
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ) : (
+                            <ArrowDown
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "1rem",
+                              }}
+                              size={14}
+                            />
+                          ))}
+                      </Th>
+                      <Th color="white">Actions</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {filteredEntries.map((entry) => (
+                      <Tr key={entry.palmwine_id}>
+                        <Td paddingX="0.5rem">
+                          <p>
+                            {
+                              orders.find((o) => o.order_id === entry.order_id)
+                                ?.customer_name
+                            }
+                          </p>
+
+                          <p>
+                            {
+                              orders
+                                .find((o) => o.order_id === entry.order_id)
+                                ?.order_date.split("T")[0]
+                            }
+                          </p>
+                        </Td>
+                        <Td>{entry.date_received.split("T")[0]}</Td>
+                        <Td>300</Td>
+                        <Td>{entry.volume_purchased}</Td>
+
+                        <Td>
+                          <span
+                            className={
+                              "status " + `${[entry.tapper_payment_status]}`
+                            }
+                          >
+                            {entry.tapper_payment_status}
+                          </span>
+                        </Td>
+
+                        <Td>
+                          <IconButton
+                            aria-label="Edit entry"
+                            icon={<Edit size={18} />}
+                            className="edit-btn"
+                            size="sm"
+                            mr={2}
+                            onClick={() => handleEditField(entry.palmwine_id)}
+                          />
+                          <IconButton
+                            aria-label="Delete entry"
+                            icon={<Trash2 size={18} />}
+                            className="delete-btn"
+                            size="sm"
+                            onClick={() => {
+                              handleDelete(entry.palmwine_id);
+                            }}
+                          />
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </div>
+
+              <Modal isOpen={isOpen} onClose={onClose} size="xl">
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader textAlign="center">
+                    Production Data Input
+                  </ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                    <form onSubmit={handleAddProd}>
+                      <FormControl isRequired>
+                        <FormLabel>Date</FormLabel>
+                        <Input
+                          type="date"
+                          name="date"
+                          value={formData.date_received}
+                          onChange={handleInputChange}
+                        />
+                      </FormControl>
+
+                      <FormControl isRequired mt={4}>
+                        <FormLabel>Order</FormLabel>
+                        <Select
+                          name="orderId"
+                          value={formData.order_id}
+                          onChange={handleInputChange}
+                          placeholder="Select Order"
+                        >
+                          {orders.map((order) => (
+                            <option
+                              key={order.customer_id}
+                              value={order.customer_id}
+                            >
+                              {order.customer_name} - {order.order_date}
+                            </option>
+                          ))}
+                        </Select>
+                        <Link href="/orders" className={styles.link}>
+                          Create New Order
+                        </Link>
+                      </FormControl>
+
+                      <FormControl isRequired mt={4}>
+                        <FormLabel>Tapper</FormLabel>
+                        <Select
+                          name="tapperId"
+                          value={formData.tapper_id}
+                          onChange={handleInputChange}
+                          placeholder="Select Tapper"
+                        >
+                          {tappers.map((tapper) => (
+                            <option
+                              key={tapper.tapper_id}
+                              value={tapper.tapper_id}
+                            >
+                              {tapper.tapper_name}
+                            </option>
+                          ))}
+                        </Select>
+                        <Link
+                          href="/production/tappers"
+                          className={styles.link}
+                        >
+                          Add New Tapper
+                        </Link>
+                      </FormControl>
+
+                      <FormControl isRequired mt={4}>
+                        <FormLabel>Volume Collected (L)</FormLabel>
+                        <Input
+                          type="number"
+                          name="volumeCollected"
+                          value={formData.volume_purchased}
+                          onChange={handleInputChange}
+                          min="0"
+                          step="0.1"
+                        />
+                      </FormControl>
+
+                      <FormControl isRequired mt={4}>
+                        <FormLabel>Payment Status</FormLabel>
+                        <Select
+                          name="tapperPaymentStatus"
+                          value={formData.tapper_payment_status}
+                          onChange={handleInputChange}
+                        >
+                          <option value="completed">Completed</option>
+                          <option value="pending">Pending</option>
+                        </Select>
+                      </FormControl>
+
+                      <Button mt={6} colorScheme="green" type="submit">
+                        <Save size={18} style={{ marginRight: "0.5rem" }} />
+                        Save Production Data
+                      </Button>
+                    </form>
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
+
+              <ScrollToTopButton />
+
+              {updateModal ? (
+                <EditModal
+                  initialData={formInitialData}
+                  fields={fields}
+                  updateModal={updateModal}
+                  setUpdateModal={setUpdateModal}
+                  handleSubmit={handleUpdate}
+                />
+              ) : null}
+            </div>
           </TabPanel>
         </TabPanels>
       </Tabs>

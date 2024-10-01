@@ -1,6 +1,18 @@
 import { NextResponse, NextRequest } from "next/server";
 import { query } from "@/lib/db/db"; // Assuming you have a db utility
 
+const HTTP_STATUS = {
+  OK: 200,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
+};
+
+const MESSAGES = {
+  DELETED: "Customer deleted successfully",
+  NOT_FOUND: "Customer not found",
+  ERROR: "Internal server error",
+};
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -8,43 +20,28 @@ export async function DELETE(
   const id = params.id;
 
   try {
-    // Check if the customer exists
-    const checkResult = await query(
-      "SELECT * FROM customer WHERE customer_id = $1",
-      [id]
-    );
-
-    if (checkResult.rowCount === 0) {
-      return NextResponse.json(
-        { error: "Customer not found" },
-        { status: 404 }
-      );
-    }
-
-    // Proceed with deletion
-    const deleteResult = await query(
-      "DELETE FROM customer WHERE customer_id = $1",
-      [id]
-    );
+    const deleteResult = await query("DELETE FROM orders WHERE order_id = $1", [
+      id,
+    ]);
 
     deleteResult.rowCount == null ? (deleteResult.rowCount = 0) : null;
 
     if (deleteResult.rowCount > 0) {
       return NextResponse.json(
-        { message: "Customer deleted successfully" },
-        { status: 200 }
+        { message: "Order deleted successfully" },
+        { status: HTTP_STATUS.OK }
       );
     } else {
       return NextResponse.json(
-        { error: "Failed to delete customer" },
-        { status: 500 }
+        { message: "Failed to delete order" },
+        { status: HTTP_STATUS.NOT_FOUND }
       );
     }
   } catch (error) {
-    console.error("Error deleting customer:", error);
+    console.error("Error deleting order:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: HTTP_STATUS.INTERNAL_SERVER_ERROR }
     );
   }
 }
