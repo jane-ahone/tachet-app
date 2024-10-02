@@ -43,31 +43,36 @@ const PurchaseRecordPage: React.FC = () => {
 
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [newPurchase, setNewPurchase] = useState<Omit<Purchase, "id">>({
-    date: "",
-    itemType: "",
-    quantity: 0,
-    price: 0,
-    customItemType: "",
-    orderId: undefined,
-  });
+  const [newPurchase, setNewPurchase] = useState<Omit<Purchase, "purchase_id">>(
+    {
+      purchase_date: "",
+      item_type: "",
+      quantity: 0,
+      rejected_quantity: 0,
+      amount: 0,
+      custom_item_type: "",
+      order_id: undefined,
+    }
+  );
   const [formInitialData, setFormInitialData] = useState<Purchase>({
-    id: 1,
-    date: "",
-    itemType: "",
+    purchase_id: 1,
+    purchase_date: "",
+    item_type: "",
     quantity: 0,
-    price: 0,
-    customItemType: "",
-    orderId: undefined,
+    rejected_quantity: 0,
+    amount: 0,
+    custom_item_type: "",
+    order_id: undefined,
   });
   const [updateFormData, setUpdateFormData] = useState<Purchase>({
-    id: 1,
-    date: "",
-    itemType: "",
+    purchase_id: 1,
+    purchase_date: "",
+    item_type: "",
     quantity: 0,
-    price: 0,
-    customItemType: "",
-    orderId: undefined,
+    rejected_quantity: 0,
+    amount: 0,
+    custom_item_type: "",
+    order_id: undefined,
   });
 
   const [updateModal, setUpdateModal] = useState<boolean>(false);
@@ -92,7 +97,7 @@ const PurchaseRecordPage: React.FC = () => {
   const fields: FieldConfig[] = [
     { name: "purchaseDate", label: "Date", type: "date", required: true },
     {
-      name: "itemType",
+      name: "item_type",
       label: "Item Type",
       type: "text",
       required: true,
@@ -144,19 +149,21 @@ const PurchaseRecordPage: React.FC = () => {
 
           setPurchases([
             {
-              id: 1,
-              date: "2023-09-01",
-              itemType: "Bottles",
+              purchase_id: 1,
+              purchase_date: "2023-09-01",
+              item_type: "Bottles",
               quantity: 1000,
-              price: 500,
-              orderId: 1,
+              rejected_quantity: 20,
+              amount: 500,
+              order_id: 1,
             },
             {
-              id: 2,
-              date: "2023-09-15",
-              itemType: "Labels",
+              purchase_id: 2,
+              purchase_date: "2023-09-15",
+              item_type: "Labels",
               quantity: 5000,
-              price: 250,
+              rejected_quantity: 20,
+              amount: 250,
             },
           ]);
         }
@@ -183,7 +190,7 @@ const PurchaseRecordPage: React.FC = () => {
             {
               order_id: 1,
               customer_id: 2,
-              customerName: "Customer A",
+              customer_name: "Customer A",
               order_date: "2024-09-01",
               status: "Progress",
               order_qty: 1,
@@ -203,7 +210,7 @@ const PurchaseRecordPage: React.FC = () => {
       [name]:
         name === "quantity" || name === "price"
           ? parseFloat(value)
-          : name === "orderId"
+          : name === "order_id"
           ? value
             ? parseInt(value)
             : undefined
@@ -246,11 +253,12 @@ const PurchaseRecordPage: React.FC = () => {
     // In a real application, you would send this data to your API
 
     setNewPurchase({
-      date: "",
-      itemType: "",
+      purchase_date: "",
+      item_type: "",
       quantity: 0,
-      price: 0,
-      orderId: undefined,
+      rejected_quantity: 0,
+      amount: 0,
+      order_id: undefined,
     });
   };
   const handleSubmit = (e: React.FormEvent) => {
@@ -289,7 +297,9 @@ const PurchaseRecordPage: React.FC = () => {
     setSharedData((prevData) => ({
       ...prevData,
       purchases: prevData.purchases
-        ? prevData.purchases.filter((purchase: Purchase) => purchase.id !== id)
+        ? prevData.purchases.filter(
+            (purchase: Purchase) => purchase.purchase_id !== id
+          )
         : [],
     }));
   };
@@ -327,17 +337,17 @@ const PurchaseRecordPage: React.FC = () => {
   const filteredPurchases = sortedPurchases.filter((purchase) => {
     const matchFilterStatus =
       filterStatus === "" ||
-      purchase.itemType.toLowerCase() === filterStatus.toLowerCase();
+      purchase.item_type.toLowerCase() === filterStatus.toLowerCase();
     const matchSearch =
-      purchase.itemType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      purchase.date.includes(searchTerm) ||
+      purchase.item_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      purchase.purchase_date.includes(searchTerm) ||
       startDate
-        ? purchase.date >= startDate
+        ? purchase.purchase_date >= startDate
         : null ||
-          (endDate ? purchase.date <= endDate : null) ||
+          (endDate ? purchase.purchase_date <= endDate : null) ||
           orders
-            .find((order) => order.order_id === purchase.orderId)
-            ?.customerName.toLowerCase()
+            .find((order) => order.order_id === purchase.order_id)
+            ?.customer_name.toLowerCase()
             .includes(searchTerm.toLowerCase());
     return matchFilterStatus && matchSearch;
   });
@@ -392,9 +402,9 @@ const PurchaseRecordPage: React.FC = () => {
           <Table variant="simple" className="dataTable">
             <Thead sx={{ backgroundColor: "#32593b" }}>
               <Tr>
-                <Th color="white" onClick={() => handleSort("date")}>
+                <Th color="white" onClick={() => handleSort("purchase_date")}>
                   Date{" "}
-                  {sortConfig?.key === "date" &&
+                  {sortConfig?.key === "purchase_date" &&
                     (sortConfig.direction === "ascending" ? (
                       <ArrowUp
                         size={14}
@@ -413,9 +423,9 @@ const PurchaseRecordPage: React.FC = () => {
                       />
                     ))}
                 </Th>
-                <Th color="white" onClick={() => handleSort("itemType")}>
+                <Th color="white" onClick={() => handleSort("item_type")}>
                   Item Type{" "}
-                  {sortConfig?.key === "itemType" &&
+                  {sortConfig?.key === "item_type" &&
                     (sortConfig.direction === "ascending" ? (
                       <ArrowUp
                         size={14}
@@ -435,7 +445,7 @@ const PurchaseRecordPage: React.FC = () => {
                     ))}
                 </Th>
                 <Th color="white" onClick={() => handleSort("quantity")}>
-                  Quantity{" "}
+                  Purchased Quantity{" "}
                   {sortConfig?.key === "quantity" &&
                     (sortConfig.direction === "ascending" ? (
                       <ArrowUp
@@ -455,9 +465,10 @@ const PurchaseRecordPage: React.FC = () => {
                       />
                     ))}
                 </Th>
-                <Th color="white" onClick={() => handleSort("price")}>
+                <Th color="white">Rejected Quantity</Th>
+                <Th color="white" onClick={() => handleSort("amount")}>
                   Total Price{" "}
-                  {sortConfig?.key === "price" &&
+                  {sortConfig?.key === "amount" &&
                     (sortConfig.direction === "ascending" ? (
                       <ArrowUp
                         size={14}
@@ -482,20 +493,21 @@ const PurchaseRecordPage: React.FC = () => {
             </Thead>
             <Tbody>
               {filteredPurchases.map((purchase) => (
-                <Tr key={purchase.id}>
-                  <Td>{purchase.date}</Td>
+                <Tr key={purchase.purchase_id}>
+                  <Td>{purchase.purchase_date}</Td>
                   <Td>
-                    {purchase.itemType == "Other"
-                      ? purchase.customItemType
-                      : purchase.itemType}
+                    {purchase.item_type == "Other"
+                      ? purchase.custom_item_type
+                      : purchase.item_type}
                   </Td>
                   <Td>{purchase.quantity}</Td>
-                  <Td>${purchase.price.toFixed(2)}</Td>
+                  <Td>50</Td>
+                  <Td>${purchase.amount.toFixed(2)}</Td>
                   <Td>
-                    {purchase.orderId
+                    {purchase.order_id
                       ? orders.find(
-                          (order) => order.order_id === purchase.orderId
-                        )?.customerName || "Unknown"
+                          (order) => order.order_id === purchase.order_id
+                        )?.customer_name || "Unknown"
                       : "N/A"}
                   </Td>
                   <Td>
@@ -513,7 +525,7 @@ const PurchaseRecordPage: React.FC = () => {
                       className="delete-btn"
                       size="sm"
                       onClick={() => {
-                        handleDeleteTapper(purchase.id);
+                        handleDeleteTapper(purchase.purchase_id);
                       }}
                     />
                   </Td>
@@ -537,15 +549,15 @@ const PurchaseRecordPage: React.FC = () => {
                     <Input
                       type="date"
                       name="date"
-                      value={newPurchase.date}
+                      value={newPurchase.purchase_date}
                       onChange={handleInputChange}
                     />
                   </FormControl>
                   <FormControl isRequired>
                     <FormLabel>Item Type</FormLabel>
                     <Select
-                      name="itemType"
-                      value={newPurchase.itemType}
+                      name="item_type"
+                      value={newPurchase.item_type}
                       onChange={handleInputChange}
                       className={styles.input}
                     >
@@ -554,11 +566,11 @@ const PurchaseRecordPage: React.FC = () => {
                       <option value="Labels">Labels</option>
                       <option value="Other">Other</option>
                     </Select>
-                    {newPurchase.itemType === "Other" && (
+                    {newPurchase.item_type === "Other" && (
                       <input
                         type="text"
-                        name="customItemType"
-                        value={newPurchase.customItemType}
+                        name="custom_item_type"
+                        value={newPurchase.custom_item_type}
                         onChange={handleInputChange}
                         placeholder="Enter new category"
                         className={styles.input}
@@ -580,20 +592,20 @@ const PurchaseRecordPage: React.FC = () => {
                     <FormLabel>Unit Price</FormLabel>
                     <Input
                       type="number"
-                      name="price"
+                      name="amount"
                       min={1}
-                      value={newPurchase.price}
+                      value={newPurchase.amount}
                       onChange={handleInputChange}
                     />
                   </FormControl>
                   <FormControl isRequired>
-                    {newPurchase.itemType === "Bottles" ||
-                      (newPurchase.itemType === "Other" && (
+                    {newPurchase.item_type === "Bottles" ||
+                      (newPurchase.item_type === "Other" && (
                         <>
                           <FormLabel>Linked Order</FormLabel>
                           <Select
-                            name="orderId"
-                            value={newPurchase.orderId || ""}
+                            name="order_id"
+                            value={newPurchase.order_id || ""}
                             onChange={handleInputChange}
                             className={styles.input}
                           >
@@ -603,7 +615,7 @@ const PurchaseRecordPage: React.FC = () => {
                                 key={order.order_id}
                                 value={order.order_id}
                               >
-                                {order.customerName} - {order.order_date}
+                                {order.customer_name} - {order.order_date}
                               </option>
                             ))}
                           </Select>

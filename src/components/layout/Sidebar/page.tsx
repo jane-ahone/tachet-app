@@ -7,6 +7,8 @@ import {
   ListOrdered,
   DollarSign,
   ChevronDownIcon,
+  BookText,
+  ShoppingCart,
 } from "lucide-react";
 import styles from "./sidebar.module.css";
 import Link from "next/link";
@@ -44,8 +46,14 @@ const sideItems = [
   {
     route: "Purchases",
     link: "/purchases",
-    icon: ShoppingBag,
+    icon: ShoppingCart,
     id: "purchases",
+  },
+  {
+    route: "Report",
+    link: "/report",
+    icon: BookText,
+    id: "report",
   },
 ];
 

@@ -7,13 +7,14 @@ export interface Customer {
 }
 
 export interface Purchase {
-  id: number;
-  date: string;
-  itemType: string;
+  purchase_id: number;
+  purchase_date: string;
+  item_type: string;
   quantity: number;
-  price: number;
-  customItemType?: string;
-  orderId?: number; // Optional because not all purchases (e.g., labels) are linked to orders
+  rejected_quantity: number;
+  amount: number;
+  custom_item_type?: string;
+  order_id?: number; // Optional because not all purchases (e.g., labels) are linked to orders
 }
 
 export interface Order {
@@ -38,7 +39,8 @@ export interface ProductionData {
   date_received: string;
   order_id: number;
   tapper_id: number;
-  volume_purchased: string;
+  volume_purchased: number;
+  volume_processed: number;
   tapper_payment_status: string;
 }
 

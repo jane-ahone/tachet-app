@@ -59,14 +59,15 @@ interface ProductionEntry extends ProductionData {
 
 const ProductionPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
   const { sharedData, setSharedData } = useSharedContext();
+  const toast = useToast();
 
   const [formData, setFormData] = useState<ProductionData>({
     date_received: "",
     order_id: 1,
     tapper_id: 1,
-    volume_purchased: "",
+    volume_purchased: 1,
+    volume_processed: 1,
     tapper_payment_status: "",
   });
   const [formInitialData, setFormInitialData] = useState<ProductionEntry>({
@@ -74,8 +75,16 @@ const ProductionPage: React.FC = () => {
     date_received: "",
     order_id: 1,
     tapper_id: 1,
-    volume_purchased: "",
+    volume_purchased: 1,
+    volume_processed: 1,
     tapper_payment_status: "",
+  });
+  const [updateFormData, setUpdateFormData] = useState<ProductionData>({
+    customer_name: "",
+    customer_id: 1,
+    phone_number: "",
+    email: "",
+    home_address: "",
   });
   const [tappers, setTappers] = useState<Tapper[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -97,7 +106,7 @@ const ProductionPage: React.FC = () => {
   ];
 
   const fields: FieldConfig[] = [
-    { name: "orderDate", label: "Date", type: "date", required: true },
+    { name: "order_date", label: "Date", type: "date", required: true },
     {
       name: "orders",
       label: "Order",
@@ -262,8 +271,8 @@ const ProductionPage: React.FC = () => {
         date_received: "",
         order_id: 1,
         tapper_id: 1,
-        volume_purchased: "",
-
+        volume_purchased: 1,
+        volume_processed: 1,
         tapper_payment_status: "",
       });
 
@@ -382,7 +391,7 @@ const ProductionPage: React.FC = () => {
         .find((o) => o.customer_id === entry.order_id)
         ?.customer_name.toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      entry.volume_purchased.includes(searchTerm) ||
+      entry.volume_purchased.toString().includes(searchTerm) ||
       entry.tapper_payment_status
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
@@ -451,6 +460,7 @@ const ProductionPage: React.FC = () => {
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
                 >
+                  {/* Replace with status options */}
                   <option value="">All Statuses</option>
                   <option value="completed">Completed</option>
                   <option value="pending">Pending</option>
@@ -460,7 +470,7 @@ const ProductionPage: React.FC = () => {
               <div className={styles.card}>
                 <AddNewRecordBtn onOpen={onOpen} />
                 <Table variant="simple" className="dataTable">
-                  <Thead>
+                  <Thead textAlign="center">
                     <Tr sx={{ backgroundColor: "#32593b" }}>
                       <Th color="white">Order</Th>
                       <Th
@@ -569,7 +579,7 @@ const ProductionPage: React.FC = () => {
                               ?.tapper_name
                           }
                         </Td>
-                        <Td textAlign="center">{entry.volume_purchased}</Td>
+                        <Td>{entry.volume_purchased}</Td>
 
                         <Td>
                           <span
@@ -619,7 +629,7 @@ const ProductionPage: React.FC = () => {
                         <FormLabel>Date</FormLabel>
                         <Input
                           type="date"
-                          name="date"
+                          name="date_received"
                           value={formData.date_received}
                           onChange={handleInputChange}
                         />
@@ -628,7 +638,7 @@ const ProductionPage: React.FC = () => {
                       <FormControl isRequired mt={4}>
                         <FormLabel>Order</FormLabel>
                         <Select
-                          name="orderId"
+                          name="order_id"
                           value={formData.order_id}
                           onChange={handleInputChange}
                           placeholder="Select Order"
@@ -650,7 +660,7 @@ const ProductionPage: React.FC = () => {
                       <FormControl isRequired mt={4}>
                         <FormLabel>Tapper</FormLabel>
                         <Select
-                          name="tapperId"
+                          name="tapper_id"
                           value={formData.tapper_id}
                           onChange={handleInputChange}
                           placeholder="Select Tapper"
@@ -676,7 +686,7 @@ const ProductionPage: React.FC = () => {
                         <FormLabel>Volume Collected (L)</FormLabel>
                         <Input
                           type="number"
-                          name="volumeCollected"
+                          name="volume_purchased"
                           value={formData.volume_purchased}
                           onChange={handleInputChange}
                           min="0"
@@ -687,7 +697,7 @@ const ProductionPage: React.FC = () => {
                       <FormControl isRequired mt={4}>
                         <FormLabel>Payment Status</FormLabel>
                         <Select
-                          name="tapperPaymentStatus"
+                          name="tapper_payment_status"
                           value={formData.tapper_payment_status}
                           onChange={handleInputChange}
                         >
