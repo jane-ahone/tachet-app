@@ -27,7 +27,7 @@ import {
 } from "@chakra-ui/react";
 import ScrollToTopButton from "@/components/ScrolltoTop/page";
 import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
-import { useSharedContext } from "@/app/sharedContext";
+import { useSharedContext } from "@/app/sharedContexts";
 
 const TapperManagementPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

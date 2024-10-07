@@ -52,7 +52,7 @@ import CustomButton from "@/components/Button/button";
 import ScrollToTopButton from "@/components/ScrolltoTop/page";
 import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
 import AlertDialogExample from "@/components/DeleteAlert/delete";
-import { useSharedContext } from "../../sharedContext";
+import { useSharedContext } from "@/app/sharedContexts";
 import {
   useErrorToast,
   useSuccessToast,

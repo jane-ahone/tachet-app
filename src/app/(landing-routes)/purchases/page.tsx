@@ -35,7 +35,7 @@ import {
   Select,
 } from "@chakra-ui/react";
 import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
-import { useSharedContext } from "@/app/sharedContext";
+import { useSharedContext } from "@/app/sharedContexts";
 
 const PurchaseRecordPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

@@ -21,7 +21,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useSharedContext } from "@/app/sharedContext";
+import { useSharedContext } from "@/app/sharedContexts";
 import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
 
 const CustomerManagementPage: React.FC = () => {

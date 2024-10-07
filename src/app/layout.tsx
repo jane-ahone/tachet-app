@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ChakraProvider } from "@chakra-ui/react";
-import { SharedProvider } from "./sharedContext";
+import { SharedProvider } from "./sharedContexts";
 
 const inter = Inter({ subsets: ["latin"] });
 
