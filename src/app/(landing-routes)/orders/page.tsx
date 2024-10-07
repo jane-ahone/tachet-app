@@ -18,7 +18,6 @@ import {
   Trash2,
   Hammer,
   BadgeDollarSign,
-  FilePlus2,
 } from "lucide-react";
 import {
   Modal,
@@ -28,7 +27,6 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  Button,
   FormControl,
   FormLabel,
   Input,
@@ -45,22 +43,26 @@ import {
   Th,
   Td,
   IconButton,
-  useToast,
 } from "@chakra-ui/react";
 import EditModal from "@/components/EditModal/editModal";
-import { Customer, Order, OrderData, FieldConfig } from "@/lib/types/interface";
-import CustomCard from "@/components/layout/Card/page";
+import { Customer, Order, FieldConfig } from "@/lib/types/interface";
+
 import { createHandleInputChange } from "@/lib/helpers/tableHelpers";
 import CustomButton from "@/components/Button/button";
 import ScrollToTopButton from "@/components/ScrolltoTop/page";
 import AddNewRecordBtn from "@/components/AddNewRecordBtn/page";
 import AlertDialogExample from "@/components/DeleteAlert/delete";
 import { useSharedContext } from "@/app/sharedContext";
+import {
+  useErrorToast,
+  useSuccessToast,
+} from "@/components/layout/ResponseToast/page";
 
 const OrderPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
   const { sharedData, setSharedData } = useSharedContext();
+  const showSuccessToast = useSuccessToast();
+  const showErrorToast = useErrorToast();
 
   const navBarItems = [
     {
@@ -85,7 +87,8 @@ const OrderPage: React.FC = () => {
 
   const statusOptions = ["pending", "inprogress", "completed", "cancelled"];
 
-  const [formData, setFormData] = useState<OrderData>({
+  const [formData, setFormData] = useState<Order>({
+    order_id: 1,
     customer_id: 1,
     customer_name: "",
     order_qty: 1,
@@ -94,7 +97,7 @@ const OrderPage: React.FC = () => {
   });
   const [formInitialData, setFormInitialData] = useState<Order>({
     order_id: 1,
-    customerName: "",
+    customer_name: "",
     customer_id: 1,
     order_qty: 1,
     order_date: new Date().toISOString().split("T")[0],
@@ -102,7 +105,7 @@ const OrderPage: React.FC = () => {
   });
   const [updateFormData, setUpdateFormData] = useState<Order>({
     order_id: 1,
-    customerName: "",
+    customer_name: "",
     customer_id: 1,
     order_qty: 1,
     order_date: new Date().toISOString().split("T")[0],
@@ -140,86 +143,60 @@ const OrderPage: React.FC = () => {
       name: "status",
       label: "Production Status",
       type: "select",
-      options: [
-        { value: "pending", label: "pending" },
-        { value: "inprogress", label: "inprogress" },
-        { value: "completed", label: "completed" },
-      ],
+      options: statusOptions.map((option) => ({
+        value: option,
+        label: option,
+      })),
+
       required: true,
     },
   ];
 
   useEffect(() => {
-    if (sharedData?.customers.length > 0) {
+    if (sharedData?.customers?.length > 0) {
+      console.log("Fetching from cache;customers");
       setCustomers(sharedData?.customers);
     } else {
       // Fetch customers if not in shared context
-
       (async () => {
         try {
           const response = await fetch("/api/customer");
-
           const data = await response.json();
           if (!response.ok) {
             throw new Error(data.error || "Failed to fetch customers");
           }
-
-          setSharedData({ ...sharedData, customers: data.customers });
-          setCustomers(data.customers);
+          setSharedData((prev) => ({ ...prev, customers: data.customers }));
+          showSuccessToast("Success fetching customer data");
         } catch (error) {
           console.log(error);
-          setCustomers([
-            {
-              customer_id: 1,
-              customer_name: "Customer A",
-              phone_number: "1234567890",
-              email: "there's been an error",
-              home_address: "123 Palm St",
-            },
-          ]);
+          showErrorToast("Error fetching customer data");
         }
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sharedData?.customers]);
 
-    if (sharedData?.orders.length > 0) {
+  useEffect(() => {
+    if (sharedData?.orders?.length > 0) {
       setOrders(sharedData?.orders);
     } else {
-      // Fetch orders if not in shared context
       (async () => {
         try {
           const response = await fetch("/api/orders");
-
           const data = await response.json();
           if (!response.ok) {
-            throw new Error(data.error || "Failed to fetch customers");
+            throw new Error(data.error || "Failed to fetch orders");
           }
-
-          setSharedData({ ...sharedData, orders: data.orders });
-          setOrders(data.orders);
+          setSharedData((prev) => ({ ...prev, orders: data.orders }));
+          showSuccessToast("Success fetching order data");
         } catch (error) {
           console.log(error);
-          setOrders([
-            {
-              order_id: 1,
-              customer_id: 1,
-              customerName: "Customer A",
-              order_date: "2024-09-01",
-              status: "inprogress",
-              order_qty: 1,
-            },
-            {
-              order_id: 2,
-              customer_id: 3,
-              customerName: "Customer B",
-              order_date: "2024-09-02",
-              status: "inprogress",
-              order_qty: 1,
-            },
-          ]);
+          showErrorToast("Error fetching order data");
         }
       })();
     }
-  }, [sharedData, setSharedData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sharedData?.orders]);
 
   const handleInputChange = createHandleInputChange(setFormData);
 
@@ -257,23 +234,10 @@ const OrderPage: React.FC = () => {
         (order) => order.order_id !== order_id
       );
       setSharedData({ ...sharedData, orders: updatedOrders });
-
-      toast({
-        title: "Order updated.",
-        description: "The order has been successfully updated.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      showSuccessToast("The order has been successfully updated.");
     } catch (error) {
       console.log(`Error: ${error}`);
-      toast({
-        title: "Error",
-        description: "Failed to uodate order.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      showErrorToast("Failed to update order.");
     } finally {
       setUpdateModal(false);
     }
@@ -293,23 +257,10 @@ const OrderPage: React.FC = () => {
 
       const updatedOrders = orders.filter((order) => order.order_id !== id);
       setSharedData({ ...sharedData, orders: updatedOrders });
-
-      toast({
-        title: "Order deleted.",
-        description: "The order has been successfully deleted.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      showSuccessToast("The order has been successfully deleted.");
     } catch (error) {
       console.log(`Error: ${error}`);
-      toast({
-        title: "Error",
-        description: "Failed to delete order.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      showErrorToast("Failed to delete order.");
     }
   };
 
@@ -337,23 +288,11 @@ const OrderPage: React.FC = () => {
       }));
 
       onClose();
-      toast({
-        title: "Order created.",
-        description: "We've created your order for you.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      showSuccessToast("We've created your order for you.");
     } catch (error) {
       console.log(`Error: ${error}`);
       onClose();
-      toast({
-        title: "Error",
-        description: "Failed to create order.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      showErrorToast("Failed to create order.");
     }
   };
 
@@ -404,6 +343,7 @@ const OrderPage: React.FC = () => {
           <div className="dateFilterContainer">
             <input
               type="date"
+              name="select-date"
               className="dateInput"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
@@ -412,6 +352,7 @@ const OrderPage: React.FC = () => {
             <span className="dateRangeSeparator">to</span>
             <input
               type="date"
+              name="select-date"
               className="dateInput"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
@@ -598,8 +539,6 @@ const OrderPage: React.FC = () => {
                     ))}
                   </Select>
                 </FormControl>
-
-                {/* Change the button to the custom one I made */}
 
                 <CustomButton type="submit" className={styles.createNewBtn}>
                   Create

@@ -80,11 +80,12 @@ const ProductionPage: React.FC = () => {
     tapper_payment_status: "",
   });
   const [updateFormData, setUpdateFormData] = useState<ProductionData>({
-    customer_name: "",
-    customer_id: 1,
-    phone_number: "",
-    email: "",
-    home_address: "",
+    date_received: "",
+    order_id: 1,
+    tapper_id: 1,
+    volume_purchased: 1,
+    volume_processed: 1,
+    tapper_payment_status: "",
   });
   const [tappers, setTappers] = useState<Tapper[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -340,18 +341,48 @@ const ProductionPage: React.FC = () => {
     });
     setUpdateModal(true);
   };
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const handleUpdate = async () => {
+    const { order_id } = formInitialData;
+
     try {
-      setUpdateModal(false);
-      // Add a toast notification for success
+      const response = await fetch(`/api/orders/${order_id}`, {
+        method: "PUT",
+        body: JSON.stringify(updateFormData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "An error occured");
+      }
+
+      const updatedOrders = orders.filter(
+        (order) => order.order_id !== order_id
+      );
+      setSharedData({ ...sharedData, orders: updatedOrders });
+
+      toast({
+        title: "Order updated.",
+        description: "The order has been successfully updated.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (error) {
       console.log(`Error: ${error}`);
-      // Add a toast notification for error
+      toast({
+        title: "Error",
+        description: "Failed to uodate order.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setUpdateModal(false);
     }
   };
-
-  console.log("My orders", orders);
 
   const handleSort = (key: keyof ProductionEntry) => {
     let direction = "ascending";
@@ -719,6 +750,8 @@ const ProductionPage: React.FC = () => {
 
               {updateModal ? (
                 <EditModal
+                  setUpdateFormData={setUpdateFormData}
+                  UpdateFormData={updateFormData}
                   initialData={formInitialData}
                   fields={fields}
                   updateModal={updateModal}
@@ -1016,6 +1049,8 @@ const ProductionPage: React.FC = () => {
                 <EditModal
                   initialData={formInitialData}
                   fields={fields}
+                  setUpdateFormData={setUpdateFormData}
+                  UpdateFormData={updateFormData}
                   updateModal={updateModal}
                   setUpdateModal={setUpdateModal}
                   handleSubmit={handleUpdate}

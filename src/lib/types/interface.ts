@@ -44,13 +44,6 @@ export interface ProductionData {
   tapper_payment_status: string;
 }
 
-export interface OrderData {
-  customer_id: number;
-  customer_name: string;
-  order_qty: number;
-  order_date: string;
-  status: string;
-}
 export interface FieldConfig {
   name: string;
   label: string;
