@@ -46,6 +46,13 @@ const TapperManagementPage: React.FC = () => {
     email: "jack@gmail.com",
     home_address: "Pending",
   });
+  const [updateFormData, setUpdateFormData] = useState<Tapper>({
+    tapper_id: 1,
+    phone_number: "697624530",
+    tapper_name: "John Doe",
+    email: "jack@gmail.com",
+    home_address: "Pending",
+  });
 
   const [searchTerm, setSearchTerm] = useState("");
   const [updateModal, setUpdateModal] = useState<boolean>(false);
@@ -328,6 +335,8 @@ const TapperManagementPage: React.FC = () => {
         {updateModal ? (
           <EditModal
             initialData={formInitialData}
+            setUpdateFormData={setUpdateFormData}
+            UpdateFormData={updateFormData}
             fields={fields}
             updateModal={updateModal}
             setUpdateModal={setUpdateModal}
