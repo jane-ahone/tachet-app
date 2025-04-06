@@ -3,7 +3,7 @@
 **Role:** UI Designer, Full-stack Developer  
 **Tech Stack:** Next.js (App Router), Vercel Postgres, TypeScript, Figma
 
-**Status: Ongoing
+**Status**: Ongoing
 
 - Designed and developed a full-stack web application for managing the production lifecycle of palm wine — from collection to bottling.  
 - Built a custom **inventory tracking system** to monitor stock levels, manage batch data 
