@@ -1,3 +1,19 @@
+
+### **Palm Wine Inventory Management System**  
+**Role:** UI Designer, Full-stack Developer  
+**Tech Stack:** Next.js (App Router), Vercel Postgres, TypeScript, Figma
+
+**Status: Ongoing
+
+- Designed and developed a full-stack web application for managing the production lifecycle of palm wine — from collection to bottling.  
+- Built a custom **inventory tracking system** to monitor stock levels, manage batch data 
+- Leveraged **Next.js App Router** for both front-end and API development, ensuring a streamlined and cohesive codebase.  
+- Used **Vercel Postgres** to model and store production and inventory data, enabling efficient querying and relationship mapping.  
+
+---
+
+Let me know if you want to include screenshots, a GitHub repo, or maybe even a one-liner on what problem the system solves. Happy to help tailor this even more if it’s going on your portfolio or resume!
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
